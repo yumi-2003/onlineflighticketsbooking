@@ -37,7 +37,8 @@
                     flight.capacity, 
                     flight.seats_researved, 
                     flight.seats_available,
-                    flight.gate    
+                    flight.gate,
+                    flight.image    
                 FROM 
                     flight
                 INNER JOIN 
@@ -68,15 +69,19 @@
             $cap = $_POST['capacity'];
             $rerseat = $_POST['seats_researved'];
             $avaseat = $cap - $rerseat;
+            $img = $_FILES['image']['name'];
+            $uploadImg = "../flightImg/{$img}";
+
+            move_uploaded_file($_FILES['image']['tmp_name'],$uploadImg);
 
             // echo "$flight_Id,$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$cap,$rerseat,$avaseat";
 
             try{
-                $sql = "Update flight set airline_id = ?,flight_name = ?,flight_date = ? ,destination =?,source =?,total_distance = ?,fee_per_ticket = ?,departure_time = ?,arrival_time=?,gate=?,capacity =? ,seats_researved =?,seats_available = ? where flight_id=?";
+                $sql = "Update flight set airline_id = ?,flight_name = ?,flight_date = ? ,destination =?,source =?,total_distance = ?,fee_per_ticket = ?,departure_time = ?,arrival_time=?,gate=?,capacity =? ,seats_researved =?,seats_available = ?, image =? where flight_id=?";
 
                 $stmt = $conn->prepare($sql);
 
-                $status = $stmt->execute([$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$gate,$cap,$rerseat,$avaseat,$flight_Id]);
+                $status = $stmt->execute([$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$gate,$cap,$rerseat,$avaseat,$img,$flight_Id]);
                 
 
                 if($status){
@@ -241,6 +246,16 @@
                             echo $flight['seats_available'];
                         }
                     ?>" />
+                </div>
+
+                <div>
+                    <label for="avaseats" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray">Previous destination photo</label>
+                    <img class="w-10 h-10" src="<?php
+                        if(isset($flight['image'])){
+                            echo $flight['image'];
+                        }
+                    ?>" alt="">
+                    <input type="file" name="image" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Choose image" required value = "" />
                 </div>
             </div>
            

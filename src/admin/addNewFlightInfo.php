@@ -25,13 +25,18 @@
             $rerseat = $_POST['seats_researved'];
             $avaseat = $_POST['seats_available'];
             $gate = $_POST['gate'];
+            $img = $_FILES['image']['name'];
+            $uploadImg = "../images/flight/".$img;
+
+            move_uploaded_file($_FILES['image']['tmp_name'], $uploadImg);
+
 
             
             
             try{
-                $sql = "INSERT INTO flight (airline_id,flight_name,flight_date,destination,source,total_distance,fee_per_ticket,departure_time,arrival_time,capacity,seats_researved,seats_available,gate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql = "INSERT INTO flight (airline_id,flight_name,flight_date,destination,source,total_distance,fee_per_ticket,departure_time,arrival_time,capacity,seats_researved,seats_available,gate,image) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $stmt = $conn->prepare($sql);
-                $status = $stmt->execute([$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$cap,$rerseat,$avaseat,$gate]);
+                $status = $stmt->execute([$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$cap,$rerseat,$avaseat,$gate,$img]);
                 $flightId = $conn->lastInsertId();
 
 
@@ -126,6 +131,10 @@
                 <div>
                     <label for="avaseats" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray">Available Seats</label>
                     <input type="number" name="seats_available" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Available Seats" required />
+                </div>
+                <div>
+                    <label for="avaseats" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray">Photo</label>
+                    <input type="file" name="seats_available" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Available Seats" required />
                 </div>
             </div>
            
