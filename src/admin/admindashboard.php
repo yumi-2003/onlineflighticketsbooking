@@ -1,5 +1,10 @@
 <?php
+     
      require_once "dbconnect.php";
+
+       if(!isset($_SESSION)){
+          session_start();
+       }
 ?>
 
 <!doctype html>
@@ -188,6 +193,23 @@
 
 <div class="p-4 sm:ml-64">
    <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
+      <h1 class="text-2xl font-semibold text-gray-900 dark:text-dark">Welcome to Admin Dashboard!!!</h1>
+      <p>
+      <?php
+
+
+         if(isset($_SESSION['adminLoginSuccess'])){
+            echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
+                     <span class='font-medium'>$_SESSION[adminLoginSuccess]</span>
+                  </div>
+                  ";
+            unset($_SESSION['adminLoginSuccess']);
+         }
+
+      ?>
+      </p>
+         
+      
       <div class="grid grid-cols-3 gap-4 mb-4">
          <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
             <p class="text-2xl text-gray-400 dark:text-gray-500">

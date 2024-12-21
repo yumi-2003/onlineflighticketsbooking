@@ -32,6 +32,7 @@
                         $password_hash = $info['admin_pwd'];
 
                         if(password_verify($password, $password_hash)){
+                            
                             $_SESSION['adminLoginSuccess'] = 'Admin login successful';
                             $_SESSION['isLoggedIn'] = true;
 
