@@ -6,6 +6,45 @@
             session_start();
         }
 
+        if(isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+
+            if(strlen($password) > 7){
+                try{
+                    $sql = "SELECT * FROM users WHERE username = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute([$username]);
+                    $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if($userInfo){
+                        $password_hash = $userInfo['password'];
+
+
+                        if(password_verify($password,$password_hash)){
+                            $_SESSION['userLoginSuccess'] = 'Login Successful';
+                            // $_SESSION['username'] = $username;
+                           
+                            // $_SESSION['isLoggedIn'] = true;
+                            header('Location: index.php');
+                        }else{
+                            $password_err =  "Invalid username or password";
+                        }
+                    }else{
+                        $password_err =  "Invalid username or password";
+                    }
+                }catch(PDOException $e){
+                    echo $e->getMessage();
+                }
+
+            }
+
+        }else{
+            $password_err =  "Invalid username or password";
+        }
+
+
 
 
 ?>

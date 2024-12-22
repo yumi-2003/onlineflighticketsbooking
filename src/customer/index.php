@@ -1,3 +1,46 @@
+<?php
+
+    require_once 'dbconnect.php';
+
+    $sql = "SELECT 
+                    flight.flight_id,
+                    airline.airline_name, 
+                    flight.flight_name, 
+                    flight.flight_date, 
+                    flight.destination, 
+                    flight.source, 
+                    flight.total_distance, 
+                    flight.fee_per_ticket, 
+                    flight.departure_time, 
+                    flight.arrival_time, 
+                    flight.capacity, 
+                    flight.seats_researved, 
+                    flight.seats_available,
+                    flight.gate
+                    
+                FROM 
+                    flight
+                INNER JOIN 
+                    airline
+                ON 
+                    flight.airline_id = airline.airline_id;";
+
+    try{
+      $stmt = $conn->query($sql);
+      $status = $stmt->execute();
+
+      if($status){
+        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      }
+
+
+    }catch(PDOException $e){
+      echo $e->getMessage();
+    }
+
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +51,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.0.0/dist/datepicker.min.js"></script>
+    
 </head>
 <body>
 
@@ -129,22 +173,21 @@
             <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
                 <div class="text-center">
                     <form action="" class="space-y-4">
-                        <div>
-                            <h1 class="text-4xl font-extrabold text-white">Welcome to SwiftMiles</h1>
-                        </div>
+                      <div>
+                        <h1 class="text-4xl font-extrabold text-white">Welcome to SwiftMiles</h1>
+                      </div>
 
-                        <div>
-                            <p class="text-white text-lg mt-4 leading-relaxed">Affordable Flights, Unforgettable Journeys </p>
-                        </div>
+                      <div>
+                        <p class="text-white text-lg mt-4 leading-relaxed">Affordable Flights, Unforgettable Journeys </p>
+                      </div>
 
-                            <div class="grid grid-flow-col auto-cols-max gap-4 mt-4 ml-28">
-                                <input type="text" class="w-full p-2 rounded-md" placeholder="From: City or Airport" />
-                                <input type="text" class="w-full p-2 rounded-md" placeholder="To: City or Airport" />
-                                <input type="date" class="w-full p-2 rounded-md" placeholder="Departure Date" />
-                                <input type="date" class="w-full p-2 rounded-md" placeholder="Return Date" />
-                                <button class="w-full p-2 text-white bg-blue-600 rounded-md">Explore</button>
-                            </div>
-                            
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
+                        <input type="text" class="w-full p-2 rounded-md" placeholder="From: City or Airport" />
+                        <input type="text" class="w-full p-2 rounded-md" placeholder="To: City or Airport" />
+                        <input type="date" class="w-full p-2 rounded-md" id="depDate" placeholder="Departure Date" />
+                        <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" />
+                        <button class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
+                      </div>
                     </form>
 
                 </div>
@@ -476,6 +519,24 @@
     </footer>
     <!-- footer ends -->
 
-    
+    <script>
+      //Depature date for current date and future date
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+
+            const depDateInput = document.querySelector("#depDate");
+            const retDateInput = document.querySelector("#retDate");
+
+            depDateInput.setAttribute("min", minDate);
+            retDateInput.setAttribute("min", minDate);
+
+            if (retDateInput.value === depDateInput.value) {
+              alert("Return date should be greater than departure date");
+            }
+            
+    </script>
 </body>
 </html>

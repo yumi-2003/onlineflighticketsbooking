@@ -49,7 +49,7 @@
 
     }
 
-        if(isset($_POST['sigup']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+        if(isset($_POST['signup']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
 
             $username = $_POST['username'];
             $email = $_POST['email'];

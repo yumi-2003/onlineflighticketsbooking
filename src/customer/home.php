@@ -128,7 +128,8 @@
 
                 <div class="max-md:text-center">
                 <h3 class="text-dark font-semibold md:text-3xl text-2xl md:leading-10">FLY AROUND THE WORLD</h3>
-                <p class="text-dark mt-4 text-sm leading-relaxed">Find flights, book tickets, and embark on your journey effortlessly.</p>
+                <p class="text-dark mt-4 text-lg leading-relaxed">Find flights, book tickets, and embark on your journey effortlessly.</p>
+                <p class="text-dark mt-4 text-sm leading-relaxed">Thinking of flying with us. Do register now and save 10% for your flight.</p>
                 <button type="button" class="px-5 py-2.5 mt-8 bg-blue-700 hover:bg-blue-800 text-white tracking-wider rounded text-sm outline-none">
                     <a href="cSignUp.php">Book Now</a>
                 </button>
