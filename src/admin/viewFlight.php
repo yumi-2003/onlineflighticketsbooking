@@ -15,7 +15,8 @@
                     flight.capacity, 
                     flight.seats_researved, 
                     flight.seats_available,
-                    flight.gate
+                    flight.gate,
+                    flight.placeImg
                     
                 FROM 
                     flight
@@ -290,6 +291,9 @@
                         Available Seats
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Place
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Action
                     </th>
                 </tr>
@@ -313,6 +317,7 @@
                           <td>$flight[capacity]</td>
                           <td>$flight[seats_researved]</td>
                           <td>$flight[seats_available]</td>
+                           <td><img src='$flight[placeImg]'></td>
                           <td class='flex flex-direction:column aligh-items:center pt-30'>
                               <a href='updateFlight.php?fid=$flight[flight_id]'><img src='/images/updated.png' height='20' width='20' alt='update'></a>
                               <a href='deleteFlight.php?fid=$flight[flight_id]'><img src='/images/delete.png' height='20' width='20' alt='delete'></a>

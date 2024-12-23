@@ -16,7 +16,8 @@
                     flight.capacity, 
                     flight.seats_researved, 
                     flight.seats_available,
-                    flight.gate
+                    flight.gate,
+                    flight.image
                     
                 FROM 
                     flight

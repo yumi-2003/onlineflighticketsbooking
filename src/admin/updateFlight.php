@@ -38,7 +38,7 @@
                     flight.seats_researved, 
                     flight.seats_available,
                     flight.gate,
-                    flight.image    
+                    flight.placeImg  
                 FROM 
                     flight
                 INNER JOIN 
@@ -69,15 +69,15 @@
             $cap = $_POST['capacity'];
             $rerseat = $_POST['seats_researved'];
             $avaseat = $cap - $rerseat;
-            $img = $_FILES['image']['name'];
-            $uploadImg = "../flightImg/{$img}";
+            $img = $_FILES['placeImg']['name'];
+            $uploadImg = "../flightImg/.$img";
 
-            move_uploaded_file($_FILES['image']['tmp_name'],$uploadImg);
+            move_uploaded_file($_FILES['placeImg']['tmp_name'],$uploadImg);
 
-            // echo "$flight_Id,$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$cap,$rerseat,$avaseat";
+            
 
             try{
-                $sql = "Update flight set airline_id = ?,flight_name = ?,flight_date = ? ,destination =?,source =?,total_distance = ?,fee_per_ticket = ?,departure_time = ?,arrival_time=?,gate=?,capacity =? ,seats_researved =?,seats_available = ?, image =? where flight_id=?";
+                $sql = "Update flight set airline_id = ?,flight_name = ?,flight_date = ? ,destination =?,source =?,total_distance = ?,fee_per_ticket = ?,departure_time = ?,arrival_time=?,gate=?,capacity =? ,seats_researved =?,seats_available = ?, placeImg =? where flight_id=?";
 
                 $stmt = $conn->prepare($sql);
 
@@ -255,7 +255,7 @@
                             echo $flight['image'];
                         }
                     ?>" alt="">
-                    <input type="file" name="image" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Choose image" required value = "" />
+                    <input type="file" name="placeImg" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Choose image" required value = "" />
                 </div>
             </div>
            
