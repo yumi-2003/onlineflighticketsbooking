@@ -56,9 +56,10 @@
             $password = $_POST['password'];
             $cpassword = $_POST['cpassword'];
 
-            $file_name = $_FILES['../profile']['name'];
-            $uploadPath = '../profile/'.$file_name;
+            $filename = $_FILES['profile']['name'];
+            $uploadPath = '../userPhoto/'.$filename;
 
+            
 
             if($password == $cpassword){
                 if(ispwdstrong($password)) {
