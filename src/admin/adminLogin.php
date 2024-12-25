@@ -11,6 +11,8 @@
             $username = $_POST['admin_uname'];
             $email = $_POST['admin_email'];
             $password = $_POST['admin_pwd'];
+            $filename = $_FILES['profile']['name'];
+            $uploadPath = '../userPhoto/'.$filename;
 
             if(empty($username) || empty($email) || empty($password)){
                 echo "<script>alert('All fields are required')</script>";
@@ -29,15 +31,20 @@
                     $info = $stmt->fetch(PDO::FETCH_ASSOC);
 
                     if($info){
+                        
                         $password_hash = $info['admin_pwd'];
+                        move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
 
                         if(password_verify($password, $password_hash)){
                             
                             $_SESSION['adminLoginSuccess'] = 'Admin login successful';
+                            $_SESSION['adName'] = $username;
+                            $_SESSION['adEmail'] = $email;
+                            $_SESSION['adprofile'] = $filename;
                             $_SESSION['isLoggedIn'] = true;
-
                             header('Location: admindashboard.php');
                             exit();
+                            
                         } else {
                             $password_error = "There is no account with this credentials";
                         }
@@ -129,6 +136,22 @@
                             <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
                         </svg>
                         </div>
+                    </div>
+
+                    <div class="mt-6 w-20">
+                        <label for="uploadFile1"
+                          class="flex bg-white hover:bg-gray-700 text-gray text-base px-5 py-3 outline-none rounded w-max cursor-pointer mx-auto font-[sans-serif]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 mr-2 fill-drak inline" viewBox="0 0 32 32">
+                                <path
+                                d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
+                                data-original="#000000" />
+                                <path
+                                d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
+                                data-original="#000000" />
+                        </svg>
+                        Upload Profile
+                        <input type="file" name="profile" id='uploadFile1' class="hidden" />
+                        </label>
                     </div>
 
                     <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
