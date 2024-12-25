@@ -19,6 +19,7 @@
             }
 
             else if(strlen($password) < 7){
+                move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
                 $password_error = "Password must be at least 7 characters long";
             } 
             
@@ -33,7 +34,7 @@
                     if($info){
                         
                         $password_hash = $info['admin_pwd'];
-                        move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
+                        
 
                         if(password_verify($password, $password_hash)){
                             

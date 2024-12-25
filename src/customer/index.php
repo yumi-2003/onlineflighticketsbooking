@@ -44,6 +44,10 @@
       echo $e->getMessage();
     }
 
+    //search by source, destin, flight date
+
+    
+
 
 
 ?>
@@ -105,10 +109,10 @@
                           </div>
                           <ul class="py-1" role="none">
                               <li>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
+                                <a href="editUProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
                               </li>
                               <li>
-                                <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                                <a href="cLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
                               </li>
                           </ul>
                           </div>
@@ -229,7 +233,7 @@
         <div class=" font-[sans-serif] p-6 mt-10" style="background-image: url('/images/cloud.webp'); background-size: cover;">
             <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
                 <div class="text-center">
-                    <form action="" class="space-y-4">
+                    <form action="" method="POST" class="space-y-4">
                       <div>
                         <h1 class="text-4xl font-extrabold text-white">Welcome to SwiftMiles</h1>
                       </div>
@@ -239,11 +243,28 @@
                       </div>
 
                       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
-                        <input type="text" class="w-full p-2 rounded-md" placeholder="From: City or Airport" />
-                        <input type="text" class="w-full p-2 rounded-md" placeholder="To: City or Airport" />
-                        <input type="date" class="w-full p-2 rounded-md" id="depDate" placeholder="Departure Date" />
-                        <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" />
-                        <button class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
+                        <select id="source" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+                            <option selected>From: City</option>
+                            <?php
+                              $uniqueSources = array_unique(array_column($flights, 'source'));
+                              foreach($uniqueSources as $source){
+                                echo "<option value='$source'>$source</option>";
+                              }
+                            ?>
+                        </select>
+
+                        <select id="destination" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+                            <option selected>To: City</option>
+                            <?php
+                              $uniqueDestin = array_unique(array_column($flights, 'destination'));
+                              foreach($uniqueDestin as $destin){
+                                echo "<option value='$destin'>$destin</option>";
+                              }
+                            ?>
+                        </select>
+                        <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" placeholder="Departure Date" />
+                        <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
+                        <button name="find" class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
                       </div>
                     </form>
 

@@ -4,13 +4,9 @@
         session_start();
     }
 
-    if(isset($_SESSION['is_logged_in'])){
+    if(isset($_SESSION['userisLoggedIn'])){
         
         session_destroy();
         header('Location: cLogin.php');
     }
-
-
-
-
 ?>

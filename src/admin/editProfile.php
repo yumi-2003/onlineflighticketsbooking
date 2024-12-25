@@ -2,13 +2,13 @@
     require_once 'dbconnect.php';
 
     if(isset($_POST['admin_email'])){
-        $email = $_POST['admin_eamil'];
+        $email = $_POST['admin_email'];
         $adInfo = getAdminInfo($email);
     }
 
     function getAdminInfo($adEmail){
         global $conn;
-        $sql = 'SELECT * FROM admin';
+        $sql = 'SELECT * FROM admin WHERE admin_email = ?';
         $stmt = $conn->prepare($sql);
         $stmt->execute([$adEmail]);
         $adInfo = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -19,7 +19,7 @@
         $ad_email = $_POST['admin_email'];
         $ad_uname = $_POST['admin_uname'];
         $filename = $_FILES['profile']['name'];
-        $uploadPath = '../userPhoto/'.$filename;
+        $uploadPath = "../userPhoto/".$filename;
         move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
 
         try{
@@ -27,7 +27,7 @@
             $sql = 'Update admin set admin_email = ?, admin_uname = ?, profile =? where admin_email = ?  ';
 
             $stmt = $conn->prepare($sql);
-            $status = $stmt->execute([$ad_email,$ad_uname,$filename]);
+            $status = $stmt->execute([$ad_email, $ad_uname, $filename, $ad_email]);
 
             if($status){
                 $_SESSION['updateAdminProfile'] = "Admin information has been updated";
@@ -96,7 +96,7 @@
                                     <div class="bg-white/90 rounded-full w-6 h-6 text-center ml-28 mt-4">
 
                                         <input type="file" name="profile" id="upload_profile" hidden required>
-
+                                        
                                         <label for="upload_profile">
                                                 <svg data-slot="icon" class="w-6 h-5 text-blue-700" fill="none"
                                                     stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24"
