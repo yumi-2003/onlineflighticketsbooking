@@ -45,7 +45,25 @@
     }
 
     //search by source, destin, flight date
+    if(isset($_POST['find'])){
+      $source = $_POST['source'];
+      $desti = $_POST['destination'];
+      $date = $_POST['flight_date'];
 
+      try{
+        $sql = "SELECT * FROM flight where source = ?, destination = ?, flight_date=?";
+
+           $stmt = $conn->prepare($sql);
+           $stmt->bindValue(1, $source);
+           $stmt->bindValue(2, $desti);
+           $stmt->bindValue(3, $date);
+           $stmt->execute();
+           $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      }catch(PDOException $e){
+        echo $e->getMessage();
+      }
+    }
     
 
 
@@ -243,7 +261,7 @@
                       </div>
 
                       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
-                        <select id="source" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+                        <select id="source" name="source" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
                             <option selected>From: City</option>
                             <?php
                               $uniqueSources = array_unique(array_column($flights, 'source'));
@@ -253,7 +271,7 @@
                             ?>
                         </select>
 
-                        <select id="destination" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+                        <select id="destination" name="destination" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
                             <option selected>To: City</option>
                             <?php
                               $uniqueDestin = array_unique(array_column($flights, 'destination'));
@@ -262,8 +280,8 @@
                               }
                             ?>
                         </select>
-                        <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" placeholder="Departure Date" />
-                        <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
+                        <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" /> 
+                        <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" />
                         <button name="find" class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
                       </div>
                     </form>
