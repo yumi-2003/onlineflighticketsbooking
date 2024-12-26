@@ -51,12 +51,12 @@
       $date = $_POST['flight_date'];
 
       try{
-        $sql = "SELECT * FROM flight where source = ?, destination = ?, flight_date=?";
+        $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
 
            $stmt = $conn->prepare($sql);
-           $stmt->bindValue(1, $source);
-           $stmt->bindValue(2, $desti);
-           $stmt->bindValue(3, $date);
+           $stmt->bindParam(1,$source,PDO::PARAM_STR);
+           $stmt->bindParam(2,$desti,PDO::PARAM_STR);
+           $stmt->bindParam(3,$date,PDO::PARAM_STR);
            $stmt->execute();
            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -64,9 +64,6 @@
         echo $e->getMessage();
       }
     }
-    
-
-
 
 ?>
 <!DOCTYPE html>
@@ -83,7 +80,6 @@
 </head>
 <body>
 
-    <!-- nav starts -->
         <nav class= "fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -104,13 +100,8 @@
                               <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
                                 <span class="sr-only">Open user menu</span>
 
-                                <!-- <?php
-                                
-                                //echo $_SESSION[]
-                                
-                                ?> -->
 
-                                <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                                <img class="w-8 h-8 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
 
                               </button>
                           </div>
@@ -155,7 +146,7 @@
                 <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
                     <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
                         <li>
-                            <a href="#" class="block py-2 px-3 text-blue-600 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-blue-500 md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+                        <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
                         </li>
                         <li>
                             <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
@@ -246,6 +237,7 @@
             </div>
         </nav>
         <!-- nav ends -->
+    
 
         <!-- Hero section starts -->
         <div class=" font-[sans-serif] p-6 mt-10" style="background-image: url('/images/cloud.webp'); background-size: cover;">
@@ -281,7 +273,7 @@
                             ?>
                         </select>
                         <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" /> 
-                        <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" />
+                        <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
                         <button name="find" class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
                       </div>
                     </form>

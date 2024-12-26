@@ -79,7 +79,6 @@
                 $sql = "Update flight set airline_id = ?,flight_name = ?,flight_date = ? ,destination =?,source =?,total_distance = ?,fee_per_ticket = ?,departure_time = ?,arrival_time=?,gate=?,capacity =? ,seats_researved =?,seats_available = ?, placeImg =? where flight_id=?";
 
                 $stmt = $conn->prepare($sql);
-
                 $status = $stmt->execute([$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$gate,$cap,$rerseat,$avaseat,$filename,$flight_Id]);
                 
 

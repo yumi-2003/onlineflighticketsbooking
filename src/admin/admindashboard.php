@@ -21,7 +21,7 @@
 <body>
    
    <!-- nav stars -->
-   <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+   <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-white-800 dark:border-gray-700">
    <div class="px-3 py-3 lg:px-5 lg:pl-3">
       <div class="flex items-center justify-between">
          <div class="flex items-center justify-start rtl:justify-end">
@@ -48,7 +48,7 @@
                   <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
                      <span class="sr-only">Open user menu</span>
 
-                     <img class="w-8 h-8 rounded-full" src="<?php echo $_SESSION['adprofile'] ?>" alt="user photo">
+                     <img class="w-8 h-8 rounded-full" src="<?php echo $_SESSION['adprofile'] ?>" alt="admin photo">
 
                   </button>
                </div>
