@@ -65,6 +65,16 @@
       }
     }
 
+    //get user information
+    try{
+      $sql = "SELECT * FROM users";
+      $stmt = $conn->prepare($sql);
+      $users= $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }catch(PDOException $e){
+      echo $e->getMessage();
+   }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,7 +128,7 @@
                           </div>
                           <ul class="py-1" role="none">
                               <li>
-                                <a href="editUProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
+                                <a href="editUProfile.php?uID=$users[]" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
                               </li>
                               <li>
                                 <a href="cLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
@@ -280,8 +290,8 @@
 
                 </div>
             </div>
-    </div>
-    <!-- Hero section ends -->
+        </div>
+        <!-- Hero section ends -->
 
     <!-- cards show -->
     <div class='flex min-h-screen items-center justify-center bg-cyan-50'>
@@ -304,14 +314,16 @@
 
           <p class='mb-3 text-lg italic text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100'>From: {$flight['source']} To: {$flight['destination']}</p>
 
-          <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>See More</button>
+          <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>
+          <a  href='flightSearch.php'>See More</a>
+          </button>
 
         </div>
       </div>";
       }
       echo "</div>";
     }
-    ?>i
+    ?>
     </div>
 
     <!-- Testimonials section starts -->

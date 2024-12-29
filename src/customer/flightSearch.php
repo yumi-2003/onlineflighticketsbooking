@@ -2,8 +2,139 @@
 
     require_once "dbconnect.php";
 
+    if(!isset($_SESSION)){
+        session_start();
+    }
+
+    //get flight information
+            $sql = "SELECT 
+            flight.flight_id,
+            airline.airline_name, 
+            flight.flight_name, 
+            flight.flight_date, 
+            flight.destination, 
+            flight.source, 
+            flight.total_distance, 
+            flight.fee_per_ticket, 
+            flight.departure_time, 
+            flight.arrival_time, 
+            flight.capacity, 
+            flight.seats_researved, 
+            flight.seats_available,
+            flight.gate,
+            flight.placeImg
+            
+        FROM 
+            flight
+        INNER JOIN 
+            airline
+        ON 
+            flight.airline_id = airline.airline_id;";
+
+        try{
+            $stmt = $conn->query($sql);
+            $status = $stmt->execute();
+
+            if($status){
+            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+        }catch(PDOException $e){
+        echo $e->getMessage();
+        }
+
+        //search by source, destin, flight date
+        if(isset($_POST['find'])){
+        $source = $_POST['source'];
+        $desti = $_POST['destination'];
+        $date = $_POST['flight_date'];
+
+        try{
+        $sql = "SELECT * FROM flight INNER JOIN 
+            airline
+        ON 
+            flight.airline_id = airline.airline_id where  source = ? AND destination = ? AND flight_date=?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(1,$source,PDO::PARAM_STR);
+        $stmt->bindParam(2,$desti,PDO::PARAM_STR);
+        $stmt->bindParam(3,$date,PDO::PARAM_STR);
+        $stmt->execute();
+        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        }catch(PDOException $e){
+        echo $e->getMessage();
+        }
+        }
+
+        try{
+            $sql = "SELECT * FROM users";
+            $stmt = $conn->prepare($sql);
+            $users= $stmt->fetchAll(PDO::FETCH_ASSOC);
+         }catch(PDOException $e){
+            echo $e->getMessage();
+         }
+
+         //get classes and flight base fees information
+
+        if(isset($_POST['classPrice']) && $_SERVER['REQUEST_METHOD']){
+            $classTypes = $_POST['classPrice']; //get user selected class types
+
+            $sql = "SELECT 
+            b.booking_id, 
+            b.user_id, 
+            b.flight_id, 
+            f.fee_per_ticket, 
+            c.base_fees, 
+            (f.fee_per_ticket * c.base_fees) AS classsPrice, 
+            b.tax, 
+            ((f.fee_per_ticket * c.base_fees) + b.tax) AS total_price
+            FROM 
+            booking b
+            JOIN 
+            flight f ON b.flight_id = f.flight_id
+            JOIN 
+            classes c ON b.class_id = c.class_id
+            WHERE 
+            c.class_id = ?";
+
+            //prepare the statment
+            $stmt = $conn->prepare($sql);
+            //bind the paramenter
+            $stmt->bindParam(1, $classTypes, PDO::PARAM_INT);
+            //execute the statment
+            $stmt->execute();
+        }
+
+        //get all infromation connecting to booking
+        $sql = "SELECT f.flight_name, 
+            f.flight_date, 
+            f.destination, 
+            f.source, 
+            f.total_distance, 
+            f.fee_per_ticket, 
+            f.departure_time, 
+            f.arrival_time, 
+            f.capacity, 
+            f.gate, 
+            b.tax, 
+            (f.fee_per_ticket + b.tax) AS total_price
+            FROM flight f 
+            JOIN booking b ON f.flight_id = b.flight_id";
+
+        try{
+            $stmt = $conn->prepare($sql);
+            $status =$stmt->execute();
+
+            if($status){
+                $bflights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
 
 
+        }catch(PDOException $e){
+            echo $e->getMessage();
+        }
+
+        
 
 
 ?>
@@ -20,7 +151,7 @@
     </head>
     <body>
          <!-- nav starts -->
-         <nav class= "fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+         <nav class= " bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 ">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
                     <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
@@ -176,190 +307,159 @@
                
             </div>
          </nav>
-        <!-- sidebar starts -->
-        
-        <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-        <span class="sr-only">Open sidebar</span>
-        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-        </svg>
-        </button>
+                
+         <div class=" font-[sans-serif] p-6 sticky top-0" style="background-image: url('/images/cloud.webp'); background-size: cover;">
+            <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
+                <div class="text-center">
+                    <form action="" method="POST" class="space-y-4">
+                      <div>
+                        <h1 class="text-4xl font-extrabold text-white">Welcome to SwiftMiles</h1>
+                      </div>
 
-        <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 mt-14" aria-label="Sidebar">
-        <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+                      <div>
+                        <p class="text-white text-lg mt-4 leading-relaxed">Affordable Flights, Unforgettable Journeys </p>
+                      </div>
 
-        <p class="text-white dark:text-white text-xl font-semibold sm:text-xl">Filter</p>
-        <hr class="w-full h-1 mx-auto my-4 bg-white border-0 rounded md:my-10 dark:bg-white">
-        
-        <ul class="space-y-2 font-medium">
-                <li class="font-semibold sm:text-lg text-white">
-                    <label for="">Flight Class</label><br>
-                    <input type="radio" name="">Economy <br>
-                    <input type="radio" name="">Premium Economy <br>
-                    <input type="radio" name="">Business <br>
-                    <input type="radio" name="">Frist <br>
-                    
-                </li>
-                <hr class="w-full h-1 mx-auto my-4 bg-white border-0 rounded md:my-10 dark:bg-white">
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
-                        <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Kanban</span>
-                    <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Inbox</span>
-                    <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                        <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Users</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                        <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/>
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Sign In</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z"/>
-                        <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z"/>
-                        <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z"/>
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Sign Up</span>
-                    </a>
-                </li>
-            </ul>
-        
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
+                        <select id="source" name="source" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+                            <option selected>From: City</option>
+                            <?php
+                              $uniqueSources = array_unique(array_column($flights, 'source'));
+                              foreach($uniqueSources as $source){
+                                echo "<option value='$source'>$source</option>";
+                              }
+                            ?>
+                        </select>
+
+                        <select id="destination" name="destination" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+                            <option selected>To: City</option>
+                            <?php
+                              $uniqueDestin = array_unique(array_column($flights, 'destination'));
+                              foreach($uniqueDestin as $destin){
+                                echo "<option value='$destin'>$destin</option>";
+                              }
+                            ?>
+                        </select>
+                        <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" /> 
+                        <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
+                        <button name="find" class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
+                      </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- main contents starts -->
+        <div class="p-1 grid grid-cols-5">
+            <div class="col-span-1">
+                <div class="flex justify-start h-full rounded-lg text-white">
+                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
+                        <label for="">Choose Flight Classes</label>
+                        <div class="grid space-y-3 pt-3">
+                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();">
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Frist</span>
+                            </label>
+
+                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="business-class" value="2" onchange="this.form.submit();" >
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Business</span>
+                            </label>
+
+                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="economy-class" value="3" onchange="this.form.submit();">
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Economy</span>
+                            </label>
+
+                            <label for="hs-vertical-radio-checked-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();">
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Primary Economy</span>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="p-1 border-gray-200 dark:border-gray-700 grid col-span-3">
+               
+            <?php
+if (isset($flights)) {
+    echo "<div class='p-4 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-full max-w-2xl mx-11'>";
+
+    foreach ($flights as $flight) {
+        echo "
+            <div class='flex items-center justify-between mb-4'>
+                <div class='flex items-center space-x-4'>
+                    <img src='' alt='Airline Logo' class='w-12 h-12 rounded-full'>
+                    <div>
+                        <p class='text-lg font-semibold text-gray-800'>{$flight['airline_name']}</p>
+                        <p class='text-sm text-gray-500'>{$flight['flight_name']}</p>
+                    </div>
+                </div>
+                <p class='text-xl font-bold text-blue-600'>{$flight["fee_per_ticket"]}</p>
+            </div>
+
+            <!-- Flight Timing and Stops -->
+            <div class='flex items-center justify-between mb-4'>
+                <!-- Departure -->
+                <div class='text-center'>
+                    <p class='text-lg font-semibold text-gray-800'>Departure time</p>
+                    <p class='text-sm text-gray-500'>{$flight["departure_time"]}</p>
+                </div>
+                <!-- Flight Path -->
+                <div class='text-center text-gray-500'>
+                    <div class='flex items-center space-x-2'>
+                        <span class='w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full'>
+                            <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
+                                <path d='M10.293 15.707a1 1 0 010-1.414l3-3H3a1 1 0 110-2h10.586l-3-3a1 1 0 011.414-1.414l4.707 4.707a1 1 0 010 1.414l-4.707 4.707a1 1 0 01-1.414 0z' />
+                            </svg>
+                        </span>
+                        <p class='text-sm'>{$flight["total_distance"]}km</p>
+                    </div>
+                    <p class='text-xs'>{$flight["gate"]}</p>
+                </div>
+                <!-- Arrival -->
+                <div class='text-center'>
+                    <p class='text-lg font-semibold text-gray-800'>Arrival time</p>
+                    <p class='text-sm text-gray-500'>{$flight["arrival_time"]}</p>
+                </div>
+            </div>
+
+            <!-- Flight Date and Buttons -->
+            <div class='flex items-center justify-between'>
+                <!-- Flight Date -->
+                <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
+                <!-- Buttons -->
+                <div class='space-x-2'>
+                    <button class='px-4 py-2 text-sm bg-blue-100 text-blue-500 rounded-lg'>Flight Detail</button>
+                    <button class='px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600'>Book Now</button>
+                </div>
+            </div>
+            <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
+    }
+
+    echo "</div>";
+}
+?>
+
+
+            </div>  
             
-        </div>
-        </aside>
+            <div class="p-4  rounded-lg w-full max-w-lg -mx-20 col-span-1">
+                <div class="bg-white shadow-[0_4px_12px_-5px_rgba(0,0,0,0.4)] p-6 w-full max-w-sm rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
+                    <h3 class="text-xl font-bold text-gray-800">Need Help??</h3>
+                    <p class="mt-3 text-sm text-gray-500 leading-relaxed">You can contact us sending emails to us</p>
 
-        <div class="p-4 sm:ml-64 mt-16">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-            <div class="grid grid-cols-3 gap-4 mb-4">
-                <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
+                    <div class="relative flex items-center px-1 bg-gray-50 border-2 focus-within:border-[#007bff] focus-within:bg-white rounded-lg mt-6">
+                        <input type="email" placeholder="Enter email"
+                        class="p-3 text-gray-800 w-full text-sm bg-transparent outline-none" />
+                        <button type="button"
+                        class="px-5 py-2.5 rounded-lg text-white text-sm tracking-wider border-none outline-none bg-blue-600 hover:bg-blue-700">Send</button>
+                    </div>
             </div>
-            <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-                <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                </p>
             </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-                <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                </p>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                    </svg>
-                    </p>
-                </div>
-            </div>
-        </div>
-        </div>
-
+        <!-- main contents ends -->
     </body>
 </html>

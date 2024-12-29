@@ -27,7 +27,7 @@
             $sql = 'Update admin set admin_email = ?, admin_uname = ?, profile =? where admin_email = ?  ';
 
             $stmt = $conn->prepare($sql);
-            $status = $stmt->execute([$ad_email, $ad_uname, $filename, $ad_email]);
+            $status = $stmt->execute([$ad_email, $ad_uname, $uploadPath, $ad_email]);
 
             if($status){
                 $_SESSION['updateAdminProfile'] = "Admin information has been updated";

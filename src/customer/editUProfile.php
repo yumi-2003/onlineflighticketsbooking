@@ -6,15 +6,16 @@
         session_start();
      }
 
-     //get users information
-    //  try{
-    //     $sql = "SELECT * FROM users";
-    //     $stmt = $conn->prepare($sql);
-    //     $users= $stmt->fetchAll(PDO::FETCH_ASSOC);
-    //  }catch(PDOException $e){
-    //     echo $e->getMessage();
-    //  }
+     try{
+        $sql = "SELECT * FROM users";
+        $stmt = $conn->prepare($sql);
+        $users= $stmt->fetchAll(PDO::FETCH_ASSOC);
+     }catch(PDOException $e){
+        echo $e->getMessage();
+     }
 
+
+     $user = [];
      if(isset($_GET['uID'])){
         $userId = $_GET['uID'];
         $user = getUserInfo($userId);
@@ -34,13 +35,13 @@
         $username = $_POST['username'];
         $email = $_POST['email'];
         $filename = $_FILES['profile']['name'];
-        $uploadPath = '../userPhoto/'.$filename;
-        move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
+        $uploadPath = 'userPhoto/'.$filename;
+        move_uploaded_file($_FILES['profile']['tmp_name'], '../'.$uploadPath);
 
         try{
             $sql = "Update users set username = ?,email = ?, profile = ? Where user_id = ?";
             $stmt = $conn->prepare($sql);
-            $status = $stmt->execute([$username,$email,$filename,$userID]);
+            $status = $stmt->execute([$username,$email,$uploadPath,$userID]);
 
             if($status){
                 $_SESSION['profileUpdated'] = "You updated your profile";
@@ -232,11 +233,11 @@
 
                     <div class="grid max-w-2xl mx-auto mt-8">
                         <div class="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
-                        <label for="">Change your profile photo</label><br>
+                        <label for="">Upload Profile Picture</label><br>
                         <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="multiple_files" type="file" name="profile" multiple>
 
-                            </div>
                         </div>
+                    </div>
 
                         <div class="items-center mt-8 sm:mt-14 text-[#202142]">
 
@@ -244,9 +245,10 @@
                                 <label for="uname"
                                     class="block mb-2 text-xl font-medium text-black">
                                     Username</label>
+                                <!-- <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>"> -->
                                 <input type="text" id="uname" name="username"
                                     class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
-                                    placeholder="" required>
+                                    placeholder="" value="<?php echo $user['username']; ?>" required>
                             </div>
 
                             <div class="mb-2 sm:mb-6">
@@ -255,7 +257,7 @@
                                     email</label>
                                 <input type="email" id="email" name="email"
                                     class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
-                                    placeholder="" required>
+                                    placeholder="" value="<?php echo $user['email']; ?>" required>
                             </div>
                             <div class="flex justify-end">
                                 <button type="submit" name="update"

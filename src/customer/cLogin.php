@@ -11,8 +11,7 @@
             
             $email = $_POST['email'];
             $password = $_POST['password'];
-            $filename = $_FILES['profile']['name'];
-            $uploadPath = '../userPhoto/'.$filename;
+            
 
             if(strlen($password) > 7){
                 try{
@@ -23,8 +22,7 @@
 
                     if($userInfo){
                         $password_hash = $userInfo['password'];
-                        move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
-
+                        
                         if(password_verify($password,$password_hash)){
                             $_SESSION['userLoginSuccess'] = 'Login Successful';
                             $_SESSION['userEmail'] = $email;

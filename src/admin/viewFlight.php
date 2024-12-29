@@ -309,7 +309,7 @@
                           <td>$flight[capacity]</td>
                           <td>$flight[seats_researved]</td>
                           <td>$flight[seats_available]</td>
-                           <td><img src='$flight[placeImg]'></td>
+                          <td><img src='$flight[placeImg]'></td>
                           <td class='flex flex-direction:column aligh-items:center pt-30'>
                               <a href='updateFlight.php?fid=$flight[flight_id]'><img src='/images/updated.png' height='20' width='20' alt='update'></a>
                               <a href='deleteFlight.php?fid=$flight[flight_id]'><img src='/images/delete.png' height='20' width='20' alt='delete'></a>
