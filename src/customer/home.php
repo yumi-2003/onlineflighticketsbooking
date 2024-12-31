@@ -10,7 +10,7 @@
 </head>
 <body>
     <!-- nav starts -->
-        <nav class= "fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <nav class= "fixed top-0 z-50 w-full bg-[#0463ca]">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
                     <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
@@ -120,7 +120,7 @@
         <!-- nav ends -->
 
         <!-- Hero section starts -->
-        <div class=" font-[sans-serif] p-6 mt-16" style="background-image: url('/images/cloud.webp'); background-size: cover;">
+        <div class=" font-[sans-serif] p-6 mt-16" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
             <div class="grid md:grid-cols-2 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
                 <div class="md:h-[400px]">
                 <img src="/images/hero.jpg" class="w-full h-full rounded-md object-cover" />

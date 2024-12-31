@@ -596,6 +596,93 @@
             </div>
         </div>
 
+        <div id="paymentForm" class="block">
+            <ol class="flex justify-items-center w-full text-sm text-gray-500 font-medium sm:text-base mb-12 mt-10 px-11">
+                <!-- Step 1: Flight Information -->
+                <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">1</span>Flight Information
+                    </div>
+                </li>
+
+                <!-- Step 2: Personal Information (Active Step) -->
+                <li class="flex md:w-full items-center text-indigo-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">2</span>Personal Information
+                    </div>
+                </li>
+
+                <!-- Step 3: Final -->
+                <li class="flex md:w-full items-center text-gray-600">
+                    <div class="flex items-center">
+                        <span class="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">3</span> Final
+                    </div>
+                </li>
+            </ol>
+            <p>
+            <?php
+            if(isset($_SESSION['completedPersonalInformation'])){
+               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
+                        <span class='font-medium'>$_SESSION[completedPersonalInformation]</span>
+                     </div>
+                     ";
+               unset($_SESSION['completedPersonalInformation']);
+            }
+            ?>
+         </p>
+            <div class="flex flex-col justify-items-center w-3/4 px-11 md:grid-cols-2 items-center gap-8 h-full">
+
+                <form class="space-y-6 px-4 max-w-sm mx-auto font-[sans-serif]" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" method="POST">
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Full Name</label>
+                        <input type="text" name="fullName" placeholder="Enter your name"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Age</label>
+                        <input type="number" name="age" placeholder="Enter your email"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Gender</label>
+                        <input type="text" name="gender" placeholder="Enter your phone no"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Nationality</label>
+                        <input type="text" name="nationality" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Phone NO.</label>
+                        <input type="number" name="phoneNo" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">ID Card NO.</label>
+                        <input type="text" name="IDcard" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">PassPort No.</label>
+                        <input type="text" name="passportNo" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <button type="submit" name="savePersonalInfo"
+                    class="!mt-8 px-6 py-2 w-full bg-[#233d9a] hover:bg-[#444] text-sm text-white mx-auto block">Submit</button>
+                </form>
+                
+            </div>
+        </div>
+
         <!-- show and hide flightInfo form and personal form -->
         <script>
             document.getElementById("nexttoPersonalInfo").addEventListener("click", function () {

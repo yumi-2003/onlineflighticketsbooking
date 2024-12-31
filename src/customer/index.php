@@ -90,7 +90,7 @@
 </head>
 <body>
 
-        <nav class= "fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <nav class= "fixed top-0 z-50 w-full bg-[#0463ca]">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
                     <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
@@ -250,7 +250,7 @@
     
 
         <!-- Hero section starts -->
-        <div class=" font-[sans-serif] p-6 mt-10" style="background-image: url('/images/cloud.webp'); background-size: cover;">
+        <div class=" font-[sans-serif] p-6 mt-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
             <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
                 <div class="text-center">
                     <form action="" method="POST" class="space-y-4">
@@ -284,7 +284,12 @@
                         </select>
                         <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" /> 
                         <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
-                        <button name="find" class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
+                        <button name="find" class="bg-white py-3.5 min-w-[200px] shadow-xl shadow-blue-200 text-black text-sm tracking-wider font-medium outline-none border border-blue-600 active:shadow-inner">Explore</button>
+                        <a href="flightSearch.php">
+                          <button type="button"
+                          class="bg-white py-3.5 min-w-[200px] shadow-xl shadow-blue-200 text-black text-sm tracking-wider font-medium outline-none border border-blue-600 active:shadow-inner">Show More Flights</button>
+                        </a>
+                        
                       </div>
                     </form>
 
