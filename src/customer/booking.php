@@ -613,9 +613,9 @@
                 </li>
 
                 <!-- Step 3: Final -->
-                <li class="flex md:w-full items-center text-gray-600">
+                <li class="flex md:w-full items-center text-white">
                     <div class="flex items-center">
-                        <span class="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">3</span> Final
+                        <span class="w-6 h-6 bg-indigo-600 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">3</span> Final
                     </div>
                 </li>
             </ol>
@@ -630,57 +630,84 @@
             }
             ?>
          </p>
-            <div class="flex flex-col justify-items-center w-3/4 px-11 md:grid-cols-2 items-center gap-8 h-full">
+         <div class="font-[sans-serif] bg-white p-4">
+      <div class="md:max-w-5xl max-w-xl mx-auto">
 
-                <form class="space-y-6 px-4 max-w-sm mx-auto font-[sans-serif]" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" method="POST">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          
+            <div class="lg:col-span-2 max-md:order-1 lg:grid-cols-2">
+                <h2 class="text-3xl font-extrabold text-gray-800">Make a payment</h2>
+                <p class="text-gray-800 text-sm mt-4">Complete your transaction swiftly and securely with our easy-to-use payment process.</p>
+            
+                <form class="mt-8 max-w-lg">
+            
+                <div class="grid gap-4">
+                <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
+
+                <div class="grid gap-4 sm:grid-cols-2 mt-4">
                     <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">Full Name</label>
-                        <input type="text" name="fullName" placeholder="Enter your name"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                        <input type="radio" class="w-5 h-5 cursor-pointer" id="card" checked />
+                        <label for="card" class="ml-4 flex gap-2 cursor-pointer">
+                        <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
+                        <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
+                        <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
+                        </label>
                     </div>
 
                     <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">Age</label>
-                        <input type="number" name="age" placeholder="Enter your email"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                        <input type="radio" class="w-5 h-5 cursor-pointer" id="paypal" />
+                        <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
+                        <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
+                        </label>
                     </div>
 
-                    <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">Gender</label>
-                        <input type="text" name="gender" placeholder="Enter your phone no"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+
+
+                    <div>
+                    <input type="text" placeholder="Cardholder's Name"
+                        class="px-4 py-3.5 bg-gray-100 text-gray-800 w-full text-sm border rounded-md focus:border-purple-500 focus:bg-transparent outline-none" />
                     </div>
 
-                    <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">Nationality</label>
-                        <input type="text" name="nationality" placeholder="Enter your state"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    <div class="flex bg-gray-100 border rounded-md focus-within:border-purple-500 focus-within:bg-transparent overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 ml-3" viewBox="0 0 32 20">
+                        <circle cx="10" cy="10" r="10" fill="#f93232" data-original="#f93232" />
+                        <path fill="#fed049"
+                        d="M22 0c-2.246 0-4.312.75-5.98 2H16v.014c-.396.298-.76.634-1.107.986h2.214c.308.313.592.648.855 1H14.03a9.932 9.932 0 0 0-.667 1h5.264c.188.324.365.654.518 1h-6.291a9.833 9.833 0 0 0-.377 1h7.044c.104.326.186.661.258 1h-7.563c-.067.328-.123.66-.157 1h7.881c.039.328.06.661.06 1h-8c0 .339.027.67.06 1h7.882c-.038.339-.093.672-.162 1h-7.563c.069.341.158.673.261 1h7.044a9.833 9.833 0 0 1-.377 1h-6.291c.151.344.321.678.509 1h5.264a9.783 9.783 0 0 1-.669 1H14.03c.266.352.553.687.862 1h2.215a10.05 10.05 0 0 1-1.107.986A9.937 9.937 0 0 0 22 20c5.523 0 10-4.478 10-10S27.523 0 22 0z"
+                        class="hovered-path" data-original="#fed049" />
+                    </svg>
+                    <input type="number" placeholder="Card Number"
+                        class="px-4 py-3.5 text-gray-800 w-full text-sm outline-none bg-transparent" />
                     </div>
 
-                    
-                    <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">Phone NO.</label>
-                        <input type="number" name="phoneNo" placeholder="Enter your state"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <input type="number" placeholder="EXP."
+                        class="px-4 py-3.5 bg-gray-100 text-gray-800 w-full text-sm border rounded-md focus:border-purple-500 focus:bg-transparent outline-none" />
                     </div>
-
-                    <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">ID Card NO.</label>
-                        <input type="text" name="IDcard" placeholder="Enter your state"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    <div>
+                        <input type="number" placeholder="CVV"
+                        class="px-4 py-3.5 bg-gray-100 text-gray-800 w-full text-sm border rounded-md focus:border-purple-500 focus:bg-transparent outline-none" />
                     </div>
-
-                    <div class="flex items-center">
-                        <label class="text-gray-400 w-36 text-sm">PassPort No.</label>
-                        <input type="text" name="passportNo" placeholder="Enter your state"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
                     </div>
+                </div>
 
-                    <button type="submit" name="savePersonalInfo"
-                    class="!mt-8 px-6 py-2 w-full bg-[#233d9a] hover:bg-[#444] text-sm text-white mx-auto block">Submit</button>
+                <button type="button" class="mt-8 w-40 py-3.5 text-sm bg-purple-500 text-white rounded-md hover:bg-purple-600 tracking-wide">Pay  </button>
                 </form>
-                
             </div>
+
+            <div class="bg-gray-100 p-6 rounded-md lg:grid-cols-1">
+                <h2 class="text-3xl font-extrabold text-gray-800">$250.00</h2>
+
+                <ul class="text-gray-800 mt-8 space-y-4">
+                <li class="flex flex-wrap gap-4 text-sm">Split Sneakers <span class="ml-auto font-bold">$150.00</span></li>
+                <li class="flex flex-wrap gap-4 text-sm">Echo Elegance <span class="ml-auto font-bold">$90.00</span></li>
+                <li class="flex flex-wrap gap-4 text-sm">Tax <span class="ml-auto font-bold">$10.00</span></li>
+                <li class="flex flex-wrap gap-4 text-sm font-bold border-t-2 pt-4">Total <span class="ml-auto">$250.00</span></li>
+                </ul>
+            </div>
+        </div>
+      </div>
+    </div>
         </div>
 
         <!-- show and hide flightInfo form and personal form -->

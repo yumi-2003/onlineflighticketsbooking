@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 23, 2024 at 04:42 AM
+-- Generation Time: Dec 31, 2024 at 02:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,8 +28,9 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admin` (
-  `admin_email` varchar(30) NOT NULL,
+  `admin_id` int(11) NOT NULL,
   `admin_uname` varchar(20) NOT NULL,
+  `admin_email` varchar(30) NOT NULL,
   `admin_pwd` varchar(60) NOT NULL,
   `profile` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -38,8 +39,8 @@ CREATE TABLE `admin` (
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`admin_email`, `admin_uname`, `admin_pwd`, `profile`) VALUES
-('admin@gmail.com', 'admin', '$2y$10$0PqW2uHfQzVsSEjZppGriOzo5Cm4RfsDDmjOM3ch9Q0Ld8o8lQCM6', NULL);
+INSERT INTO `admin` (`admin_id`, `admin_uname`, `admin_email`, `admin_pwd`, `profile`) VALUES
+(1, 'admin', 'admin@gmail.com', '$2y$10$0PqW2uHfQzVsSEjZppGriOzo5Cm4RfsDDmjOM3ch9Q0Ld8o8lQCM6', NULL);
 
 -- --------------------------------------------------------
 
@@ -49,38 +50,18 @@ INSERT INTO `admin` (`admin_email`, `admin_uname`, `admin_pwd`, `profile`) VALUE
 
 CREATE TABLE `airline` (
   `airline_id` int(11) NOT NULL,
-  `airline_name` varchar(100) NOT NULL
+  `airline_name` varchar(100) NOT NULL,
+  `photo` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `airline`
 --
 
-INSERT INTO `airline` (`airline_id`, `airline_name`) VALUES
-(1, 'Myanmar Airway International(MAI)'),
-(2, 'Mynamar National Airlines(MNA)'),
-(3, 'Global Myanamr Airline');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `booking`
---
-
-CREATE TABLE `booking` (
-  `booking_id` int(11) NOT NULL,
-  `triptype_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `flight_id` int(11) NOT NULL,
-  `passenger_id` int(11) NOT NULL,
-  `tax` decimal(10,2) NOT NULL,
-  `total_price` decimal(10,2) NOT NULL,
-  `class_id` int(11) NOT NULL,
-  `book_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `transaction_id` int(11) NOT NULL,
-  `status` varchar(100) NOT NULL,
-  `seatno_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `airline` (`airline_id`, `airline_name`, `photo`) VALUES
+(1, 'Myanmar Airway International(MAI)', NULL),
+(2, 'Mynamar National Airlines(MNA)', NULL),
+(3, 'Global Myanamr Airline', NULL);
 
 -- --------------------------------------------------------
 
@@ -125,16 +106,44 @@ CREATE TABLE `flight` (
   `seats_researved` int(11) NOT NULL,
   `seats_available` int(11) NOT NULL,
   `gate` varchar(255) NOT NULL,
-  `image` varchar(100) DEFAULT NULL
+  `placeImg` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `flight`
 --
 
-INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `image`) VALUES
-(2, 1, 'MAI-201', '2025-01-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', 'How to Visit Bangkok\'s Grand Palace.jpg'),
-(4, 1, 'MAI 707', '2024-12-17', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', NULL);
+INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `placeImg`) VALUES
+(2, 1, 'MAI-201', '2024-06-27', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
+(4, 1, 'MAI 707', '2024-12-17', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `flightclasses`
+--
+
+CREATE TABLE `flightclasses` (
+  `flightclasses_id` int(11) NOT NULL,
+  `flight_id` int(11) DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `triptype` int(11) DEFAULT NULL,
+  `classPrice` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `flightclasses`
+--
+
+INSERT INTO `flightclasses` (`flightclasses_id`, `flight_id`, `class_id`, `triptype`, `classPrice`) VALUES
+(1, 2, 1, 1, 900.00),
+(2, 2, 1, 2, 1800.00),
+(3, 2, 2, 1, 600.00),
+(4, 2, 2, 2, 1200.00),
+(5, 2, 3, 2, 600.00),
+(6, 2, 3, 1, 300.00),
+(7, 2, 4, 1, 150.00),
+(8, 2, 4, 2, 300.00);
 
 -- --------------------------------------------------------
 
@@ -161,10 +170,10 @@ CREATE TABLE `passengers` (
 
 CREATE TABLE `payment` (
   `transaction_id` int(11) NOT NULL,
-  `payment_type` varchar(100) NOT NULL,
-  `amount` decimal(10,2) NOT NULL,
-  `payment_date` datetime NOT NULL,
-  `payment_status` decimal(10,2) NOT NULL
+  `ticket_id` int(11) NOT NULL,
+  `card_no` int(11) NOT NULL,
+  `Expire_date` datetime NOT NULL,
+  `total_amount` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -213,12 +222,9 @@ INSERT INTO `seatno` (`seatNo_id`, `flightId`, `seatypeId`, `status`, `seatNo`, 
 CREATE TABLE `tickets` (
   `ticket_id` int(11) NOT NULL,
   `flight_id` int(11) NOT NULL,
-  `booking_id` int(11) NOT NULL,
-  `triptype_id` int(11) NOT NULL,
-  `class_id` int(11) NOT NULL,
-  `passenger_id` int(11) NOT NULL,
-  `seatno_id` int(11) DEFAULT NULL,
-  `status` varchar(100) DEFAULT NULL
+  `user_id` int(11) NOT NULL,
+  `total_fees` int(11) NOT NULL,
+  `bookAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -252,6 +258,7 @@ CREATE TABLE `users` (
   `username` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(60) DEFAULT NULL,
+  `cpassword` varchar(60) DEFAULT NULL,
   `profile` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -259,9 +266,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `profile`) VALUES
-(7, 'yumi', 'yumi@gmail.com', '$2y$10$eh5owIGVV2nJpdiWGEOaA..BZld55im4zmofzSaEDnnioZZkZJU9m', '../profile/'),
-(8, 'nora', 'nora@gmail.com', '$2y$10$NgvqKqPGybSk6zAv8lfIuOKJZZuYVOQutV6FNiGsO2UxVvDKKYD1m', '../profile/');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `cpassword`, `profile`) VALUES
+(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/photo_2024-01-07_17-04-55.jpg');
 
 --
 -- Indexes for dumped tables
@@ -271,25 +277,13 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `profile`) VALU
 -- Indexes for table `admin`
 --
 ALTER TABLE `admin`
-  ADD PRIMARY KEY (`admin_email`);
+  ADD PRIMARY KEY (`admin_id`);
 
 --
 -- Indexes for table `airline`
 --
 ALTER TABLE `airline`
   ADD PRIMARY KEY (`airline_id`);
-
---
--- Indexes for table `booking`
---
-ALTER TABLE `booking`
-  ADD PRIMARY KEY (`booking_id`),
-  ADD KEY `FK_flightbook` (`flight_id`),
-  ADD KEY `FK_tripbook` (`triptype_id`),
-  ADD KEY `FK_paymentbook` (`transaction_id`),
-  ADD KEY `FK_classbook` (`class_id`),
-  ADD KEY `FK_userbook` (`user_id`),
-  ADD KEY `FK_passengerbook` (`passenger_id`);
 
 --
 -- Indexes for table `classes`
@@ -303,6 +297,15 @@ ALTER TABLE `classes`
 ALTER TABLE `flight`
   ADD PRIMARY KEY (`flight_id`),
   ADD KEY `FK_airflight` (`airline_id`);
+
+--
+-- Indexes for table `flightclasses`
+--
+ALTER TABLE `flightclasses`
+  ADD PRIMARY KEY (`flightclasses_id`),
+  ADD KEY `FK_flight` (`flight_id`),
+  ADD KEY `FK_Class` (`class_id`),
+  ADD KEY `FK_triptype` (`triptype`);
 
 --
 -- Indexes for table `passengers`
@@ -328,12 +331,7 @@ ALTER TABLE `seatno`
 -- Indexes for table `tickets`
 --
 ALTER TABLE `tickets`
-  ADD PRIMARY KEY (`ticket_id`),
-  ADD KEY `FK_flighticket` (`flight_id`),
-  ADD KEY `FK_classticket` (`class_id`),
-  ADD KEY `FK_bookingticket` (`booking_id`),
-  ADD KEY `FK_passengerticket` (`passenger_id`),
-  ADD KEY `FK_triptypeticket` (`triptype_id`);
+  ADD PRIMARY KEY (`ticket_id`);
 
 --
 -- Indexes for table `triptype`
@@ -352,16 +350,16 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `airline`
 --
 ALTER TABLE `airline`
   MODIFY `airline_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `booking`
---
-ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `classes`
@@ -374,6 +372,12 @@ ALTER TABLE `classes`
 --
 ALTER TABLE `flight`
   MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `flightclasses`
+--
+ALTER TABLE `flightclasses`
+  MODIFY `flightclasses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `passengers`
@@ -409,22 +413,11 @@ ALTER TABLE `triptype`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `booking`
---
-ALTER TABLE `booking`
-  ADD CONSTRAINT `FK_classbook` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`),
-  ADD CONSTRAINT `FK_flightbook` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
-  ADD CONSTRAINT `FK_passengerbook` FOREIGN KEY (`passenger_id`) REFERENCES `passengers` (`passenger_id`),
-  ADD CONSTRAINT `FK_paymentbook` FOREIGN KEY (`transaction_id`) REFERENCES `payment` (`transaction_id`),
-  ADD CONSTRAINT `FK_tripbook` FOREIGN KEY (`triptype_id`) REFERENCES `triptype` (`triptypeId`),
-  ADD CONSTRAINT `FK_userbook` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `flight`
@@ -433,21 +426,19 @@ ALTER TABLE `flight`
   ADD CONSTRAINT `FK_airflight` FOREIGN KEY (`airline_id`) REFERENCES `airline` (`airline_id`);
 
 --
+-- Constraints for table `flightclasses`
+--
+ALTER TABLE `flightclasses`
+  ADD CONSTRAINT `FK_Class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`),
+  ADD CONSTRAINT `FK_flight` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
+  ADD CONSTRAINT `FK_triptype` FOREIGN KEY (`triptype`) REFERENCES `triptype` (`triptypeId`);
+
+--
 -- Constraints for table `seatno`
 --
 ALTER TABLE `seatno`
   ADD CONSTRAINT `FK_flightseatno` FOREIGN KEY (`flightId`) REFERENCES `flight` (`flight_id`),
   ADD CONSTRAINT `FK_typeseatno` FOREIGN KEY (`seatypeId`) REFERENCES `classes` (`class_id`);
-
---
--- Constraints for table `tickets`
---
-ALTER TABLE `tickets`
-  ADD CONSTRAINT `FK_bookingticket` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`booking_id`),
-  ADD CONSTRAINT `FK_classticket` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`),
-  ADD CONSTRAINT `FK_flighticket` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
-  ADD CONSTRAINT `FK_passengerticket` FOREIGN KEY (`passenger_id`) REFERENCES `passengers` (`passenger_id`),
-  ADD CONSTRAINT `FK_triptypeticket` FOREIGN KEY (`triptype_id`) REFERENCES `triptype` (`triptypeId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
