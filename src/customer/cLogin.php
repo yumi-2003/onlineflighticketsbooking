@@ -139,8 +139,8 @@
                     <p class="text-sm !mt-8 text-center text-gray-800">Don't have an account <a href="cSignUp.php" class="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap">Register here</a></p>
                     </form>
                 </div>
-                <div class="lg:h-[400px] md:h-[300px] max-md:mt-8">
-                    <img src="/images/signup. Vector illustration for poster, banner_" class="w-full h-full max-md:w-4/5 mx-auto block object-cover" alt="Dining Experience" />
+                <div class="lg:h-[500px] md:h-[400px] max-md:mt-8">
+                    <img src="/images/booking-hotel-reservation-travel-destination-concept.jpg" class="w-full h-full max-md:w-4/5 mx-auto block object-cover" alt="" />
                 </div>
                 </div>
             </div>

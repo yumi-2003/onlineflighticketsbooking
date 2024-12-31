@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 31, 2024 at 02:17 PM
+-- Generation Time: Dec 31, 2024 at 07:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -162,6 +162,13 @@ CREATE TABLE `passengers` (
   `passportNo` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `passengers`
+--
+
+INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `nationality`, `phoneNo`, `IDcard`, `passportNo`) VALUES
+(1, '', 0, '', '', 0, '', '');
+
 -- --------------------------------------------------------
 
 --
@@ -169,11 +176,23 @@ CREATE TABLE `passengers` (
 --
 
 CREATE TABLE `payment` (
-  `transaction_id` int(11) NOT NULL,
-  `ticket_id` int(11) NOT NULL,
-  `card_no` int(11) NOT NULL,
-  `Expire_date` datetime NOT NULL,
-  `total_amount` int(11) NOT NULL
+  `paymentID` int(11) NOT NULL,
+  `cardNo` int(11) DEFAULT NULL,
+  `securityCode` int(11) DEFAULT NULL,
+  `expireDate` date DEFAULT NULL,
+  `paymentType` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `paymenttype`
+--
+
+CREATE TABLE `paymenttype` (
+  `typeID` int(11) NOT NULL,
+  `paymentName` varchar(100) DEFAULT NULL,
+  `logo` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -317,7 +336,14 @@ ALTER TABLE `passengers`
 -- Indexes for table `payment`
 --
 ALTER TABLE `payment`
-  ADD PRIMARY KEY (`transaction_id`);
+  ADD PRIMARY KEY (`paymentID`),
+  ADD KEY `FK_type` (`paymentType`);
+
+--
+-- Indexes for table `paymenttype`
+--
+ALTER TABLE `paymenttype`
+  ADD PRIMARY KEY (`typeID`);
 
 --
 -- Indexes for table `seatno`
@@ -383,13 +409,19 @@ ALTER TABLE `flightclasses`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `paymenttype`
+--
+ALTER TABLE `paymenttype`
+  MODIFY `typeID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `seatno`
@@ -432,6 +464,12 @@ ALTER TABLE `flightclasses`
   ADD CONSTRAINT `FK_Class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`),
   ADD CONSTRAINT `FK_flight` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
   ADD CONSTRAINT `FK_triptype` FOREIGN KEY (`triptype`) REFERENCES `triptype` (`triptypeId`);
+
+--
+-- Constraints for table `payment`
+--
+ALTER TABLE `payment`
+  ADD CONSTRAINT `FK_type` FOREIGN KEY (`paymentType`) REFERENCES `payment` (`paymentID`);
 
 --
 -- Constraints for table `seatno`

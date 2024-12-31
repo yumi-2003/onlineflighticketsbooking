@@ -25,7 +25,7 @@
 
         // Now, you can use these values to populate your booking form
     } else {
-        echo "<script>window.alerts('NO flight selected!!!')<script>";
+        echo "<script>window.alerts('NO flight selected!!!')</script>";
     }
 
     //store the selected data when clicked next button using session
@@ -152,8 +152,6 @@
                        }
 
                     ?>
-
-
 
                     <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
@@ -509,7 +507,7 @@
 
          </div>
 
-        <div id="personalInfoForm" class="hidden">
+        <div id="personalInfoForm" class="block">
             <ol class="flex justify-items-center w-full text-sm text-gray-500 font-medium sm:text-base mb-12 mt-10 px-11">
                 <!-- Step 1: Flight Information -->
                 <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
@@ -596,7 +594,7 @@
             </div>
         </div>
 
-        <div id="paymentForm" class="hidden">
+        <div id="paymentForm" class="block">
             <ol class="flex justify-items-center w-full text-sm text-gray-500 font-medium sm:text-base mb-12 mt-10 px-11">
                 <!-- Step 1: Flight Information -->
                 <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
@@ -605,17 +603,17 @@
                     </div>
                 </li>
 
-                <!-- Step 2: Personal Information (Active Step) -->
-                <li class="flex md:w-full items-center text-indigo-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                <!-- Step 2: Personal Information-->
+                <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
                     <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
                         <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">2</span>Personal Information
                     </div>
                 </li>
 
-                <!-- Step 3: Final -->
-                <li class="flex md:w-full items-center text-white">
-                    <div class="flex items-center">
-                        <span class="w-6 h-6 bg-indigo-600 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">3</span> Final
+                <!-- Step 3: Final  (Active Step)  -->
+                <li class="flex md:w-full items-center text-indigo-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">3</span>Payment
                     </div>
                 </li>
             </ol>
@@ -631,82 +629,80 @@
             ?>
          </p>
 
-         <div class="font-[sans-serif] bg-white p-4">
-                <div class="md:max-w-5xl max-w-xl mx-auto">
+            <div class="font-[sans-serif] bg-white p-4">
+                <div class="font-[sans-serif] lg:flex lg:items-center lg:justify-center lg:h-screen max-lg:py-4">
+                    <div class="bg-purple-100 p-8 w-full max-w-5xl max-lg:max-w-xl mx-auto rounded-md">
+                        <h2 class="text-3xl font-extrabold text-gray-800 text-center">Checkout</h2>
 
-                        <div class="grid col-span-3 gap-8">
-                    
-                            <div class="lg:col-span-2 max-md:order-1 col-span-2>
-                                <h2 class="text-3xl font-extrabold text-gray-800">Make a payment</h2>
-                                <p class="text-gray-800 text-sm mt-4">Complete your transaction swiftly and securely with our easy-to-use payment process.</p>
-                            
-                                <form class="mt-8 max-w-lg">
-                            
-                                <div class="grid gap-4">
-                                <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
+                        <div class="grid lg:grid-cols-3 gap-6 max-lg:gap-8 mt-16">
+                        <div class="lg:col-span-2">
+                            <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
 
-                                <div class="grid gap-4 sm:grid-cols-2 mt-4">
-                                    <div class="flex items-center">
-                                        <input type="radio" class="w-5 h-5 cursor-pointer" id="card" checked />
-                                        <label for="card" class="ml-4 flex gap-2 cursor-pointer">
-                                        <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
-                                        <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
-                                        <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
-                                        </label>
-                                    </div>
+                            <div class="grid gap-4 sm:grid-cols-2 mt-4">
+                            <div class="flex items-center">
+                                <input type="radio" class="w-5 h-5 cursor-pointer" id="card" checked />
+                                <label for="card" class="ml-4 flex gap-2 cursor-pointer">
+                                <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
+                                <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
+                                <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
+                                </label>
+                            </div>
 
-                                    <div class="flex items-center">
-                                        <input type="radio" class="w-5 h-5 cursor-pointer" id="paypal" />
-                                        <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
-                                        <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
-                                        </label>
-                                    </div>
+                            <div class="flex items-center">
+                                <input type="radio" class="w-5 h-5 cursor-pointer" id="paypal" />
+                                <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
+                                <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
+                                </label>
+                            </div>
+                            </div>
 
-                                    <div>
-                                    <input type="text" placeholder="Cardholder's Name"
-                                        class="px-4 py-3.5 bg-gray-100 text-gray-800 w-full text-sm border rounded-md focus:border-purple-500 focus:bg-transparent outline-none" />
-                                    </div>
-
-                                    <div class="flex bg-gray-100 border rounded-md focus-within:border-purple-500 focus-within:bg-transparent overflow-hidden">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 ml-3" viewBox="0 0 32 20">
-                                        <circle cx="10" cy="10" r="10" fill="#f93232" data-original="#f93232" />
-                                        <path fill="#fed049"
-                                        d="M22 0c-2.246 0-4.312.75-5.98 2H16v.014c-.396.298-.76.634-1.107.986h2.214c.308.313.592.648.855 1H14.03a9.932 9.932 0 0 0-.667 1h5.264c.188.324.365.654.518 1h-6.291a9.833 9.833 0 0 0-.377 1h7.044c.104.326.186.661.258 1h-7.563c-.067.328-.123.66-.157 1h7.881c.039.328.06.661.06 1h-8c0 .339.027.67.06 1h7.882c-.038.339-.093.672-.162 1h-7.563c.069.341.158.673.261 1h7.044a9.833 9.833 0 0 1-.377 1h-6.291c.151.344.321.678.509 1h5.264a9.783 9.783 0 0 1-.669 1H14.03c.266.352.553.687.862 1h2.215a10.05 10.05 0 0 1-1.107.986A9.937 9.937 0 0 0 22 20c5.523 0 10-4.478 10-10S27.523 0 22 0z"
-                                        class="hovered-path" data-original="#fed049" />
-                                    </svg>
-                                    <input type="number" placeholder="Card Number"
-                                        class="px-4 py-3.5 text-gray-800 w-full text-sm outline-none bg-transparent" />
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <input type="number" placeholder="EXP."
-                                        class="px-4 py-3.5 bg-gray-100 text-gray-800 w-full text-sm border rounded-md focus:border-purple-500 focus:bg-transparent outline-none" />
-                                    </div>
-                                    <div>
-                                        <input type="number" placeholder="CVV"
-                                        class="px-4 py-3.5 bg-gray-100 text-gray-800 w-full text-sm border rounded-md focus:border-purple-500 focus:bg-transparent outline-none" />
-                                    </div>
-                                    </div>
+                            <form class="mt-8">
+                            <div class="grid sm:col-span-2 sm:grid-cols-2 gap-4">
+                                <div>
+                                <input type="text" placeholder="Name of card holder"
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
                                 </div>
-
-                                <button type="button" class="mt-8 w-40 py-3.5 text-sm bg-purple-500 text-white rounded-md hover:bg-purple-600 tracking-wide">Pay  </button>
-                                </form>
+                                <div>
+                                <input type="number" placeholder="Postal code"
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="Card number"
+                                    class="col-span-full px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="EXP."
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="CVV"
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
                             </div>
 
-                            <div class="bg-gray-100 p-6 rounded-md col-span-1">
-                                <h2 class="text-3xl font-extrabold text-gray-800">$250.00</h2>
-
-                                <ul class="text-gray-800 mt-8 space-y-4">
-                                <li class="flex flex-wrap gap-4 text-sm">Split Sneakers <span class="ml-auto font-bold">$150.00</span></li>
-                                <li class="flex flex-wrap gap-4 text-sm">Echo Elegance <span class="ml-auto font-bold">$90.00</span></li>
-                                <li class="flex flex-wrap gap-4 text-sm">Tax <span class="ml-auto font-bold">$10.00</span></li>
-                                <li class="flex flex-wrap gap-4 text-sm font-bold border-t-2 pt-4">Total <span class="ml-auto">$250.00</span></li>
-                                </ul>
+                            <div class="flex flex-wrap gap-4 mt-8">
+                                <button type="button"
+                                class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
+                                <button type="button"
+                                class="px-7 py-3.5 text-sm tracking-wide bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
                             </div>
+                            </form>
                         </div>
+
+                        <div class="bg-white p-6 rounded-md max-lg:-order-1">
+                            <h3 class="text-lg font-bold text-gray-800">Summary</h3>
+                            <ul class="text-gray-800 mt-6 space-y-3">
+                            <li class="flex flex-wrap gap-4 text-sm">Sub total <span class="ml-auto font-bold">$48.00</span></li>
+                            <li class="flex flex-wrap gap-4 text-sm">Discount (20%) <span class="ml-auto font-bold">$4.00</span></li>
+                            <li class="flex flex-wrap gap-4 text-sm">Tax <span class="ml-auto font-bold">$4.00</span></li>
+                            <hr />
+                            <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$52.00</span></li>
+                            </ul>
+                        </div>
+                        </div>
+                    </div>
                 </div>
-        </div>
+            </div>
         </div>
 
         <!-- show and hide flightInfo form and personal form -->
