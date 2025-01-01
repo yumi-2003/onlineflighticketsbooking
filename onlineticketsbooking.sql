@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 31, 2024 at 07:24 PM
+-- Generation Time: Jan 01, 2025 at 02:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -114,8 +114,8 @@ CREATE TABLE `flight` (
 --
 
 INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `placeImg`) VALUES
-(2, 1, 'MAI-201', '2024-06-27', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
-(4, 1, 'MAI 707', '2024-12-17', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
+(2, 1, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
+(4, 1, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
 
 -- --------------------------------------------------------
 

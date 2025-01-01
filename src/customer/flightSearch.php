@@ -161,7 +161,7 @@
         }
 
             //process to booking page
-            if (isset($_POST['book'])) {
+            if (isset($_POST['book'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Store the selected flight data in the session
                 $_SESSION['flight'] = [
                     'flight_id' => $_POST['flight_id'],
@@ -183,6 +183,54 @@
                 exit;
             }
 
+            //get filtered flight information by price
+            if(isset($_POST['priceRangeSearch'])){
+                $price = $_POST['priceRangeSearch'];
+
+                try{
+                    $sql = "SELECT 
+                        flight.flight_id,
+                        airline.airline_name, 
+                        flight.flight_name, 
+                        flight.flight_date, 
+                        flight.destination, 
+                        flight.source, 
+                        flight.total_distance, 
+                        flight.fee_per_ticket, 
+                        flight.departure_time, 
+                        flight.arrival_time, 
+                        flight.capacity, 
+                        flight.seats_researved, 
+                        flight.seats_available,
+                        flight.gate,
+                        flight.placeImg,
+                        flightclasses.classPrice,
+                        classes.class_name,
+                        triptype.triptype_name 
+                    FROM 
+                        flight
+                    INNER JOIN 
+                        airline ON flight.airline_id = airline.airline_id
+                    INNER JOIN 
+                        flightclasses ON flight.flight_id = flightclasses.flight_id
+                    INNER JOIN 
+                        classes ON flightclasses.class_id = classes.class_id
+                    INNER JOIN 
+                        triptype on flightclasses.triptype = triptype.triptypeId
+                    WHERE
+                        flightclasses.classPrice beween ? and ?;
+                    ";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(1,$price,PDO::PARAM_INT);
+                $stmt->execute();
+                $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                }catch(PDOException $e){
+                echo $e->getMessage();
+                }
+            }
+
 
 ?>
 <!DOCTYPE html>
@@ -198,7 +246,7 @@
     </head>
     <body>
          <!-- nav starts -->
-         <nav class= " bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 ">
+         <nav class= " bg-[#0463ca] ">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
                     <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
@@ -355,7 +403,7 @@
             </div>
          </nav>
                 
-         <div class=" font-[sans-serif] p-6 sticky top-0 z-10" style="background-image: url('/images/cloud.webp'); background-size: cover;">
+         <div class=" font-[sans-serif] p-6 sticky top-0 z-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
             <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
                 <div class="text-center">
                     <form action="" method="POST" class="space-y-4">
@@ -429,6 +477,24 @@
                     </form>   
                 </div>
                 <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
+
+
+                <!-- search by price range -->
+                <div class="flex justify-start rounded-lg text-black">
+                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3 w-full" id="priceRangeSearch">
+                        <label for="">Price Range</label>
+                        <div class="relative mb-6 z-0">
+                            <input id="labels-range-input" name="classPrice" type="range" value="1000" min="100" max="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" onchange="formSubmit()">
+                            <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6"> ($100)</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$500</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-2/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$1000</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">($1500)</span>
+                            </div>
+                        </div>
+                    </form>   
+                </div>
+                <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
                 <!-- search by trip type -->
                 <div class="flex justify-start rounded-lg text-black mt-0">
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
@@ -458,20 +524,7 @@
                     
                 </div>
                 <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
-                <!-- search by price range -->
-                <div class="flex justify-start rounded-lg text-black">
-                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3 w-full" id="priceRangeSearch">
-                        <label for="">Price Range</label>
-                        <div class="relative mb-6 z-0">
-                            <input id="labels-range-input" type="range" value="1000" min="100" max="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
-                            <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6"> ($100)</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$500</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-2/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$1000</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">($1500)</span>
-                        </div>
-                    </form>   
-                </div>
-                <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
+                
                 <!-- search by ariline name -->
                 <div class="flex justify-start rounded-lg text-black">
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
@@ -547,7 +600,8 @@
                                 </div>
                             </div>
                             <p class='text-xl font-bold text-blue-600'>{$flight["class_name"]}</p>
-                            <p class='text-xl font-bold text-blue-600'>{$flight["classPrice"]}</p>
+                            
+                            <p class='text-xl font-bold text-blue-600'><span class='text-xl font-bold text-blue-600'>$</span>{$flight["classPrice"]}</p>
                         </div>
 
                         
@@ -616,7 +670,7 @@
             
             <div class="p-4 rounded-lg w-full max-w-lg -mx-28 col-span-1">
                 <div class="bg-white shadow-[0_4px_12px_-5px_rgba(0,0,0,0.4)] p-6 w-[350px] rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
-                    <h3 class="text-xl font-bold text-gray-800">Need Help??</h3>
+                    <h3 class="text-xl font-bold text-gray-800">Keep Updated</h3>
                     <p class="mt-3 text-sm text-gray-500 leading-relaxed">
                         You can contact us by sending emails to us.
                     </p>
@@ -633,12 +687,17 @@
                         <button 
                             type="button"
                             class="px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700">
-                            Send
+                            Subscribe
                         </button>
                     </div>
                 </div>
             </div>
 
+            <script>
+                function formSubmit(){
+                    document.getElementById('priceRangeSearch').submit();
+                }
+            </script>
         <!-- main contents ends -->
     </body>
 </html>

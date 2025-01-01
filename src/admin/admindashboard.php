@@ -15,6 +15,7 @@
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
+    <script src="..js/dropbutton.js"></script>
 
 </head>
 
@@ -89,6 +90,7 @@
       </div>
    </div>
    </nav>
+   <!-- nav ends -->
 
    <!-- sidebar starts -->
    <aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 mt-10 py-3" aria-label="Sidebar">
@@ -124,10 +126,10 @@
                         <a href="viewFlight.php" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Flight Schedule</a>
                      </li>
                      <li>
-                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Flight Classes</a>
+                        <a href="viewFlightClasses.php" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Flight Classes & Trip Types</a>
                      </li>
                      <li>
-                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Trip Type</a>
+                        <a href="flightClassesandtriptypePrice.php" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Pricing</a>
                      </li>
                      <li>
                         <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Seat Number</a>
@@ -201,7 +203,13 @@
             <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
                <p class="text-2xl text-gray-400 dark:text-gray-500">
                   <!-- user count and user icon add -->
-                  users
+                  Users
+                  <?php
+                     $sql = "SELECT * FROM users";
+                     $result = $conn->query($sql);
+                     $userCount = $result->rowCount();
+                     echo $userCount;
+                  ?>
                </p>
             </div>
 
@@ -299,14 +307,15 @@
    </div>
    <!-- main contents ends -->
 
-<script>
-   const dropdownButton = document.getElementById('dropdownButton');
-   const dropdownMenu = document.getElementById('dropdownMenu');
 
-   dropdownButton.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('hidden');
-   });
-</script>
+   <script>
+      const dropdownButton = document.getElementById('dropdownButton');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+
+    dropdownButton.addEventListener('click', () => {
+     dropdownMenu.classList.toggle('hidden');
+      });
+   </script>
 </body>
-    
+</html>    
  
