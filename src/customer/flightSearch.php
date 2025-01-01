@@ -187,6 +187,9 @@
             if(isset($_POST['priceRangeSearch'])){
                 $price = $_POST['priceRangeSearch'];
 
+                $minPrice = $price - 100;
+                $maxPrice = $price + 100;
+
                 try{
                     $sql = "SELECT 
                         flight.flight_id,
@@ -218,12 +221,12 @@
                     INNER JOIN 
                         triptype on flightclasses.triptype = triptype.triptypeId
                     WHERE
-                        flightclasses.classPrice beween ? and ?;
+                        flightclasses.classPrice BETWEEN ? AND ?;
                     ";
 
                 $stmt = $conn->prepare($sql);
                 $stmt->bindParam(1,$price,PDO::PARAM_INT);
-                $stmt->execute();
+                $stmt->execute([$minPrice,$maxPrice]);
                 $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 }catch(PDOException $e){
@@ -484,9 +487,9 @@
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3 w-full" id="priceRangeSearch">
                         <label for="">Price Range</label>
                         <div class="relative mb-6 z-0">
-                            <input id="labels-range-input" name="classPrice" type="range" value="1000" min="100" max="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" onchange="formSubmit()">
+                            <input id="labels-range-input" name="priceRangeSearch" type="range" value="100" min="100" max="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" onchange="this.form.submit()">
                             <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6"> ($100)</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">($100)</span>
                                 <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$500</span>
                                 <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-2/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$1000</span>
                                 <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">($1500)</span>
