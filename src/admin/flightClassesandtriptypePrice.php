@@ -58,6 +58,8 @@
     }catch(PDOException $e){
     echo $e->getMessage();
     }
+
+           
 ?>
 
 <!doctype html>
@@ -241,7 +243,7 @@
                   </div>
                </di>
                <div>
-               <a href="addNewFlightInfo.php" class="flex items-center justify-end p-2 text-sm text-black rounded-lg">
+               <a href="addPricing.php" class="flex items-center justify-end p-2 text-sm text-black rounded-lg">
                   <svg class="w-4 h-4 me-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                      <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 5.523 4.477 10 10 10 5.523 0 10-4.477 10-10 0-5.523-4.477-10-10-10Zm0 18.75c-4.556 0-8.25-3.694-8.25-8.25S5.444 2.25 10 2.25 18.25 5.944 18.25 10 14.556 18.75 10 18.75Zm-1.25-9.25H6.25a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5a.75.75 0 0 0-1.5 0v2.5Z"></path>
                   </svg>
@@ -269,15 +271,15 @@
                         Fee per ticket
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Class Multiplier
+                        Class Name
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Trip Type Multiplier
+                        Trip type Name
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Total Price
                         </th>
-                        <td class="px-4 py-4 text-sm text-gray-800">
+                        <td class="px-4 py-4 text-sm text-gray-800 width-1/4">
                         <button class="text-blue-600 mr-4">Edit</button>
                         <button class="text-red-600">Delete</button>
                         </td>
@@ -292,26 +294,26 @@
                         <td class='px-4 py-4 text-sm text-gray-800'>
                         $flight[flightclasses_id]
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
-                        $flight[flight_name]
+                        <td class='px-4 py-4 text-sm text-gray-800 '>
+                           $flight[flight_name] 
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
+                        <td class='px-4 py-4 text-sm text-gray-800 '>
                         $flight[source]
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
+                        <td class='px-4 py-4 text-sm text-gray-800 '>
                         $flight[destination]
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
+                        <td class='px-4 py-4 text-sm text-gray-800 '>
                         $$flight[fee_per_ticket]
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
+                        <td class='px-4 py-4 text-sm text-gray-800 '>
                         $flight[class_name]
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
+                        <td class='px-4 py-4 text-sm text-gray-800 '>
                         $flight[triptype_name]
                         </td>
-                        <td class='px-4 py-4 text-sm text-gray-800'>
-                        $$flight[classPrice]
+                         <td class='px-4 py-4 text-sm text-gray-800 '>
+                        $flight[classPrice]
                         </td>
                         <td class='px-4 py-4 text-sm text-gray-800'>
                         <button class='text-blue-600 mr-4'>Edit</button>
