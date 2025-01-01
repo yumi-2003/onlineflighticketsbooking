@@ -234,6 +234,94 @@
                 }
             }
 
+            //search by radio buttion of trip name
+        if (isset($_POST['tripType']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            $triptype = $_POST['tripType']; // Get user-selected class type
+        
+            $sql = "SELECT 
+            flight.flight_id,
+            airline.airline_name, 
+            flight.flight_name, 
+            flight.flight_date, 
+            flight.destination, 
+            flight.source, 
+            flight.total_distance, 
+            flight.fee_per_ticket, 
+            flight.departure_time, 
+            flight.arrival_time, 
+            flight.capacity, 
+            flight.seats_researved, 
+            flight.seats_available,
+            flight.gate,
+            flight.placeImg,
+            flightclasses.classPrice,
+            classes.class_name,
+            triptype.triptype_name
+        FROM 
+            flight
+        INNER JOIN 
+            airline ON flight.airline_id = airline.airline_id
+        INNER JOIN 
+            flightclasses ON flight.flight_id = flightclasses.flight_id
+        INNER JOIN 
+            classes ON flightclasses.class_id = classes.class_id
+        INNER JOIN 
+            triptype on flightclasses.triptype = triptype.triptypeId
+        WHERE 
+            triptype.triptypeId = ?";
+        
+            // Prepare the statement
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(1, $triptype, PDO::PARAM_INT);
+            $stmt->execute();
+        
+            // Fetch the results
+            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        //search by airline name using select option
+        if (isset($_POST['airlineSearch']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            $airline = $_POST['airline_name']; 
+        
+            $sql = "SELECT 
+            flight.flight_id,
+            airline.airline_name, 
+            flight.flight_name, 
+            flight.flight_date, 
+            flight.destination, 
+            flight.source, 
+            flight.total_distance, 
+            flight.fee_per_ticket, 
+            flight.departure_time, 
+            flight.arrival_time, 
+            flight.capacity, 
+            flight.seats_researved, 
+            flight.seats_available,
+            flight.gate,
+            flight.placeImg,
+            flightclasses.classPrice,
+            classes.class_name,
+            triptype.triptype_name
+        FROM 
+            flight
+        INNER JOIN 
+            airline ON flight.airline_id = airline.airline_id
+        INNER JOIN 
+            flightclasses ON flight.flight_id = flightclasses.flight_id
+        INNER JOIN 
+            classes ON flightclasses.class_id = classes.class_id
+        INNER JOIN 
+            triptype on flightclasses.triptype = triptype.triptypeId
+        WHERE 
+            airline.airline_id = ?";
+        
+            // Prepare the statement
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(1, $airline, PDO::PARAM_INT);
+            $stmt->execute();
+            // Fetch the results
+            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
 ?>
 <!DOCTYPE html>
@@ -452,11 +540,17 @@
         <!-- main contents starts -->
         <div class="p-1 grid grid-cols-5">
             <div class="col-span-1 grid-row-4">
+            <div class="flex justify-start rounded-lg text-black bg-blue-100">
+                <h3 class="text-2xl">Filter Flight Information</h3>
+            </div>
+
                 <!-- search by classes -->
                 <div class="flex justify-start rounded-lg text-black">
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
-                        <label for="">Choose Flight Classes</label>
-                        <div class="grid space-y-3 pt-3">
+                        <label for="">Choose Flight Classes
+                        </label>
+                        
+                        <div class="grid space-y-3 pt-3" id="classPriceSearch">
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
                                 <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();">
                                 <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Frist</span>
@@ -490,37 +584,26 @@
                             <input id="labels-range-input" name="priceRangeSearch" type="range" value="100" min="100" max="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" onchange="this.form.submit()">
                             <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                                 <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">($100)</span>
-                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$500</span>
-                                <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-2/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">$1000</span>
                                 <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">($1500)</span>
                             </div>
                         </div>
                     </form>   
                 </div>
                 <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
+
                 <!-- search by trip type -->
                 <div class="flex justify-start rounded-lg text-black mt-0">
-                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
+                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="tripTypeSearch">
                         <label for="">Choose Trip Type</label>
                         <div class="grid space-y-3 pt-3">
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Frist</span>
+                                <input type="radio" name="tripType" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="single" value="1" onchange="this.form.submit();">
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Single</span>
                             </label>
 
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="business-class" value="2" onchange="this.form.submit();" >
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Business</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="economy-class" value="3" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Economy</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-checked-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Primary Economy</span>
+                                <input type="radio" name="tripType" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="round" value="2" onchange="this.form.submit();" >
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Round</span>
                             </label>
                         </div>
                     </form>
@@ -530,28 +613,18 @@
                 
                 <!-- search by ariline name -->
                 <div class="flex justify-start rounded-lg text-black">
-                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
+                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="airlineSearch">
                         <label for="">Airline Name</label>
                         <div class="grid space-y-3 pt-3">
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Frist</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="business-class" value="2" onchange="this.form.submit();" >
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Business</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="economy-class" value="3" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Economy</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-checked-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Primary Economy</span>
-                            </label>
+                            <select class="py-3 px-4 pe-9 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" name="airline_name" onchange="this.form.submit();">
+                            <option selected="">Choose Airline</option>
+                            <?php
+                              $uniqueAirlines = array_unique(array_column($flights, 'airline_name'));
+                              foreach($uniqueAirlines as $airline){
+                                echo "<option value='$airline'>$airline</option>";
+                              }
+                            ?>
+                            </select>
                         </div>
                     </form>   
                 </div>
@@ -697,8 +770,8 @@
             </div>
 
             <script>
-                function formSubmit(){
-                    document.getElementById('priceRangeSearch').submit();
+                function airlineSearch(){
+                    document.getElementById('airlineSearch').submit();
                 }
             </script>
         <!-- main contents ends -->

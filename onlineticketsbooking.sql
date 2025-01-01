@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 01, 2025 at 06:23 PM
+-- Generation Time: Jan 01, 2025 at 08:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -115,7 +115,7 @@ CREATE TABLE `flight` (
 
 INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `placeImg`) VALUES
 (2, 1, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
-(4, 1, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
+(4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
 
 -- --------------------------------------------------------
 
@@ -143,7 +143,23 @@ INSERT INTO `flightclasses` (`flightclasses_id`, `flight_id`, `class_id`, `tript
 (5, 2, 3, 2, 600.00),
 (6, 2, 3, 1, 300.00),
 (7, 2, 4, 1, 150.00),
-(8, 2, 4, 2, 300.00);
+(8, 2, 4, 2, 300.00),
+(9, 4, 1, 1, 600.00),
+(10, 4, 1, 2, 1200.00),
+(11, 4, 2, 1, 400.00),
+(12, 4, 2, 2, 800.00),
+(13, 4, 3, 1, 200.00),
+(14, 4, 3, 2, 400.00),
+(15, 4, 4, 1, 100.00),
+(16, 4, 4, 2, 200.00),
+(17, 4, 1, 1, 600.00),
+(18, 4, 1, 2, 1200.00),
+(19, 4, 2, 1, 400.00),
+(20, 4, 2, 2, 800.00),
+(21, 4, 3, 1, 200.00),
+(22, 4, 3, 2, 400.00),
+(23, 4, 4, 1, 100.00),
+(24, 4, 4, 2, 200.00);
 
 -- --------------------------------------------------------
 
@@ -403,7 +419,7 @@ ALTER TABLE `flight`
 -- AUTO_INCREMENT for table `flightclasses`
 --
 ALTER TABLE `flightclasses`
-  MODIFY `flightclasses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `flightclasses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `passengers`
