@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 01, 2025 at 08:40 PM
+-- Generation Time: Jan 02, 2025 at 08:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,9 +59,9 @@ CREATE TABLE `airline` (
 --
 
 INSERT INTO `airline` (`airline_id`, `airline_name`, `photo`) VALUES
-(1, 'Myanmar Airway International(MAI)', NULL),
-(2, 'Mynamar National Airlines(MNA)', NULL),
-(3, 'Global Myanamr Airline', NULL);
+(2, 'Myanmar International Airways(MNA)', '../flightImg/MNA.webp'),
+(5, 'Myanmar Airway International                                ', '../flightImg/MAI.png'),
+(6, 'Singapore Airlines(QA)                                                              ', '../flightImg/SA.png');
 
 -- --------------------------------------------------------
 
@@ -114,7 +114,7 @@ CREATE TABLE `flight` (
 --
 
 INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `placeImg`) VALUES
-(2, 1, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
+(2, 5, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bk.jpg'),
 (4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
 
 -- --------------------------------------------------------
@@ -302,7 +302,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `cpassword`, `profile`) VALUES
-(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/photo_2024-01-07_17-04-55.jpg');
+(7, 'yumimay', 'yumimay@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/download (4).jpg');
 
 --
 -- Indexes for dumped tables
@@ -401,7 +401,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `airline`
 --
 ALTER TABLE `airline`
-  MODIFY `airline_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `airline_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `classes`
