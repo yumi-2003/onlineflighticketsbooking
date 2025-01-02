@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 w-20">
+                    <!-- <div class="mt-6 w-20">
                         <label for="uploadFile1"
                           class="flex bg-white hover:bg-gray-700 text-gray text-base px-5 py-3 outline-none rounded w-max cursor-pointer mx-auto font-[sans-serif]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 mr-2 fill-drak inline" viewBox="0 0 32 32">
@@ -153,7 +153,7 @@
                         Upload Profile
                         <input type="file" name="profile" id='uploadFile1' class="hidden" />
                         </label>
-                    </div>
+                    </div> -->
 
                     <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
                         <div class="flex items-center">

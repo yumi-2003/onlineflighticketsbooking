@@ -22,11 +22,12 @@
 
                     if($userInfo){
                         $password_hash = $userInfo['password'];
+                        $profile= $userInfo['profile'];
                         
                         if(password_verify($password,$password_hash)){
                             $_SESSION['userLoginSuccess'] = 'Login Successful';
                             $_SESSION['userEmail'] = $email;
-                            $_SESSION['userPhoto'] = $filename;
+                            $_SESSION['userPhoto'] = $profile;
                             $_SESSION['userisLoggedIn'] = true;
                             header('Location: index.php');
                         }else{
