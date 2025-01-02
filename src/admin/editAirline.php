@@ -41,8 +41,7 @@ if (isset($_POST['update'])) {
         echo $status;
 
         if ($status) {
-            // $_SESSION['updateAirlineComplete'] = "Fligth ID $airline_Id information has been updated";
-            echo $status;
+            $_SESSION['updateAirlineComplete'] = "Fligth ID $airline_Id information has been updated";
             header("Location:viewAirline.php");
         }
     } catch (PDOException $e) {
@@ -132,8 +131,9 @@ if (isset($_POST['update'])) {
             </div>
         </div>
     </nav>
+    <!-- nav ends -->
 
-    <form method="POST" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" class="m-auto mt-16 w-60">
+    <form method="POST" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" class="m-auto mt-16 max-w-md p-6">
         <div class="grid grid-cols-1 gap-6 mb-6 md:grid-cols-1">
             <input type="hidden" name="airline_id"
                 value="<?php
@@ -142,9 +142,8 @@ if (isset($_POST['update'])) {
                         }
                         ?>">
             <div>
-                <label for="airlineName" class="block mb-2 text-sm font-medium dark:text-gray dark:text-gray">Airline Name</label>
-                <input type="text" name="airline_name" class=" bg-gray-50 border border-gray-300 dark:text-gray text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Airline Name" required value="
-                    <?php
+                <label for="airlineName" class="block mb-2 text-sm font-medium dark:text-gray dark:text-white">Airline Name</label>
+                <input type="text" name="airline_name" class="bg-gray-50 border border-gray-300 dark:text-gray text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Airline Name" required value="<?php
                     if (isset($airline['airline_name'])) {
                         echo "$airline[airline_name]";
                     }
@@ -152,9 +151,9 @@ if (isset($_POST['update'])) {
                     " />
             </div>
 
-
+        
             <label for="uploadFile"
-                class="bg-white text-center rounded w-full max-w-sm min-h-[180px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif]">
+                class="bg-white text-center rounded w-full max-w-xl min-h-[150px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif]">
 
                 <img class="w-20 h-20" src='<?php
                                             if (isset($airline['photo'])) {
@@ -162,14 +161,13 @@ if (isset($_POST['update'])) {
                                             }
                                             ?>' alt="">
 
-                <p class="text-gray-400 font-semibold text-sm">Drag & Drop or <span class="text-[#007bff]">Choose Airline Photo</span> to
-                    upload</p>
+                <p class="text-gray-400 font-semibold text-sm">Drag & Drop or<br>
+                <span class="text-[#007bff]">Choose Airline Photo</span></p>
                 <input type="file" id='uploadFile' name="photo" class="hidden" />
             </label>
 
             <button type="sumbit" name="update" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">update</button>
     </form>
-
 
 </body>
 

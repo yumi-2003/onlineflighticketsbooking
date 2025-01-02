@@ -9,7 +9,8 @@
     //get flight information
             $sql = "SELECT 
                 flight.flight_id,
-                airline.airline_name, 
+                airline.airline_name,
+                airline.photo, 
                 flight.flight_name, 
                 flight.flight_date, 
                 flight.destination, 
@@ -38,11 +39,12 @@
                 flight.flight_id = flightclasses.flight_id
             INNER JOIN 
                 classes
+            ON 
+                flightclasses.class_id = classes.class_id
             INNER JOIN
                 triptype
             ON 
-                flightclasses.class_id = classes.class_id;
-            ";
+                flightclasses.triptype = triptype.triptypeId;";
 
         try{
             $stmt = $conn->query($sql);
@@ -55,14 +57,72 @@
         echo $e->getMessage();
         }
 
-        //search by source, destin, flight date
-        if(isset($_POST['find'])){
-        $source = $_POST['source'];
-        $desti = $_POST['destination'];
-        $date = $_POST['flight_date'];
+            //search by source, destin, flight date
+            if(isset($_POST['find'])){
+            $source = $_POST['source'];
+            $desti = $_POST['destination'];
+            $date = $_POST['flight_date'];
 
-        try{
-            $sql = "SELECT 
+            try{
+                $sql = "SELECT 
+                    flight.flight_id,
+                    airline.airline_name,
+                    airline.photo, 
+                    flight.flight_name, 
+                    flight.flight_date, 
+                    flight.destination, 
+                    flight.source, 
+                    flight.total_distance, 
+                    flight.fee_per_ticket, 
+                    flight.departure_time, 
+                    flight.arrival_time, 
+                    flight.capacity, 
+                    flight.seats_researved, 
+                    flight.seats_available,
+                    flight.gate,
+                    flight.placeImg,
+                    flightclasses.classPrice,
+                    triptype.triptype_name, 
+                    classes.class_name,
+                FROM 
+                    flight
+                INNER JOIN 
+                    airline
+                ON 
+                    flight.airline_id = airline.airline_id
+                INNER JOIN 
+                    flightclasses
+                ON 
+                    flight.flight_id = flightclasses.flight_id
+                INNER JOIN 
+                    classes 
+                ON 
+                    flightclasses.class_id = classes.class_id
+                INNER JOIN 
+                    triptype 
+                ON
+                    flightclasses.triptype = triptype.triptypeId
+                ON 
+                    flightclasses.class_id = classes.class_id WHERE source = ? AND destination = ? AND flight_date = ?;;
+                ";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(1,$source,PDO::PARAM_STR);
+            $stmt->bindParam(2,$desti,PDO::PARAM_STR);
+            $stmt->bindParam(3,$date,PDO::PARAM_STR);
+            $stmt->execute();
+            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            }catch(PDOException $e){
+            echo $e->getMessage();
+            }
+            }
+
+            //search by radio buttion of class name
+            if (isset($_POST['classPrice']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+                $classPrice = $_POST['classPrice']; // Get user-selected class type
+            
+                $sql = "SELECT 
                 flight.flight_id,
                 airline.airline_name, 
                 flight.flight_name, 
@@ -79,86 +139,29 @@
                 flight.gate,
                 flight.placeImg,
                 flightclasses.classPrice,
-                triptype.triptype_name, 
                 classes.class_name,
+                triptype.triptype_name
             FROM 
                 flight
             INNER JOIN 
-                airline
-            ON 
-                flight.airline_id = airline.airline_id
+                airline ON flight.airline_id = airline.airline_id
             INNER JOIN 
-                flightclasses
-            ON 
-                flight.flight_id = flightclasses.flight_id
+                flightclasses ON flight.flight_id = flightclasses.flight_id
             INNER JOIN 
-                classes 
-            ON 
-                flightclasses.class_id = classes.class_id
+                classes ON flightclasses.class_id = classes.class_id
             INNER JOIN 
-                triptype 
-            ON
-                flightclasses.triptype = triptype.triptypeId
-            ON 
-                flightclasses.class_id = classes.class_id WHERE source = ? AND destination = ? AND flight_date = ?;;
-            ";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(1,$source,PDO::PARAM_STR);
-        $stmt->bindParam(2,$desti,PDO::PARAM_STR);
-        $stmt->bindParam(3,$date,PDO::PARAM_STR);
-        $stmt->execute();
-        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        }catch(PDOException $e){
-        echo $e->getMessage();
-        }
-        }
-
-        //search by radio buttion of class name
-        if (isset($_POST['classPrice']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-            $classPrice = $_POST['classPrice']; // Get user-selected class type
-        
-            $sql = "SELECT 
-            flight.flight_id,
-            airline.airline_name, 
-            flight.flight_name, 
-            flight.flight_date, 
-            flight.destination, 
-            flight.source, 
-            flight.total_distance, 
-            flight.fee_per_ticket, 
-            flight.departure_time, 
-            flight.arrival_time, 
-            flight.capacity, 
-            flight.seats_researved, 
-            flight.seats_available,
-            flight.gate,
-            flight.placeImg,
-            flightclasses.classPrice,
-            classes.class_name,
-            triptype.triptype_name
-        FROM 
-            flight
-        INNER JOIN 
-            airline ON flight.airline_id = airline.airline_id
-        INNER JOIN 
-            flightclasses ON flight.flight_id = flightclasses.flight_id
-        INNER JOIN 
-            classes ON flightclasses.class_id = classes.class_id
-        INNER JOIN 
-            triptype on flightclasses.triptype = triptype.triptypeId
-        WHERE 
-            classes.class_id = ?";
-        
-            // Prepare the statement
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(1, $classPrice, PDO::PARAM_INT);
-            $stmt->execute();
-        
-            // Fetch the results
-            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+                triptype on flightclasses.triptype = triptype.triptypeId
+            WHERE 
+                classes.class_id = ?;";
+            
+                // Prepare the statement
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(1, $classPrice, PDO::PARAM_INT);
+                $stmt->execute();
+            
+                // Fetch the results
+                $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             //process to booking page
             if (isset($_POST['book'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -235,93 +238,93 @@
             }
 
             //search by radio buttion of trip name
-        if (isset($_POST['tripType']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-            $triptype = $_POST['tripType']; // Get user-selected class type
-        
-            $sql = "SELECT 
-            flight.flight_id,
-            airline.airline_name, 
-            flight.flight_name, 
-            flight.flight_date, 
-            flight.destination, 
-            flight.source, 
-            flight.total_distance, 
-            flight.fee_per_ticket, 
-            flight.departure_time, 
-            flight.arrival_time, 
-            flight.capacity, 
-            flight.seats_researved, 
-            flight.seats_available,
-            flight.gate,
-            flight.placeImg,
-            flightclasses.classPrice,
-            classes.class_name,
-            triptype.triptype_name
-        FROM 
-            flight
-        INNER JOIN 
-            airline ON flight.airline_id = airline.airline_id
-        INNER JOIN 
-            flightclasses ON flight.flight_id = flightclasses.flight_id
-        INNER JOIN 
-            classes ON flightclasses.class_id = classes.class_id
-        INNER JOIN 
-            triptype on flightclasses.triptype = triptype.triptypeId
-        WHERE 
-            triptype.triptypeId = ?";
-        
-            // Prepare the statement
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(1, $triptype, PDO::PARAM_INT);
-            $stmt->execute();
-        
-            // Fetch the results
-            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+            if (isset($_POST['tripType']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+                $triptype = $_POST['tripType']; // Get user-selected class type
+            
+                $sql = "SELECT 
+                flight.flight_id,
+                airline.airline_name, 
+                flight.flight_name, 
+                flight.flight_date, 
+                flight.destination, 
+                flight.source, 
+                flight.total_distance, 
+                flight.fee_per_ticket, 
+                flight.departure_time, 
+                flight.arrival_time, 
+                flight.capacity, 
+                flight.seats_researved, 
+                flight.seats_available,
+                flight.gate,
+                flight.placeImg,
+                flightclasses.classPrice,
+                classes.class_name,
+                triptype.triptype_name
+            FROM 
+                flight
+            INNER JOIN 
+                airline ON flight.airline_id = airline.airline_id
+            INNER JOIN 
+                flightclasses ON flight.flight_id = flightclasses.flight_id
+            INNER JOIN 
+                classes ON flightclasses.class_id = classes.class_id
+            INNER JOIN 
+                triptype on flightclasses.triptype = triptype.triptypeId
+            WHERE 
+                triptype.triptypeId = ?;";
+            
+                // Prepare the statement
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(1, $triptype, PDO::PARAM_INT);
+                $stmt->execute();
+            
+                // Fetch the results
+                $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
 
-        //search by airline name using select option
-        if (isset($_POST['airlineSearch']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-            $airline = $_POST['airline_name']; 
-        
-            $sql = "SELECT 
-            flight.flight_id,
-            airline.airline_name, 
-            flight.flight_name, 
-            flight.flight_date, 
-            flight.destination, 
-            flight.source, 
-            flight.total_distance, 
-            flight.fee_per_ticket, 
-            flight.departure_time, 
-            flight.arrival_time, 
-            flight.capacity, 
-            flight.seats_researved, 
-            flight.seats_available,
-            flight.gate,
-            flight.placeImg,
-            flightclasses.classPrice,
-            classes.class_name,
-            triptype.triptype_name
-        FROM 
-            flight
-        INNER JOIN 
-            airline ON flight.airline_id = airline.airline_id
-        INNER JOIN 
-            flightclasses ON flight.flight_id = flightclasses.flight_id
-        INNER JOIN 
-            classes ON flightclasses.class_id = classes.class_id
-        INNER JOIN 
-            triptype on flightclasses.triptype = triptype.triptypeId
-        WHERE 
-            airline.airline_id = ?";
-        
-            // Prepare the statement
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(1, $airline, PDO::PARAM_INT);
-            $stmt->execute();
-            // Fetch the results
-            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+            //search by airline name using select option
+            if (isset($_POST['airlineSearch']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+                $airline = $_POST['airline_name']; 
+            
+                $sql = "SELECT 
+                flight.flight_id,
+                airline.airline_name, 
+                flight.flight_name, 
+                flight.flight_date, 
+                flight.destination, 
+                flight.source, 
+                flight.total_distance, 
+                flight.fee_per_ticket, 
+                flight.departure_time, 
+                flight.arrival_time, 
+                flight.capacity, 
+                flight.seats_researved, 
+                flight.seats_available,
+                flight.gate,
+                flight.placeImg,
+                flightclasses.classPrice,
+                classes.class_name,
+                triptype.triptype_name
+            FROM 
+                flight
+            INNER JOIN 
+                airline ON flight.airline_id = airline.airline_id
+            INNER JOIN 
+                flightclasses ON flight.flight_id = flightclasses.flight_id
+            INNER JOIN 
+                classes ON flightclasses.class_id = classes.class_id
+            INNER JOIN 
+                triptype on flightclasses.triptype = triptype.triptypeId
+            WHERE 
+                airline.airline_id =:airlineId;";
+            
+                // Prepare the statement
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(1, $airline, PDO::PARAM_INT);
+                $stmt->execute();
+                // Fetch the results
+                $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
 
 ?>
 <!DOCTYPE html>
@@ -494,7 +497,7 @@
             </div>
          </nav>
                 
-         <div class=" font-[sans-serif] p-6 sticky top-0 z-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
+         <div class="font-[sans-serif] p-6 sticky top-0 z-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
             <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
                 <div class="text-center">
                     <form action="" method="POST" class="space-y-4">
@@ -540,8 +543,8 @@
         <!-- main contents starts -->
         <div class="p-1 grid grid-cols-5">
             <div class="col-span-1 grid-row-4">
-            <div class="flex justify-start rounded-lg text-black bg-blue-100">
-                <h3 class="text-2xl">Filter Flight Information</h3>
+            <div class="flex justify-start rounded-lg text-black">
+                <h3 class="font-[sans-serif] text-2xl">Filter Flight Information</h3>
             </div>
 
                 <!-- search by classes -->
@@ -669,7 +672,7 @@
                     echo "
                         <div class='flex items-center justify-between mb-4'>
                             <div class='flex items-center space-x-4'>
-                                <img src='' alt='Airline Logo' class='w-12 h-12 rounded-full'>
+                                <img src='{$flight['photo']}' alt='Airline Logo' class='w-16 h-12 rounded-full'>
                                 <div>
                                     <p class='text-lg font-semibold text-gray-800'>{$flight['airline_name']}</p>
                                     <p class='text-sm text-gray-500'>{$flight['flight_name']}</p>

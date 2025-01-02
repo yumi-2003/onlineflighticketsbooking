@@ -66,13 +66,17 @@
     }
 
     //get user information
+    $sql = "SELECT * FROM users";
     try{
-      $sql = "SELECT * FROM users";
-      $stmt = $conn->prepare($sql);
-      $users= $stmt->fetchAll(PDO::FETCH_ASSOC);
-   }catch(PDOException $e){
+      $stmt = $conn->query($sql);
+      $status = $stmt->execute();
+
+      if($status){
+        $users = $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+    }catch(PDOException $e){
       echo $e->getMessage();
-   }
+    }
 
 
 ?>
@@ -85,11 +89,11 @@
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.0.0/dist/datepicker.min.js"></script>
+    
     
 </head>
 <body>
-
+        <!-- nav starts -->
         <nav class= "fixed top-0 z-50 w-full bg-[#0463ca]">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -111,7 +115,7 @@
                                 <span class="sr-only">Open user menu</span>
 
 
-                                <img class="w-8 h-8 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
+                                <img class="w-10 h-10 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
 
                               </button>
                           </div>
@@ -123,12 +127,10 @@
                                     echo $_SESSION['userEmail'];
                                 ?>
                               </p>
-                              <!-- <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                              </p> -->
                           </div>
                           <ul class="py-1" role="none">
                               <li>
-                                <a href="editUProfile.php?uID=$users[]" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
+                                <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
                               </li>
                               <li>
                                 <a href="cLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>

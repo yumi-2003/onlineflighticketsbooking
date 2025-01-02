@@ -69,7 +69,6 @@
             $cap = $_POST['capacity'];
             $rerseat = $_POST['seats_researved'];
             $avaseat = $cap - $rerseat;
-
             $filename = $_FILES['placeImg']['name'];
             $uploadPath = "../flightImg/".$filename;
             move_uploaded_file($_FILES['placeImg']['tmp_name'], $uploadPath);

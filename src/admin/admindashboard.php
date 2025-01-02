@@ -5,6 +5,15 @@ require_once "dbconnect.php";
 if (!isset($_SESSION)) {
    session_start();
 }
+
+   $sql = "SELECT * FROM admin";
+   try{
+      $stmt = $conn->prepare($sql);
+      $stmt->execute();
+      $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+   } catch(PDOException $e){
+      echo $e->getMessage();
+   }
 ?>
 
 <!doctype html>
@@ -64,15 +73,14 @@ if (!isset($_SESSION)) {
                            </p>
                            <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
                               <?php
-
                               echo $_SESSION['adEmail'];
-
                               ?>
                            </p>
                         </div>
                         <ul class="py-1" role="none">
                            <li>
-                              <a href="editProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
+                              <a href="editProfile.php?id=<?php echo $admin['admin_id']; ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
+                           
                            </li>
                            <li>
                               <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
@@ -218,6 +226,12 @@ if (!isset($_SESSION)) {
                <p class="text-2xl text-gray-400 dark:text-gray-500">
                   <!-- flight count and flight icon add -->
                   flights
+                  <?php
+                  $sql = "SELECT * FROM flight";
+                  $result = $conn->query($sql);
+                  $flightCount = $result->rowCount();
+                  echo $flightCount;
+                  ?>
                </p>
             </div>
             <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">

@@ -1,9 +1,8 @@
 <?php
     require_once "dbconnect.php";
     
+    //get all airlines
     $sql = "SELECT * FROM airline";
-                    
-
     try{
       $stmt = $conn->query($sql);
       $status = $stmt->execute();
@@ -16,6 +15,32 @@
     }catch(PDOException $e){
       echo $e->getMessage();
     }
+
+    if(isset($_POST['addAirline'])){
+
+        $airname = $_POST['airline_name'];
+        $photo = $_FILES['photo']['name'];
+        $uploadPath = "../flightImg/".$photo;
+        move_uploaded_file($_FILES['photo']['tmp_name'], $uploadPath);
+
+        
+        try{
+            $sql = "INSERT INTO airline (airline_name,photo) VALUES (?,?)";
+            $stmt = $conn->prepare($sql);
+            $status = $stmt->execute([$airname,$uploadPath]);
+            $airline = $conn->lastInsertId();
+
+
+            if($status){
+                header("Location:viewAirline.php");
+            }
+        }catch(PDOException $e){
+            echo $e->getMessage();
+        }
+        
+
+    }
+
 
 ?>
 
@@ -32,75 +57,73 @@
 
 <body>
    
-    <!-- nav starts -->
-    <nav class="fixed top-0 z-50 w-full bg-gray-50 dark:bg-gray-800">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center justify-start rtl:justify-end">
-                <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                    <span class="sr-only">Open sidebar</span>
-                    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-                    </svg>
-                    </button>
-                <a href="https://flowbite.com" class="flex ms-2 md:me-24">
-                    <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" /> -->
-                    <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">SwiftMiles</span>
-                </a>
+     <!-- nav stars -->
+   <nav class="fixed top-0 z-50 w-full bg-gray-50 dark:bg-gray-800">
+     <div class="px-3 py-3 lg:px-5 lg:pl-3">
+       <div class="flex items-center justify-between">
+         <div class="flex items-center justify-start rtl:justify-end">
+            <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+              <span class="sr-only">Open sidebar</span>
+              <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"></svg>
+                <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+              </svg>
+            </button>
+            <a href="https://flowbite.com" class="flex ms-2 md:me-24">
+              <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" /> -->
+              <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">SwiftMiles</span>
+            </a>
+         </div>
+
+         <?php
+         session_start();
+         if (isset($_SESSION['isLoggedIn'])) {
+         ?>
+
+            <div class="flex items-center">
+              <div class="flex items-center ms-3">
+                <div>
+                  <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
+                     <span class="sr-only">Open user menu</span>
+                     <!-- admin profile -->
+                     <img class="w-8 h-8 rounded-full" src="../userPhoto/download (3).jpg" alt="admin photo">
+
+                  </button>
                 </div>
 
-                <?php
-
-                    if(isset($_SESSION['isLoggedIn'])){
-                ?>
-
-                <div class="flex items-center">
-                    <div class="flex items-center ms-3">
-                    <div>
-                        <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
-                            <span class="sr-only">Open user menu</span>
-
-                            <img class="w-8 h-8 rounded-full" src="<?php echo $_SESSION['adprofile'] ?>" alt="admin photo">
-
-                        </button>
-                    </div>
-
-                    <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                    <div class="px-4 py-3" role="none">
-                        <p class="text-sm text-gray-900 dark:text-white" role="none">
-                            <?php
-                                echo $_SESSION['adName'];
-                            ?>
-                        </p>
-                        <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                            <?php
-
-                            echo $_SESSION['adEmail'];
-
-                            ?>
-                        </p>
-                    </div>
-                    <ul class="py-1" role="none">
-                        <li>
-                            <a href="editProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
-                        </li>
-                        <li>
-                            <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
-                        </li>
-                    </ul>
-                    </div>
-                    </div>
+                <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                  <div class="px-4 py-3" role="none">
+                     <p class="text-sm text-gray-900 dark:text-white" role="none">
+                       <?php
+                       echo $_SESSION['adName'];
+                       ?>
+                     </p>
+                     <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                       <?php
+                       echo $_SESSION['adEmail'];
+                       ?>
+                     </p>
+                  </div>
+                  <ul class="py-1" role="none">
+                     <li>
+                       <a href="editProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
+                     </li>
+                     <li>
+                       <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                     </li>
+                  </ul>
                 </div>
-
-                <?php
-                    }
-
-                ?>
-
-                
+              </div>
             </div>
-        </div>
-    </nav>
+
+         <?php
+         } else {
+            echo '<a href="login.php" class="text-sm text-gray-700 dark:text-gray-300">Login</a>';
+         }
+         ?>
+
+       </div>
+     </div>
+   </nav>
    <!-- nav ends -->
 
     <aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 mt-10" aria-label="Sidebar">
@@ -212,7 +235,7 @@
 
     <!-- view airline information -->
     <div class="p-4 sm:ml-64">
-    <div class="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 mt-14">
+    <div class="p-4 border-gray-200 dark:border-gray-700 mt-14">
         <div class="grid-cols-2">
             <div>
                 <p>
@@ -222,51 +245,82 @@
             </div>
 
             <div>
-                <a href="addNewAirline.php" class="flex items-center justify-end p-2 text-sm text-black rounded-lg">
-                <svg class="w-4 h-4 me-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 5.523 4.477 10 10 10 5.523 0 10-4.477 10-10 0-5.523-4.477-10-10-10Zm0 18.75c-4.556 0-8.25-3.694-8.25-8.25S5.444 2.25 10 2.25 18.25 5.944 18.25 10 14.556 18.75 10 18.75Zm-1.25-9.25H6.25a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5a.75.75 0 0 0-1.5 0v2.5Z"></path>
-                </svg>
-                Add Airline Name
-                </a>
+                
+                <div class="flex items-center justify-end">
+                    
+                    <button id="addNewAirline" class="p-2 text-sm text-white border-2 w-36 h-12 rounded-lg shadow-md bg-blue-900">Add Airline Name
+                    </button>
+
+                </div>
+                
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg hidden" id="addAirlineForm">
+                    <form method="POST" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" class="m-auto mt-16 w-60">
+                    <div class="grid grid-cols-1 gap-6 mb-6 md:grid-cols-1">
+                    
+                        <div>
+                            <label for="airlineName" class="block mb-2 text-sm font-medium dark:text-gray dark:text-gray">Airline Name</label>
+                            <input type="text" name="airline_name" class=" bg-gray-50 border border-gray-300 dark:text-gray text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-cyan-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Airline Name" required />
+                        </div>
+                    
+
+                        <label for="uploadFile"
+                            class="bg-white text-center rounded w-full max-w-sm min-h-[180px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 mb-3 fill-gray-400" viewBox="0 0 24 24">
+                                <path
+                                d="M22 13a1 1 0 0 0-1 1v4.213A2.79 2.79 0 0 1 18.213 21H5.787A2.79 2.79 0 0 1 3 18.213V14a1 1 0 0 0-2 0v4.213A4.792 4.792 0 0 0 5.787 23h12.426A4.792 4.792 0 0 0 23 18.213V14a1 1 0 0 0-1-1Z"
+                                data-original="#000000" />
+                                <path
+                                d="M6.707 8.707 11 4.414V17a1 1 0 0 0 2 0V4.414l4.293 4.293a1 1 0 0 0 1.414-1.414l-6-6a1 1 0 0 0-1.414 0l-6 6a1 1 0 0 0 1.414 1.414Z"
+                                data-original="#000000" />
+                            </svg>
+                            <p class="text-gray-400 font-semibold text-sm">Drag & Drop or <span class="text-[#007bff]">Choose Airline Photo</span> to
+                                upload</p>
+                            <input type="file" id='uploadFile' name="photo" class="hidden" />
+                        </label>
+            
+                        <button type="submit" name="addAirline" class="w-full px-4 py-2 text-sm font-medium text-white bg-cyan-500 rounded-lg hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">Add Airline</button>
+                    </form>
+                </div>
             </div>
             
         </div>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full h-96 text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-black uppercase bg-cyan-100">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Airline ID
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Airline Name
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Photo
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class=" bg-cyan-50 text-black">
-                <?php
-                if(isset($airlines)){
-                    foreach($airlines as $airline){
-                    echo "<tr>
-                            <td>$airline[airline_id]</td>
-                            <td>$airline[airline_name]</td>
-                            <td><img src='$airline[photo]'></td>
-                            <td class='flex flex-direction:column aligh-items:center pt-30'>
-                                <a href='editAirline.php?arid=$airline[airline_id]'><img src='/images/updated.png' height='20' width='20' alt='update' class='mx-10'></a>
-                                <a href='deleteAirline.php?arid=$airline[airline_id]'><img src='/images/delete.png' height='20' width='20' alt='delete'></a>
-                            </td>
-                        </tr>";
-                    }
-                }    ?>
-                </tbody>
-            </table>
-        </div>
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full h-96 text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-black uppercase bg-cyan-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Airline ID
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Airline Name
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Photo
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class=" bg-cyan-50 text-black">
+                    <?php
+                    if(isset($airlines)){
+                        foreach($airlines as $airline){
+                        echo "<tr>
+                                <td>$airline[airline_id]</td>
+                                <td>$airline[airline_name]</td>
+                                <td><img src='$airline[photo]' class='w-32 h-24'></td>
+                                <td class='flex flex-direction:column aligh-items:center pt-30'>
+                                    <a href='editAirline.php?arid=$airline[airline_id]'><img src='/images/updated.png' height='20' width='20' alt='update' class='mx-10'></a>
+                                    <a href='deleteAirline.php?arid=$airline[airline_id]'><img src='/images/delete.png' height='20' width='20' alt='delete'></a>
+                                </td>
+                            </tr>";
+                        }
+                    }    ?>
+                    </tbody>
+                </table>
+            </div>
+            
     </div>
     </div>
     <!-- end airline information -->
@@ -279,6 +333,13 @@
     dropdownButton.addEventListener('click', () => {
         dropdownMenu.classList.toggle('hidden');
     });
+
+    const addNewAirline = document.getElementById('addNewAirline');
+    const addAirlineForm = document.getElementById('addAirlineForm');
+    addNewAirline.addEventListener('click', () => {
+        addAirlineForm.classList.toggle('hidden');
+    });
+
     </script>
 
 </body>

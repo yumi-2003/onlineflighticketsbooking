@@ -14,8 +14,6 @@
         echo $e->getMessage();
      }
 
-
-     $user = [];
      if(isset($_GET['uID'])){
         $userId = $_GET['uID'];
         $user = getUserInfo($userId);
@@ -34,9 +32,9 @@
         $userID = $_POST['user_id'];
         $username = $_POST['username'];
         $email = $_POST['email'];
-        $filename = $_FILES['profile']['name'];
-        $uploadPath = 'userPhoto/'.$filename;
-        move_uploaded_file($_FILES['profile']['tmp_name'], '../'.$uploadPath);
+        $proflile = $_FILES['profile']['name'];
+        $uploadPath = '../userPhoto/'.$proflile;
+        move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
 
         try{
             $sql = "Update users set username = ?,email = ?, profile = ? Where user_id = ?";
@@ -66,7 +64,7 @@
         <link href="./output.css" rel="stylesheet">
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.0.0/dist/datepicker.min.js"></script>
+        
     </head>
     <body>
         <!-- nav starts -->
@@ -235,7 +233,6 @@
                         <div class="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
                         <label for="">Upload Profile Picture</label><br>
                         <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="multiple_files" type="file" name="profile" multiple>
-
                         </div>
                     </div>
 
@@ -245,7 +242,7 @@
                                 <label for="uname"
                                     class="block mb-2 text-xl font-medium text-black">
                                     Username</label>
-                                <!-- <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>"> -->
+                                <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
                                 <input type="text" id="uname" name="username"
                                     class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                                     placeholder="" value="<?php echo $user['username']; ?>" required>

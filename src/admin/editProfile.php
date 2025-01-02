@@ -1,21 +1,22 @@
 <?php
     require_once 'dbconnect.php';
 
-    if(isset($_POST['admin_email'])){
-        $email = $_POST['admin_email'];
-        $adInfo = getAdminInfo($email);
+    if(isset($_POST['id'])){
+        $id = $_POST['id'];
+        $adInfo = getAdminInfo($id);
     }
 
-    function getAdminInfo($adEmail){
+    function getAdminInfo($adID){
         global $conn;
-        $sql = 'SELECT * FROM admin WHERE admin_email = ?';
+        $sql = 'SELECT * FROM admin WHERE admin_id = ?';
         $stmt = $conn->prepare($sql);
-        $stmt->execute([$adEmail]);
+        $stmt->execute([$adID]);
         $adInfo = $stmt->fetch(PDO::FETCH_ASSOC);
         return $adInfo;
     }
 
     if(isset($_POST['editProfile'])){
+        $ad_id = $_POST['admin_id'];
         $ad_email = $_POST['admin_email'];
         $ad_uname = $_POST['admin_uname'];
         $filename = $_FILES['profile']['name'];
@@ -24,10 +25,9 @@
 
         try{
             
-            $sql = 'Update admin set admin_email = ?, admin_uname = ?, profile =? where admin_email = ?  ';
-
+            $sql = 'Update admin set admin_email = ?, admin_uname = ?, profile =? where admin_id = ?';
             $stmt = $conn->prepare($sql);
-            $status = $stmt->execute([$ad_email, $ad_uname, $uploadPath, $ad_email]);
+            $status = $stmt->execute([$ad_uname,$ad_email, $uploadPath, $ad_id]);
 
             if($status){
                 $_SESSION['updateAdminProfile'] = "Admin information has been updated";
@@ -87,11 +87,12 @@
                             Edit Profile
                         </h1>
                         <h2 class="text-grey text-sm mb-4 dark:text-gray-400">Edit Profile</h2>
+                        
                         <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data">
-                            
+                                <input type="hidden" name="admin_id" value="<?php echo $adInfo['admin_id'] ?>">
                                 <!-- Profile Image -->
                                 <div
-                                     class="mx-auto flex justify-center  bg-[url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw4fHxwcm9maWxlfGVufDB8MHx8fDE3MTEwMDM0MjN8MA&ixlib=rb-4.0.3&q=80&w=1080')] w-[141px] h-[141px] bg-blue-300/20 rounded-full  bg-cover bg-center bg-no-repeat">
+                                     class="mx-auto flex justify-center w-[141px] h-[141px] bg-blue-300/20 rounded-full  bg-cover bg-center bg-no-repeat">
 
                                     <div class="bg-white/90 rounded-full w-6 h-6 text-center ml-28 mt-4">
 
