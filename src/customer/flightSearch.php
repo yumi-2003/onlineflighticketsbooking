@@ -124,7 +124,8 @@
             
                 $sql = "SELECT 
                 flight.flight_id,
-                airline.airline_name, 
+                airline.airline_name,
+                airline.photo, 
                 flight.flight_name, 
                 flight.flight_date, 
                 flight.destination, 
@@ -169,6 +170,7 @@
                 $_SESSION['flight'] = [
                     'flight_id' => $_POST['flight_id'],
                     'airline_name' => $_POST['airline_name'],
+                    'photo' => $_POST['photo'],
                     'flight_name' => $_POST['flight_name'],
                     'class_name' => $_POST['class_name'],
                     'classPrice' => $_POST['classPrice'],
@@ -244,6 +246,7 @@
                 $sql = "SELECT 
                 flight.flight_id,
                 airline.airline_name, 
+                airline.photo,
                 flight.flight_name, 
                 flight.flight_date, 
                 flight.destination, 
@@ -288,7 +291,8 @@
             
                 $sql = "SELECT 
                 flight.flight_id,
-                airline.airline_name, 
+                airline.airline_name,
+                airline.photo, 
                 flight.flight_name, 
                 flight.flight_date, 
                 flight.destination, 
@@ -545,6 +549,7 @@
             <div class="col-span-1 grid-row-4">
             <div class="flex justify-start rounded-lg text-black">
                 <h3 class="font-[sans-serif] text-2xl">Filter Flight Information</h3>
+                <form action=""><input type="reset" value="Reset"></form>
             </div>
 
                 <!-- search by classes -->

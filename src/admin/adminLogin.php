@@ -10,8 +10,7 @@
             $username = $_POST['admin_uname'];
             $email = $_POST['admin_email'];
             $password = $_POST['admin_pwd'];
-            $filename = $_FILES['profile']['name'];
-            $uploadPath = '../userPhoto/'.$filename;
+           
 
             if(empty($email) || empty($password)){
                 echo "<script>alert('All fields are required')</script>";
@@ -38,16 +37,15 @@
                             $_SESSION['adminLoginSuccess'] = 'Admin login successful';
                             $_SESSION['adName'] = $username;
                             $_SESSION['adEmail'] = $email;
-                            $_SESSION['adprofile'] = $filename;
                             $_SESSION['isLoggedIn'] = true;
                             header('Location: admindashboard.php');
                             exit();
                             
                         } else {
-                            $password_error = "There is no account with this credentials";
+                            $password_error = "<script>alert('There is no account with this credentials')</script>";
                         }
                     } else {
-                        $password_error = "Email or Password might be wrong";
+                        $password_error = "<script>alert('Email or Password might be wrong')</script>";
                     }
                 } catch(PDOException $e){
                     echo $e->getMessage();

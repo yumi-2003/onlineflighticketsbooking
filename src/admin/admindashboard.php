@@ -6,14 +6,14 @@ if (!isset($_SESSION)) {
    session_start();
 }
 
-   $sql = "SELECT * FROM admin";
-   try{
-      $stmt = $conn->prepare($sql);
-      $stmt->execute();
-      $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-   } catch(PDOException $e){
-      echo $e->getMessage();
-   }
+$sql = "SELECT * FROM admin";
+try {
+   $stmt = $conn->prepare($sql);
+   $stmt->execute();
+   $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+   echo $e->getMessage();
+}
 ?>
 
 <!doctype html>
@@ -59,7 +59,7 @@ if (!isset($_SESSION)) {
                         <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
                            <span class="sr-only">Open user menu</span>
                            <!-- admin profile -->
-                           <img class="w-8 h-8 rounded-full" src="../userPhoto/download (3).jpg" alt="admin photo">
+                           <img class="w-8 h-8 rounded-full" src="<?php echo $admin['profile'] ?>" alt="admin photo">
 
                         </button>
                      </div>
@@ -80,7 +80,7 @@ if (!isset($_SESSION)) {
                         <ul class="py-1" role="none">
                            <li>
                               <a href="editProfile.php?id=<?php echo $admin['admin_id']; ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
-                           
+
                            </li>
                            <li>
                               <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>

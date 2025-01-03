@@ -43,6 +43,9 @@
 
             if($status){
                 $_SESSION['profileUpdated'] = "You updated your profile";
+                $_SESSION['userEmail'] = $email;
+                $_SESSION['userPhoto'] = $uploadPath;
+                $_SESSION['userUsername'] = $username;
                 header("Location:index.php");
             }
 

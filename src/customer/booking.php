@@ -25,7 +25,7 @@
 
         // Now, you can use these values to populate your booking form
     } else {
-        echo "<script>window.alerts('NO flight selected!!!')</script>";
+        echo "<script>alert('NO flight selected!!!')</script>";
     }
 
     //store the selected data when clicked next button using session
