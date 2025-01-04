@@ -58,7 +58,6 @@
                     flight.gate,
                     flight.placeImg,
                     flightclasses.classPrice,
-                    classes.class_id,
                     classes.class_name,
                     triptype.triptype_name 
                 FROM 
@@ -735,18 +734,23 @@
                         </div>
                         <div class='flex items-center justify-between'>
                             <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
-                            
-                            <form action='showSeat.php' method='POST'>
-                            <input type='hidden' name='flight_id' value='{$flight["flight_id"]}'>
-                            <input type='hidden' name='class_id' value='{$flight["class_id"]}'>
-                            <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
-                            <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
-                            <input type='hidden' name='triptype_name' value='{$flight["flight_name"]}'>
                             <div class='space-x-2'>
-                                <button type='submit' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
+                                <form action='flightSearch.php' method='POST' enctype='multipart/form-data'>
+                                    <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
+                                    <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
+                                    <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
+                                    <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
+                                    <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
+                                    <input type='hidden' name='source' value='{$flight["source"]}'>
+                                    <input type='hidden' name='flight_date' value='{$flight["flight_date"]}'>
+                                    <input type='hidden' name='departure_time' value='{$flight["departure_time"]}'>
+                                    <input type='hidden' name='triptype_name' value='{$flight["triptype_name"]}'>
+                                    <input type='hidden' name='gate' value='{$flight["gate"]}'>
+                                    <input type='hidden' name='destination' value='{$flight["destination"]}'>
+                                    <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
+                                    <button type='submit' name='book' class='px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600'>Book Now</button>
+                                </form>
                             </div>
-                            </form>
-                            
                         </div>
                         <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
                 }
