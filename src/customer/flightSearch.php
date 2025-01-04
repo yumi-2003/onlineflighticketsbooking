@@ -22,13 +22,22 @@
     //get flight information and make pagination
     try{
         //pagination setup
-        $perPage = 8;
+        $perPage = 8; // number of flight for each page
+
+        //get the current page number or set 1 as a default
         $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+
+        //calculate the first record to display on the current page
         $start = ($currentPage - 1) * $perPage;
 
+        //get flight counts
         $count = "SELECT count(*) as total FROM flightclasses";
         $stmtCount = $conn->query($count);
+
+        //fetch the total number of flights
         $totalFlights = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+        //calculate the total pages based on total flights and per pages
         $totalPages = ceil($totalFlights / $perPage);
 
         $sql = "SELECT 
@@ -61,16 +70,16 @@
                     classes ON flightclasses.class_id = classes.class_id
                 INNER JOIN 
                     triptype on flightclasses.triptype = triptype.triptypeId
-                LIMIT :perPage OFFSET :start;
-                ";
+                LIMIT :perPage OFFSET :start; 
+                ";//limt the number of flight to display on each page, offset is the starting point of the record to display
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
+
         $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+
         $stmt->execute();
         $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
     }catch(PDOException $e){
         echo $e->getMessage();
     }
@@ -747,7 +756,10 @@
 
                 echo "</div>";
 
+                //pagination links start here
                 echo "<div class='flex justify-center items-center space-x-2 mt-6'>";
+
+                // set up the previous page link
                     if ($currentPage > 1) {
                         echo "<a href='?page=" . ($currentPage - 1) . "' class='flex items-center justify-center w-9 h-9 bg-gray-100 rounded-md'>
                                 <svg xmlns='http://www.w3.org/2000/svg' class='w-4 fill-gray-400' viewBox='0 0 55.753 55.753'>
@@ -755,11 +767,13 @@
                                 </svg>
                             </a>";
                     }
+                    // loop through the total pages
                     for ($i = 1; $i <= $totalPages; $i++) {
                         $activeClass = ($i == $currentPage) ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800";
-                        
+
                         echo "<a href='?page=$i' class='flex items-center justify-center w-9 h-9 $activeClass border rounded-md'>$i</a>";
                     }
+                    // set up the next page link
                     if ($currentPage < $totalPages) {
                         echo "<a href='?page=" . ($currentPage + 1) . "' class='flex items-center justify-center w-9 h-9 bg-gray-100 rounded-md'>
                                 <svg xmlns='http://www.w3.org/2000/svg' class='w-4 fill-gray-400 rotate-180' viewBox='0 0 55.753 55.753'>
