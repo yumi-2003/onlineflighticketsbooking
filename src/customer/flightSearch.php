@@ -574,11 +574,11 @@
 
 
         <!-- main contents starts -->
-        <div class="p-1 grid grid-cols-5">
+        <div class="p-4 grid grid-cols-5 gap-1">
             <div class="col-span-1 grid-row-4">
+            <!-- filter section -->
             <div class="flex justify-start rounded-lg text-black">
                 <h3 class="font-[sans-serif] text-2xl">Filter Flight Information</h3>
-                <a href="javascript:location.reload(true)"><button class="border-2 rounded-lg bg-blue-100">Reset</button></a>
             </div>
 
                 <!-- search by classes -->
@@ -688,11 +688,12 @@
                 <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
             </div>
 
+            <!-- disply flight information -->
             <div class="p-1 border-gray-200 dark:border-gray-700 grid col-span-3">
                
             <?php
             if (isset($flights)) {
-                echo "<div class='p-4 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-full max-w-2xl mx-11'>";
+                echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto'>";
 
                 foreach ($flights as $flight) {
                     echo "
@@ -794,8 +795,8 @@
 
             </div>  
             
-            <div class="p-4 rounded-lg w-full max-w-lg -mx-28 col-span-1">
-                <div class="bg-white shadow-[0_4px_12px_-5px_rgba(0,0,0,0.4)] p-6 w-[350px] rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
+            <div class="p-1 rounded-lg col-span-1">
+                <div class="bg-white shadow-[0_4px_12px_-5px_rgba(0,0,0,0.4)] p-6 w-auto rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
                     <h3 class="text-xl font-bold text-gray-800">Keep Updated</h3>
                     <p class="mt-3 text-sm text-gray-500 leading-relaxed">
                         You can contact us by sending emails to us.
@@ -807,15 +808,15 @@
                         <input 
                             type="email" 
                             placeholder="Enter email" 
-                            class="p-3 text-gray-800 flex-1 text-sm bg-transparent outline-none"
+                            class="p-3 text-gray-800 flex-1 text-sm bg-transparent outline-none w-full md:w-auto"
                         />
                         <!-- Button -->
-                        <button 
-                            type="button"
-                            class="px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700">
-                            Subscribe
-                        </button>
                     </div>
+                    <button 
+                            type="button"
+                            class="px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700 mt-6">
+                            Subscribe
+                    </button>
                 </div>
             </div>
 
