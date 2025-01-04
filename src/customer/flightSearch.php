@@ -6,57 +6,74 @@
         session_start();
     }
 
-    //get flight information
-            $sql = "SELECT 
-                flight.flight_id,
-                airline.airline_name,
-                airline.photo, 
-                flight.flight_name, 
-                flight.flight_date, 
-                flight.destination, 
-                flight.source, 
-                flight.total_distance, 
-                flight.fee_per_ticket, 
-                flight.departure_time, 
-                flight.arrival_time, 
-                flight.capacity, 
-                flight.seats_researved, 
-                flight.seats_available,
-                flight.gate,
-                flight.placeImg,
-                flightclasses.classPrice,
-                classes.class_name,
-                triptype.triptype_name 
-            FROM 
-                flight
-            INNER JOIN 
-                airline
-            ON 
-                flight.airline_id = airline.airline_id
-            INNER JOIN 
-                flightclasses
-            ON 
-                flight.flight_id = flightclasses.flight_id
-            INNER JOIN 
-                classes
-            ON 
-                flightclasses.class_id = classes.class_id
-            INNER JOIN
-                triptype
-            ON 
-                flightclasses.triptype = triptype.triptypeId;";
+    try{
+        $sql = "SELECT * FROM airline";
+        $stmt = $conn->prepare($sql);
+        $status = $stmt->execute();
 
-        try{
-            $stmt = $conn->query($sql);
-            $status = $stmt->execute();
-
-            if($status){
-            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            }
-        }catch(PDOException $e){
-        echo $e->getMessage();
+        if($status){
+            $airlines = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
+    }catch(PDOException $e){
+        echo $e->getMessage();
+    }
+
+    //get flight information and make pagination
+    try{
+        //pagination setup
+        $perPage = 8;
+        $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+        $start = ($currentPage - 1) * $perPage;
+
+        $count = "SELECT count(*) as total FROM flightclasses";
+        $stmtCount = $conn->query($count);
+        $totalFlights = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+        $totalPages = ceil($totalFlights / $perPage);
+
+        $sql = "SELECT 
+                    flight.flight_id,
+                    airline.airline_name,
+                    airline.photo, 
+                    flight.flight_name, 
+                    flight.flight_date, 
+                    flight.destination, 
+                    flight.source, 
+                    flight.total_distance, 
+                    flight.fee_per_ticket, 
+                    flight.departure_time, 
+                    flight.arrival_time, 
+                    flight.capacity, 
+                    flight.seats_researved, 
+                    flight.seats_available,
+                    flight.gate,
+                    flight.placeImg,
+                    flightclasses.classPrice,
+                    classes.class_name,
+                    triptype.triptype_name 
+                FROM 
+                    flight
+                INNER JOIN 
+                    airline ON flight.airline_id = airline.airline_id
+                INNER JOIN 
+                    flightclasses ON flight.flight_id = flightclasses.flight_id
+                INNER JOIN 
+                    classes ON flightclasses.class_id = classes.class_id
+                INNER JOIN 
+                    triptype on flightclasses.triptype = triptype.triptypeId
+                LIMIT :perPage OFFSET :start;
+                ";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
+        $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+        $stmt->execute();
+        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    }catch(PDOException $e){
+        echo $e->getMessage();
+    }
             //search by source, destin, flight date
             if(isset($_POST['find'])){
             $source = $_POST['source'];
@@ -198,7 +215,8 @@
                 try{
                     $sql = "SELECT 
                         flight.flight_id,
-                        airline.airline_name, 
+                        airline.airline_name,
+                        airline.photo,  
                         flight.flight_name, 
                         flight.flight_date, 
                         flight.destination, 
@@ -240,7 +258,7 @@
             }
 
             //search by radio buttion of trip name
-            if (isset($_POST['tripType']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_POST['tripType'])) {
                 $triptype = $_POST['tripType']; // Get user-selected class type
             
                 $sql = "SELECT 
@@ -286,9 +304,8 @@
             }
 
             //search by airline name using select option
-            if (isset($_POST['airlineSearch']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-                $airline = $_POST['airline_name']; 
-            
+            if (isset($_POST['airlineSearch'])) {
+                $name = $_POST['airline_name']; // Get user-selected class type
                 $sql = "SELECT 
                 flight.flight_id,
                 airline.airline_name,
@@ -320,15 +337,18 @@
             INNER JOIN 
                 triptype on flightclasses.triptype = triptype.triptypeId
             WHERE 
-                airline.airline_id =:airlineId;";
+                airline.airline_id = ?;";
             
                 // Prepare the statement
                 $stmt = $conn->prepare($sql);
-                $stmt->bindParam(1, $airline, PDO::PARAM_INT);
-                $stmt->execute();
+                $stmt->execute([$name]);
                 // Fetch the results
                 $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
+
+            //search by departure time and arrival time
+            
+
 
 ?>
 <!DOCTYPE html>
@@ -549,7 +569,7 @@
             <div class="col-span-1 grid-row-4">
             <div class="flex justify-start rounded-lg text-black">
                 <h3 class="font-[sans-serif] text-2xl">Filter Flight Information</h3>
-                <form action=""><input type="reset" value="Reset"></form>
+                <a href="javascript:location.reload(true)"><button class="border-2 rounded-lg bg-blue-100">Reset</button></a>
             </div>
 
                 <!-- search by classes -->
@@ -560,22 +580,22 @@
                         
                         <div class="grid space-y-3 pt-3" id="classPriceSearch">
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Frist</span>
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();" <?php echo (isset($_POST['classPrice']) && $_POST['classPrice'] == '1') ? 'checked' : ''; ?>>
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">First</span>
                             </label>
 
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="business-class" value="2" onchange="this.form.submit();" >
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="business-class" value="2" onchange="this.form.submit();" <?php echo (isset($_POST['classPrice']) && $_POST['classPrice'] == '2') ? 'checked' : ''; ?>>
                                 <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Business</span>
                             </label>
 
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="economy-class" value="3" onchange="this.form.submit();">
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="economy-class" value="3" onchange="this.form.submit();" <?php echo (isset($_POST['classPrice']) && $_POST['classPrice'] == '3') ? 'checked' : ''; ?>>
                                 <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Premium Economy</span>
                             </label>
 
                             <label for="hs-vertical-radio-checked-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();">
+                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();" <?php echo (isset($_POST['classPrice']) && $_POST['classPrice'] == '4') ? 'checked' : ''; ?>>
                                 <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Economy</span>
                             </label>
                         </div>
@@ -605,13 +625,13 @@
                         <label for="">Choose Trip Type</label>
                         <div class="grid space-y-3 pt-3">
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="tripType" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="single" value="1" onchange="this.form.submit();">
+                                <input type="radio" name="tripType" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="single" value="1" onchange="this.form.submit();" <?php echo (isset($_POST['tripType']) && $_POST['tripType'] == '1') ? 'checked' : ''; ?>>
                                 <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Single</span>
                             </label>
 
                             <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="tripType" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="round" value="2" onchange="this.form.submit();" >
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Round</span>
+                                <input type="radio" name="tripType" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="round" value="2" onchange="this.form.submit();" <?php echo (isset($_POST['tripType']) && $_POST['tripType'] == '2') ? 'checked' : ''; ?>>
+                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400" >Round</span>
                             </label>
                         </div>
                     </form>
@@ -621,48 +641,40 @@
                 
                 <!-- search by ariline name -->
                 <div class="flex justify-start rounded-lg text-black">
-                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="airlineSearch">
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data" class="p-3" id="airlineSearch">
                         <label for="">Airline Name</label>
                         <div class="grid space-y-3 pt-3">
                             <select class="py-3 px-4 pe-9 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" name="airline_name" onchange="this.form.submit();">
-                            <option selected="">Choose Airline</option>
+                            <option>Choose Airline</option>
                             <?php
-                              $uniqueAirlines = array_unique(array_column($flights, 'airline_name'));
-                              foreach($uniqueAirlines as $airline){
-                                echo "<option value='$airline'>$airline</option>";
-                              }
+                                foreach($airlines as $airline){
+                                    echo "<option value='{$airline['airline_id']}'>{$airline['airline_name']}</option>";
+                                }
                             ?>
                             </select>
                         </div>
                     </form>   
                 </div>
                 <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
+
                 <!-- search by departure time and arrival time -->
                 <div class="flex justify-start rounded-lg text-black">
-                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
-                        <label for="">Airline Name</label>
+                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="timeSearch">
+                        <label for="">Departure and Arrival</label>
                         <div class="grid space-y-3 pt-3">
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Frist</span>
-                            </label>
+                            <div class="grid space-y-2">
+                                <label for="departure-checkbox" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+                                    <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="departure-checkbox" name="departure_time" onchange="this.form.submit();">
+                                    <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Departure Time</span>
+                                </label>
 
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="business-class" value="2" onchange="this.form.submit();" >
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Business</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="economy-class" value="3" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Economy</span>
-                            </label>
-
-                            <label for="hs-vertical-radio-checked-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Primary Economy</span>
-                            </label>
+                                <label for="arrival-checkbox" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+                                    <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="arrival-checkbox" name="arrival_time" onchange="this.form.submit();">
+                                    <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Arrival Time</span>
+                                </label>
+                            </div>
                         </div>
-                    </form>   
+                    </form>
                 </div>
                 <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
             </div>
@@ -684,19 +696,14 @@
                                 </div>
                             </div>
                             <p class='text-xl font-bold text-blue-600'>{$flight["class_name"]}</p>
-                            
                             <p class='text-xl font-bold text-blue-600'><span class='text-xl font-bold text-blue-600'>$</span>{$flight["classPrice"]}</p>
                         </div>
-
-                        
                         <div class='flex items-center justify-between mb-4'>
-                            
                             <div class='text-center'>
                                 <p class='text-lg font-semibold text-gray-800'>From</p>
                                 <p class='text-sm text-gray-500'>{$flight["source"]}</p>
                                 <p class='text-sm text-gray-500'>{$flight["departure_time"]}</p>
                             </div>
-                           
                             <div class='text-center text-gray-500'>
                                 <div class='flex items-center space-x-2'>
                                     <span class='w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full'>
@@ -709,45 +716,66 @@
                                 <p class='text-xs'>Gate Name:{$flight["gate"]}</p>
                                 <p class='text-xs'>Trip Type:{$flight["triptype_name"]}</p>
                             </div>
-                            
                             <div class='text-center'>
                                 <p class='text-lg font-semibold text-gray-800'>To</p>
                                 <p class='text-sm text-gray-500'>{$flight["destination"]}</p>
                                 <p class='text-sm text-gray-500'>{$flight["arrival_time"]}</p>
                             </div>
                         </div>
-
-                        
                         <div class='flex items-center justify-between'>
-                            
                             <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
-                        
-                            
                             <div class='space-x-2'>
-                            <form action='flightSearch.php' method = 'POST' enctype='multipart/form-data'>
-                            <input type='hidden' name='flight_id' value ='{$flight['flight_id']}'>
-                            <input type='hidden' name='airline_name' value ='{$flight['airline_name']}'>
-                            <input type='hidden' name='flight_name' value ='{$flight['flight_name']}'>
-                            <input type='hidden' name='class_name' value ='{$flight["class_name"]}'>
-                            <input type='hidden' name='classPrice' value ='{$flight["classPrice"]}'>
-                            <input type='hidden' name='source' value ='{$flight["source"]}'>
-                            <input type='hidden' name='flight_date' value ='{$flight["flight_date"]}'>
-                            <input type='hidden' name='departure_time' value ='{$flight["departure_time"]}'>
-                            <input type='hidden' name='triptype_name' value ='{$flight["triptype_name"]}'>
-                            <input type='hidden' name='gate' value ='{$flight["gate"]}'>
-                            <input type='hidden' name='destination' value ='{$flight["destination"]}'>
-                            <input type='hidden' name='arrival_time' value ='{$flight["arrival_time"]}'>
-                            <button type='submit' name='book' class='px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600'>Book Now</button>
-                            </form>
-                                
+                                <form action='flightSearch.php' method='POST' enctype='multipart/form-data'>
+                                    <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
+                                    <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
+                                    <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
+                                    <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
+                                    <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
+                                    <input type='hidden' name='source' value='{$flight["source"]}'>
+                                    <input type='hidden' name='flight_date' value='{$flight["flight_date"]}'>
+                                    <input type='hidden' name='departure_time' value='{$flight["departure_time"]}'>
+                                    <input type='hidden' name='triptype_name' value='{$flight["triptype_name"]}'>
+                                    <input type='hidden' name='gate' value='{$flight["gate"]}'>
+                                    <input type='hidden' name='destination' value='{$flight["destination"]}'>
+                                    <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
+                                    <button type='submit' name='book' class='px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600'>Book Now</button>
+                                </form>
                             </div>
                         </div>
                         <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
                 }
 
                 echo "</div>";
+
+                echo "<div class='flex justify-center items-center space-x-2 mt-6'>";
+                    if ($currentPage > 1) {
+                        echo "<a href='?page=" . ($currentPage - 1) . "' class='flex items-center justify-center w-9 h-9 bg-gray-100 rounded-md'>
+                                <svg xmlns='http://www.w3.org/2000/svg' class='w-4 fill-gray-400' viewBox='0 0 55.753 55.753'>
+                                    <path d='M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z'/>
+                                </svg>
+                            </a>";
+                    }
+                    for ($i = 1; $i <= $totalPages; $i++) {
+                        $activeClass = ($i == $currentPage) ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800";
+                        
+                        echo "<a href='?page=$i' class='flex items-center justify-center w-9 h-9 $activeClass border rounded-md'>$i</a>";
+                    }
+                    if ($currentPage < $totalPages) {
+                        echo "<a href='?page=" . ($currentPage + 1) . "' class='flex items-center justify-center w-9 h-9 bg-gray-100 rounded-md'>
+                                <svg xmlns='http://www.w3.org/2000/svg' class='w-4 fill-gray-400 rotate-180' viewBox='0 0 55.753 55.753'>
+                                    <path d='M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z'/>
+                                </svg>
+                            </a>";
+                    }
+                    echo "</div>";
+
+            } else {
+                echo "<div class='p-4 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-full max-w-2xl mx-11'>
+                        <p class='text-lg font-semibold text-gray-800'>No Flights Found</p>
+                    </div>";
             }
             ?>
+            
 
 
             </div>  
