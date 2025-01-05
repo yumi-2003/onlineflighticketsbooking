@@ -22,9 +22,17 @@
         $departure_time = $flight['departure_time'];
         $arrival_time = $flight['arrival_time'];
         $triptype_name = $flight['triptype_name'];
-
-        // Now, you can use these values to populate your booking form
     } else {
+        echo "<script>alert('NO flight selected!!!')</script>";
+    }
+
+    if(isset($_SESSION['seat_layout'])){
+        $seat = $_SESSION['seat_layout'];
+        $seatId = $seat['id'] ?? '';
+        $flightId = $seat['flight_id'] ?? '';
+        $classid = $seat['class_id'] ?? '';
+        $seatNo = $seat['seatNo'] ?? '';
+    }else{
         echo "<script>alert('NO flight selected!!!')</script>";
     }
 
@@ -322,13 +330,19 @@
       
             <div class="flex flex-col justify-items-center w-3/4 px-11">
                 <!-- get slected flight info by book now button from fligh search page -->
-                <form action="<?php $_SERVER['REQUEST_URI'] ?>" enctype="multipart/form-data" method="POST" class="w-auto"> 
+                <form action="<?php $_SERVER['REQUEST_URI']?>" enctype="multipart/form-data" method="POST" class="w-auto"> 
                 <div class="flex gap-x-6 mb-6">
                     <div class="w-full relative">
-                        <input type="hidden" name="airline_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="
+                        <input type="hidden" name="flight_id" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="
                         <?php
                         if(isset($flight['flight_id'])){
                             echo $flight['flight_id'];
+                        }
+                        ?>">
+                        <input type="hidden" name="id" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="
+                        <?php
+                        if(isset($seat['id'])){
+                            echo $seat['id'];
                         }
                         ?>">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Airline Name
@@ -365,6 +379,15 @@
                         <input type="text" name="triptype_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
                         if(isset($flight['triptype_name'])){
                             echo $flight['triptype_name'];
+                        }
+                        ?>">
+                    </div>
+                    <div class="w-full relative">
+                        <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Seat No
+                        </label>
+                        <input type="text" name="seatNo" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        if(isset($seat['seatNo'])){
+                            echo $seat['seatNo'];
                         }
                         ?>">
                     </div>

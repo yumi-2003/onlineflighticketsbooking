@@ -4,6 +4,41 @@
     if(!isset($_SESSION)){
         session_start();
     }
+
+    //get the selected seat No
+    if(isset($_POST['select'])){
+        $_SESSION['seat_layout'] = [
+            'id' => $_POST['id'],
+            'flight_id' =>$_POST['flight_id'],
+            'class_id' => $_POST['class_id'],
+            'seatNo' => $_POST['seatNo']
+        ];
+
+        header('Location: booking.php');
+        exit();
+    }
+
+    if (isset($_SESSION['flight'])) {
+        // Retrieve the flight details from the session
+        $flight = $_SESSION['flight'];
+        $flight_id = $flight['flight_id'];
+        $airline_name = $flight['airline_name'];
+        $flight_name = $flight['flight_name'];
+        $class_name = $flight['class_name'];
+        $class_price = $flight['classPrice'];
+        $source = $flight['source'];
+        $destination = $flight['destination'];
+        $gate = $flight['gate'];
+        $flight_date = $flight['flight_date'];
+        $departure_time = $flight['departure_time'];
+        $arrival_time = $flight['arrival_time'];
+        $triptype_name = $flight['triptype_name'];
+
+        // Now, you can use these values to populate your booking form
+    } else {
+        echo "<script>alert('NO flight selected!!!')</script>";
+    }
+
   
     ?>
 <!DOCTYPE html>
@@ -173,55 +208,74 @@
         <!-- nav ends -->
 
 
-    <div class="flex justify-center items-center  font-[sans-serif] h-full md:min-h-screen p-4 my-3 grid grid-cols-3 grid-flow-row-dense">
+    <div class="flex justify-center items-center  font-[sans-serif] h-full md:min-h-screen p-4 my-3 grid grid-cols-3 gap-4">
     <div class="p-4 gap-2 mt-16 mx-auto bg-cyan-200 col-span-2 border-2 rounded-lg">
         <h1>Select Your Seat</h1>
-        <form action="" method="POST" class="seat-container w-full">
                 <?php
-                        $flightID = $_POST['flight_id'] ?? '';
-                        $flightName = $_POST['flight_name'] ?? '';
+                    $flight_id = $flight['flight_id'] ?? '';
+                    $airline_name = $flight['airline_name'] ?? '';
+                    $flight_name = $flight['flight_name'] ?? '';
+                    $class_name = $flight['class_name'] ?? '';
+                    $class_price = $flight['classPrice'] ?? '';
+                    $source = $flight['source'];
+                    $destination = $flight['destination'] ?? '';
+                    $gate = $flight['gate'] ?? '';
+                    $flight_date = $flight['flight_date'] ?? '';
+                    $departure_time = $flight['departure_time'] ?? '';
+                    $arrival_time = $flight['arrival_time'] ?? '';
+                    $triptype_name = $flight['triptype_name'] ?? '';
+                    $sql = "SELECT * FROM seat_layout WHERE flight_ID = :flightID";
 
-                        $sql = "SELECT seatNo,status FROM seat_layout WHERE flight_ID = '$flightID'";
-                        $stmt = $conn->query($sql);
-                        $seats = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        $row = 1;
-                        $col = 1;
-                        foreach ($seats as $seat) {
-                            if ($col > 10) {
-                                $col = 1;
-                                $row++;
-                                echo "<br>";
-                            }
-                            if ($col == 6){
-                                echo "<span>aisle</span>";
-                            }
-                            if ($row > 15) {
-                                break;
-                            }
-                            if ($seat['status'] == 1) {
-                                echo "
-                                <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
-                                <input type='button' class='focus:outline-none text-white bg-green-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' value='{$seat['seatNo']}'>";
-                            } else {
-                                echo "
-                                <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
-                                <input type='button' class='focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800' value='{$seat['seatNo']}'>
-                                ";
-                            }
-                            $col++;
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':flightID', $flightID);
+                    $stmt->execute();
+                    $seats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $row = 1;
+                    $col = 1;
+                    echo "<form action='booking.php' method='POST' class='seat-container w-full inline-block' enctype='multipart/form-data'>";
+
+                    foreach ($seats as $seat) {
+                        if ($col > 10) {
+                            $col = 1;
+                            $row++;
+                            echo "<br>";
                         }
+                        if ($col == 6){
+                            echo "<span>aisle</span>";
+                        }
+                        if ($row > 15) {
+                            break;
+                        }
+                        if ($seat['status'] == 1) {
+                            echo "
+                            
+                            <button type='submit' name='select' class='focus:outline-none text-white bg-green-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'>{$seat['seatNo']}
+                            </button>
+                            
+                            ";
+                        } else{
+                            echo "
+                            <button type='submit' name='select' class='focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'>{$seat['seatNo']}
+                            </button>
+                            
+                            ";
+                        }
+                        $col++;
+                    }
+                    echo "
+                                <input type='hidden' name='id' value='{$seat['id']}'>
+                                <input type='hidden' name='flight_id' value='{$seat['flight_id']}'>
+                                <input type='hidden' name='class_id' value='{$seat['class_id']}'>
+                                <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
+                            </form>";
+                    
                 ?>
-                <button type="submit" id="selectedSeat()" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Confirm</button>
-        </form>
+            
     </div>
-    <div class="gap-4 w-full h-60 mx-auto my-0 col-span-1 bg-cyan-100">
+    <div class="gap-4 w-full h-60 mx-auto my-0 col-span-1 bg-cyan-100 border-b rounded-lg">
         <div class="">booked</div>
         <div class="">Available</div>
     </div>
     </div>
-    <script>
-        
-    </script>
-    
 </body>
 </html>

@@ -76,7 +76,6 @@
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
-
         $stmt->bindParam(':start', $start, PDO::PARAM_INT);
 
         $stmt->execute();
@@ -191,8 +190,8 @@
                 $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
-            //process to booking page
-            if (isset($_POST['book'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            //process to seat Layout
+            if (isset($_POST['selectFlight'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Store the selected flight data in the session
                 $_SESSION['flight'] = [
                     'flight_id' => $_POST['flight_id'],
@@ -211,7 +210,7 @@
                 ];
 
                 // Redirect to the booking page
-                header("Location: booking.php");
+                header("Location: showSeat.php");
                 exit;
             }
 
@@ -527,7 +526,6 @@
                     </ul>
                 </div>
 
-               
             </div>
          </nav>
                 
@@ -736,15 +734,22 @@
                         <div class='flex items-center justify-between'>
                             <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
                             
-                            <form action='showSeat.php' method='POST'>
-                            <input type='hidden' name='flight_id' value='{$flight["flight_id"]}'>
-                            <input type='hidden' name='class_id' value='{$flight["class_id"]}'>
-                            <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
-                            <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
-                            <input type='hidden' name='triptype_name' value='{$flight["flight_name"]}'>
-                            <div class='space-x-2'>
-                                <button type='submit' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
-                            </div>
+                            <form action='showSeat.php' method='POST' enctype='multipart/form-data'>
+                                    <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
+                                    <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
+                                    <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
+                                    <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
+                                    <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
+                                    <input type='hidden' name='source' value='{$flight["source"]}'>
+                                    <input type='hidden' name='flight_date' value='{$flight["flight_date"]}'>
+                                    <input type='hidden' name='departure_time' value='{$flight["departure_time"]}'>
+                                    <input type='hidden' name='triptype_name' value='{$flight["triptype_name"]}'>
+                                    <input type='hidden' name='gate' value='{$flight["gate"]}'>
+                                    <input type='hidden' name='destination' value='{$flight["destination"]}'>
+                                    <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
+                                    <div class='space-x-2'>
+                                        <button type='submit' name='selectFlight' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
+                                    </div>
                             </form>
                             
                         </div>
