@@ -27,13 +27,13 @@
     }
 
     if(isset($_SESSION['seat_layout'])){
-        $seat = $_SESSION['seat_layout'];
-        $seatId = $seat['id'] ?? '';
-        $flightId = $seat['flight_id'] ?? '';
-        $classid = $seat['class_id'] ?? '';
-        $seatNo = $seat['seatNo'] ?? '';
+        $seats = $_SESSION['seat_layout'];
+        $seatId = $seats['id'];
+        $flightId = $seats['flight_id'];
+        $classid = $seats['class_id'];
+        $seatNo = $seats['seatNo'];
     }else{
-        echo "<script>alert('NO flight selected!!!')</script>";
+        echo "<script>alert('NO Seat selected!!!')</script>";
     }
 
     //store the selected data when clicked next button using session
@@ -386,8 +386,10 @@
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Seat No
                         </label>
                         <input type="text" name="seatNo" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
-                        if(isset($seat['seatNo'])){
-                            echo $seat['seatNo'];
+
+                        $seatNo = $seats['seatNo'] ?? '';
+                        if(isset($seats['seatNo'])){
+                            echo $seats['seatNo'];
                         }
                         ?>">
                     </div>

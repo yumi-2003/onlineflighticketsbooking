@@ -191,7 +191,8 @@
             }
 
             //process to seat Layout
-            if (isset($_POST['selectFlight'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_POST['selectSeat'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
                 // Store the selected flight data in the session
                 $_SESSION['flight'] = [
                     'flight_id' => $_POST['flight_id'],
@@ -209,7 +210,6 @@
                     'triptype_name' => $_POST['triptype_name']
                 ];
 
-                // Redirect to the booking page
                 header("Location: showSeat.php");
                 exit;
             }
@@ -734,7 +734,7 @@
                         <div class='flex items-center justify-between'>
                             <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
                             
-                            <form action='showSeat.php' method='POST' enctype='multipart/form-data'>
+                            <form action='flightSearch.php' method='POST' enctype='multipart/form-data'>
                                     <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
                                     <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
                                     <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
@@ -748,7 +748,7 @@
                                     <input type='hidden' name='destination' value='{$flight["destination"]}'>
                                     <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
                                     <div class='space-x-2'>
-                                        <button type='submit' name='selectFlight' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
+                                        <button type='submit' name='selectSeat' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
                                     </div>
                             </form>
                             
