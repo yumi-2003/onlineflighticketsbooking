@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 04, 2025 at 09:51 PM
+-- Generation Time: Jan 06, 2025 at 09:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -62,6 +62,32 @@ INSERT INTO `airline` (`airline_id`, `airline_name`, `photo`) VALUES
 (2, 'Myanmar International Airways(MNA)', '../flightImg/MNA.webp'),
 (5, 'Myanmar Airway International                                ', '../flightImg/MAI.png'),
 (6, 'Singapore Airlines(QA)                                                              ', '../flightImg/SA.png');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `booking`
+--
+
+CREATE TABLE `booking` (
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `flight_id` int(11) DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `triptype_id` int(11) DEFAULT NULL,
+  `seatNoId` int(11) DEFAULT NULL,
+  `bookAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `passenger_id` int(11) DEFAULT NULL,
+  `status` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `triptype_id`, `seatNoId`, `bookAt`, `passenger_id`, `status`) VALUES
+(9, NULL, 2, 1, 1, 462, '2025-01-06 14:36:55', 10, 'pending'),
+(10, NULL, 2, 1, 1, 462, '2025-01-06 14:38:54', 11, 'pending');
 
 -- --------------------------------------------------------
 
@@ -183,7 +209,8 @@ CREATE TABLE `passengers` (
 --
 
 INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `nationality`, `phoneNo`, `IDcard`, `passportNo`) VALUES
-(1, '', 0, '', '', 0, '', '');
+(10, 'Ingyin', 21, 'female', 'myanmar', 9876543, '3ef34 ', '3cex'),
+(11, 'Ingyin', 21, 'female', 'myanmar', 562432423, '3ef34 ', '3cex');
 
 -- --------------------------------------------------------
 
@@ -196,7 +223,9 @@ CREATE TABLE `payment` (
   `cardNo` int(11) DEFAULT NULL,
   `securityCode` int(11) DEFAULT NULL,
   `expireDate` date DEFAULT NULL,
-  `paymentType` int(11) DEFAULT NULL
+  `paymentType` int(11) DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `totalPrice` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -207,9 +236,16 @@ CREATE TABLE `payment` (
 
 CREATE TABLE `paymenttype` (
   `typeID` int(11) NOT NULL,
-  `paymentName` varchar(100) DEFAULT NULL,
-  `logo` varchar(100) DEFAULT NULL
+  `paymentName` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `paymenttype`
+--
+
+INSERT INTO `paymenttype` (`typeID`, `paymentName`) VALUES
+(1, 'visa'),
+(2, 'paypal');
 
 -- --------------------------------------------------------
 
@@ -604,6 +640,12 @@ ALTER TABLE `airline`
   ADD PRIMARY KEY (`airline_id`);
 
 --
+-- Indexes for table `booking`
+--
+ALTER TABLE `booking`
+  ADD PRIMARY KEY (`booking_id`);
+
+--
 -- Indexes for table `classes`
 --
 ALTER TABLE `classes`
@@ -687,6 +729,12 @@ ALTER TABLE `airline`
   MODIFY `airline_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT for table `booking`
+--
+ALTER TABLE `booking`
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
@@ -708,7 +756,7 @@ ALTER TABLE `flightclasses`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `payment`
@@ -720,7 +768,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `paymenttype`
 --
 ALTER TABLE `paymenttype`
-  MODIFY `typeID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `typeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `seat_layout`

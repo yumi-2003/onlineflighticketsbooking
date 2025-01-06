@@ -41,26 +41,7 @@
         $totalPages = ceil($totalFlights / $perPage);
 
         $sql = "SELECT 
-                    flight.flight_id,
-                    airline.airline_name,
-                    airline.photo, 
-                    flight.flight_name, 
-                    flight.flight_date, 
-                    flight.destination, 
-                    flight.source, 
-                    flight.total_distance, 
-                    flight.fee_per_ticket, 
-                    flight.departure_time, 
-                    flight.arrival_time, 
-                    flight.capacity, 
-                    flight.seats_researved, 
-                    flight.seats_available,
-                    flight.gate,
-                    flight.placeImg,
-                    flightclasses.classPrice,
-                    classes.class_id,
-                    classes.class_name,
-                    triptype.triptype_name 
+                    *
                 FROM 
                     flight
                 INNER JOIN 
@@ -108,8 +89,11 @@
                     flight.gate,
                     flight.placeImg,
                     flightclasses.classPrice,
+                    triptype.priceCharge
                     triptype.triptype_name, 
+                    classes.class_id,
                     classes.class_name,
+                    classes.base_fees
                 FROM 
                     flight
                 INNER JOIN 
@@ -149,25 +133,7 @@
                 $classPrice = $_POST['classPrice']; // Get user-selected class type
             
                 $sql = "SELECT 
-                flight.flight_id,
-                airline.airline_name,
-                airline.photo, 
-                flight.flight_name, 
-                flight.flight_date, 
-                flight.destination, 
-                flight.source, 
-                flight.total_distance, 
-                flight.fee_per_ticket, 
-                flight.departure_time, 
-                flight.arrival_time, 
-                flight.capacity, 
-                flight.seats_researved, 
-                flight.seats_available,
-                flight.gate,
-                flight.placeImg,
-                flightclasses.classPrice,
-                classes.class_name,
-                triptype.triptype_name
+                *
             FROM 
                 flight
             INNER JOIN 
@@ -198,6 +164,9 @@
                     'flight_id' => $_POST['flight_id'],
                     'airline_name' => $_POST['airline_name'],
                     'photo' => $_POST['photo'],
+                    'fee_per_ticket' => $_POST['fee_per_ticket'],
+                    'base_fees' => $_POST['base_fees'],
+                    'priceCharge' => $_POST['priceCharge'],
                     'flight_name' => $_POST['flight_name'],
                     'class_name' => $_POST['class_name'],
                     'classPrice' => $_POST['classPrice'],
@@ -207,7 +176,9 @@
                     'flight_date' => $_POST['flight_date'],
                     'departure_time' => $_POST['departure_time'],
                     'arrival_time' => $_POST['arrival_time'],
-                    'triptype_name' => $_POST['triptype_name']
+                    'triptypeId' => $_POST['triptypeId'],
+                    'triptype_name' => $_POST['triptype_name'],
+                    'class_id' => $_POST['class_id']
                 ];
 
                 header("Location: showSeat.php");
@@ -223,25 +194,7 @@
 
                 try{
                     $sql = "SELECT 
-                        flight.flight_id,
-                        airline.airline_name,
-                        airline.photo,  
-                        flight.flight_name, 
-                        flight.flight_date, 
-                        flight.destination, 
-                        flight.source, 
-                        flight.total_distance, 
-                        flight.fee_per_ticket, 
-                        flight.departure_time, 
-                        flight.arrival_time, 
-                        flight.capacity, 
-                        flight.seats_researved, 
-                        flight.seats_available,
-                        flight.gate,
-                        flight.placeImg,
-                        flightclasses.classPrice,
-                        classes.class_name,
-                        triptype.triptype_name 
+                        *
                     FROM 
                         flight
                     INNER JOIN 
@@ -271,25 +224,7 @@
                 $triptype = $_POST['tripType']; // Get user-selected class type
             
                 $sql = "SELECT 
-                flight.flight_id,
-                airline.airline_name, 
-                airline.photo,
-                flight.flight_name, 
-                flight.flight_date, 
-                flight.destination, 
-                flight.source, 
-                flight.total_distance, 
-                flight.fee_per_ticket, 
-                flight.departure_time, 
-                flight.arrival_time, 
-                flight.capacity, 
-                flight.seats_researved, 
-                flight.seats_available,
-                flight.gate,
-                flight.placeImg,
-                flightclasses.classPrice,
-                classes.class_name,
-                triptype.triptype_name
+                *
             FROM 
                 flight
             INNER JOIN 
@@ -316,25 +251,7 @@
             if (isset($_POST['airlineSearch'])) {
                 $name = $_POST['airline_name']; // Get user-selected class type
                 $sql = "SELECT 
-                flight.flight_id,
-                airline.airline_name,
-                airline.photo, 
-                flight.flight_name, 
-                flight.flight_date, 
-                flight.destination, 
-                flight.source, 
-                flight.total_distance, 
-                flight.fee_per_ticket, 
-                flight.departure_time, 
-                flight.arrival_time, 
-                flight.capacity, 
-                flight.seats_researved, 
-                flight.seats_available,
-                flight.gate,
-                flight.placeImg,
-                flightclasses.classPrice,
-                classes.class_name,
-                triptype.triptype_name
+                *
             FROM 
                 flight
             INNER JOIN 
@@ -652,11 +569,11 @@
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data" class="p-3" id="airlineSearch">
                         <label for="">Airline Name</label>
                         <div class="grid space-y-3 pt-3">
-                            <select class="py-3 px-4 pe-9 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" name="airline_name" onchange="this.form.submit();">
+                            <select class="py-3 px-4 pe-9 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" name="airline_name" onchange="selectAirline()">
                             <option>Choose Airline</option>
                             <?php
                                 foreach($airlines as $airline){
-                                    echo "<option value='{$airline['airline_id']}'>{$airline['airline_name']}</option>";
+                                    echo "<option value='{$airline['airline_name']}'>{$airline['airline_name']}</option>";
                                 }
                             ?>
                             </select>
@@ -734,15 +651,21 @@
                         <div class='flex items-center justify-between'>
                             <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
                             
-                            <form action='flightSearch.php' method='POST' enctype='multipart/form-data'>
+                            <form action='$_SERVER[PHP_SELF]' method='POST' enctype='multipart/form-data'>
                                     <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
+                                    <input type='hidden' name='class_id' value='{$flight['class_id']}'>
+                                    <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
+                                    <input type='hidden' name='photo' value='{$flight['photo']}'>
                                     <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
                                     <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
                                     <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
+                                    <input type='hidden' name='base_fees' value='{$flight["base_fees"]}'>
+                                    <input type='hidden' name='priceCharge' value='{$flight["priceCharge"]}'>
                                     <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
                                     <input type='hidden' name='source' value='{$flight["source"]}'>
                                     <input type='hidden' name='flight_date' value='{$flight["flight_date"]}'>
                                     <input type='hidden' name='departure_time' value='{$flight["departure_time"]}'>
+                                    <input type='hidden' name='triptypeId' value='{$flight["triptypeId"]}'>
                                     <input type='hidden' name='triptype_name' value='{$flight["triptype_name"]}'>
                                     <input type='hidden' name='gate' value='{$flight["gate"]}'>
                                     <input type='hidden' name='destination' value='{$flight["destination"]}'>
@@ -823,7 +746,7 @@
 
             <script>
                 function airlineSearch(){
-                    document.getElementById('airlineSearch').submit();
+                    document.getElementById('airline_name').value;
                 }
             </script>
         <!-- main contents ends -->

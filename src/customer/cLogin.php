@@ -26,6 +26,7 @@
                         
                         if(password_verify($password,$password_hash)){
                             $_SESSION['userLoginSuccess'] = 'Login Successful';
+                            $_SESSION['user_id'] = $user_id;
                             $_SESSION['userEmail'] = $email;
                             $_SESSION['userPhoto'] = $profile;
                             $_SESSION['userisLoggedIn'] = true;

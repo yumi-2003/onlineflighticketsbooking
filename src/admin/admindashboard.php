@@ -306,7 +306,6 @@ try {
    </div>
    <!-- main contents ends -->
 
-
    <script>
       const dropdownButton = document.getElementById('dropdownButton');
       const dropdownMenu = document.getElementById('dropdownMenu');

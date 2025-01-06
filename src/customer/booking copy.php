@@ -16,7 +16,6 @@
         $feePerTicket = $flight['fee_per_ticket'];
         $classtypefees = $flight['base_fees'];
         $triptypefees = $flight['priceCharge'];
-        $classId = $flight['class_id'];
         $class_name = $flight['class_name'];
         $class_price = $flight['classPrice'];
         $source = $flight['source'];
@@ -25,7 +24,6 @@
         $flight_date = $flight['flight_date'];
         $departure_time = $flight['departure_time'];
         $arrival_time = $flight['arrival_time'];
-        $triptypeId = $flight['triptypeId'];
         $triptype_name = $flight['triptype_name'];
 
     } else {
@@ -48,10 +46,6 @@
             'flight_id' => $_POST['flight_id'],
             'airline_name' => $_POST['airline_name'],
             'flight_name' => $_POST['flight_name'],
-            'fee_per_ticket' => $_POST['fee_per_ticket'],
-            'base_fees' => $_POST['base_fees'],
-            'priceCharge' => $_POST['priceCharge'],
-            'class_id' => $_POST['class_id'],
             'class_name' => $_POST['class_name'],
             'classPrice' => $_POST['classPrice'],
             'source' => $_POST['source'],
@@ -60,19 +54,57 @@
             'flight_date' => $_POST['flight_date'],
             'departure_time' => $_POST['departure_time'],
             'arrival_time' => $_POST['arrival_time'],
-            'triptypeId' => $_POST['triptypeId'],
             'triptype_name' => $_POST['triptype_name']
         ];
 
         $_SESSION['seat_Layout'] = [
+            
                 'id' => $_POST['id'],
                 'flight_id' => $_POST['flight_id'],
                 'class_id' => $_POST['class_id'],
                 'seatNo' => $_POST['seatNo']
+            
         ];
+
         header("Location: passengerBookForm.php");
         exit;
     }
+
+
+    //store personal information
+    try{
+        $sql = "SELECT * FROM passengers";
+        $stmt =$conn->query($sql);
+        $personInfos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }catch(PDOException $e){
+        echo $e->getMessage();
+    }
+
+    if(isset($_POST['savePersonalInfo'])){
+        $fName = $_POST['fullName'];
+        $age = $_POST['age'];
+        $gender = $_POST['gender'];
+        $nationality = $_POST['nationality'];
+        $phoneNo = $_POST['phoneNo'];
+        $idCard = $_POST['IDcard'];
+        $passport = $_POST['passportNo'];
+
+        try{
+            $sql = "INSERT INTO passengers (fullName,age,gender,nationality,phoneNo,IDcard,passportNo) VALUES (?,?,?,?,?,?,?)";
+            $stmt = $conn->prepare($sql);
+            $status = $stmt->execute([$fName,$age,$gender,$nationality,$phoneNo,$idCard,$passport]);
+            $passenger = $conn->lastInsertId();
+
+            if($status){
+                $_SESSION['completedPersonalInformation'] = "You Completed your personal information";
+            }
+
+        }catch(PDOException $e){
+            echo $e->getMessage();
+        }
+    }
+
 
     try{
         $sql = "SELECT * FROM payment INNER JOIN paymenttype on payment.paymentType = paymenttype.typeID;";
@@ -100,7 +132,7 @@
 </head>
 <body>
         <!-- nav starts -->
-        <nav class= " bg-[#0463ca] ">
+        <nav class= "fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
                 <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
                     <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
@@ -138,7 +170,7 @@
                           </div>
                           <ul class="py-1" role="none">
                               <li>
-                                <a href="editUProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
+                                <a href="editUProfile.php?uID=$users[]" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
                               </li>
                               <li>
                                 <a href="cLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
@@ -152,8 +184,6 @@
                        }
 
                     ?>
-
-
 
                     <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
@@ -253,8 +283,10 @@
                     </ul>
                 </div>
 
+               
             </div>
-         </nav>
+        </nav>
+        <!-- nav ends -->
     
         <!-- slider starts -->
         <div id="default-carousel" class="relative w-full mt-14" data-carousel="slide">
@@ -470,29 +502,9 @@
                                 echo $flight['flight_name'];
                             }
                             ?>"'>
-                            <input type='hidden' name='fee_per_ticket' value ='"<?php
-                            if(isset($flight['fee_per_ticket'])){
-                                echo $flight['fee_per_ticket'];
-                            }
-                            ?>"'>
-                             <input type='hidden' name='class_id' value="<?php
-                            if(isset($flight['class_id'])){
-                                echo $flight['class_id'];
-                            }
-                            ?>">
                         <input type='hidden' name='class_name' value="<?php
                             if(isset($flight['class_name'])){
                                 echo $flight['class_name'];
-                            }
-                            ?>">
-                            <input type='hidden' name='base_fees' value="<?php
-                            if(isset($flight['base_fees'])){
-                                echo $flight['base_fees'];
-                            }
-                            ?>">
-                            <input type='hidden' name='priceCharge' value="<?php
-                            if(isset($flight['priceCharge'])){
-                                echo $flight['priceCharge'];
                             }
                             ?>">
                         <input type='hidden' name='classPrice' value="<?php
@@ -513,11 +525,6 @@
                         <input type='hidden' name='departure_time' value="<?php
                             if(isset($flight['departure_time'])){
                                 echo $flight['departure_time'];
-                            }
-                            ?>">
-                            <input type='hidden' name='triptypeId' value="<?php
-                            if(isset($flight['triptypeId'])){
-                                echo $flight['triptypeId'];
                             }
                             ?>">
                         <input type='hidden' name='triptype_name' value="<?php
@@ -556,6 +563,356 @@
                 </form>
             </div>
 
-         </div>        
+         </div>
+
+        <div id="personalInfoForm" class="block">
+            <ol class="flex justify-items-center w-full text-sm text-gray-500 font-medium sm:text-base mb-12 mt-10 px-11">
+                <!-- Step 1: Flight Information -->
+                <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">1</span>Flight Information
+                    </div>
+                </li>
+
+                <!-- Step 2: Personal Information (Active Step) -->
+                <li class="flex md:w-full items-center text-indigo-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">2</span>Personal Information
+                    </div>
+                </li>
+
+                <!-- Step 3: Final -->
+                <li class="flex md:w-full items-center text-gray-600">
+                    <div class="flex items-center">
+                        <span class="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">3</span> Final
+                    </div>
+                </li>
+            </ol>
+            <p>
+            <?php
+            if(isset($_SESSION['completedPersonalInformation'])){
+               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
+                        <span class='font-medium'>$_SESSION[completedPersonalInformation]</span>
+                     </div>
+                     ";
+               unset($_SESSION['completedPersonalInformation']);
+            }
+            ?>
+         </p>
+            <div class="flex flex-col justify-items-center w-3/4 px-11 md:grid-cols-2 items-center gap-8 h-full">
+
+                <form class="space-y-6 px-4 max-w-sm mx-auto font-[sans-serif]" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" method="POST">
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Full Name</label>
+                        <input type="text" name="fullName" placeholder="Enter your name"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Age</label>
+                        <input type="number" name="age" placeholder="Enter your email"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Gender</label>
+                        <input type="text" name="gender" placeholder="Enter your phone no"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Nationality</label>
+                        <input type="text" name="nationality" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">Phone NO.</label>
+                        <input type="number" name="phoneNo" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">ID Card NO.</label>
+                        <input type="text" name="IDcard" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="text-gray-400 w-36 text-sm">PassPort No.</label>
+                        <input type="text" name="passportNo" placeholder="Enter your state"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" />
+                    </div>
+
+                    <button type="submit" name="savePersonalInfo"
+                    class="!mt-8 px-6 py-2 w-full bg-[#233d9a] hover:bg-[#444] text-sm text-white mx-auto block">Submit</button>
+                </form>
+                
+            </div>
+        </div>
+
+        <div id="paymentForm" class="block">
+            <ol class="flex justify-items-center w-full text-sm text-gray-500 font-medium sm:text-base mb-12 mt-10 px-11">
+                <!-- Step 1: Flight Information -->
+                <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">1</span>Flight Information
+                    </div>
+                </li>
+
+                <!-- Step 2: Personal Information-->
+                <li class="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">2</span>Personal Information
+                    </div>
+                </li>
+
+                <!-- Step 3: Final  (Active Step)  -->
+                <li class="flex md:w-full items-center text-indigo-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8">
+                    <div class="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2">
+                        <span class="w-6 h-6 bg-indigo-600 border border-indigo-200 rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">3</span>Payment
+                    </div>
+                </li>
+            </ol>
+            <p>
+            <!-- <?php
+            // if(isset($_SESSION['completedPersonalInformation'])){
+            //    echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
+            //             <span class='font-medium'>$_SESSION[completedPersonalInformation]</span>
+            //          </div>
+            //          ";
+            //    unset($_SESSION['completedPersonalInformation']);
+            // }
+            ?> -->
+         </p>
+
+            <div class="font-[sans-serif] bg-white p-4 mt-28 mx-8">
+
+                <div class="font-[sans-serif] lg:flex lg:items-center lg:justify-center lg:h-screen max-lg:py-4">
+                    <div class="bg-purple-100 p-8 w-full max-w-5xl max-lg:max-w-xl mx-auto rounded-md">
+                        <h2 class="text-3xl font-extrabold text-gray-800 text-center">Checkout</h2>
+
+                        <div class="grid lg:grid-cols-1 gap-6 max-lg:gap-8 mt-16">
+                            <form class="lg:col-span-1" action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
+
+                                <div class="bg-white p-6 rounded-md max-lg:-order-1">
+                                    <h3 class="text-lg font-bold text-gray-800">Summary</h3>
+                                    <ul class="text-gray-800 mt-6 space-y-3">
+                                    <li class="flex flex-wrap gap-4 text-sm">Flight Base Fees<span class="ml-auto font-bold">$
+                                        <?php
+                                            $feePerTicket = $flight['fee_per_ticket'] ?? '';
+                                            echo $feePerTicket;
+                                        ?>
+                                    </span></li>
+                                    <li class="flex flex-wrap gap-4 text-sm">Class Type Charges<span class="ml-auto font-bold">$
+                                        <?php
+                                            $classtypefees = $flight['base_fees'] ?? '';
+                                            echo $classtypefees;
+                                        ?>
+                                    </span></li>
+                                    <li class="flex flex-wrap gap-4 text-sm">Trip type Charges
+                                        <span class="ml-auto font-bold">$
+                                        <?php
+                                            $triptypefees = $flight['priceCharge'];
+                                            echo $triptypefees;
+                                        ?>
+                                        </span></li>
+                                        <li class="flex flex-wrap gap-4 text-sm">Tax
+                                        <span class="ml-auto font-bold">$
+                                        <?php
+                                            $tax = 0.15;
+                                            echo number_format($tax,2);
+                                        ?>
+                                        </span></li>
+                                    <hr />
+                                    <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$
+                                        <?php
+                                            $class_price = $flight['classPrice'] ?? '';
+                                            $tax = 0.15;
+                                            $taxAmount = $class_price * $tax;
+                                            $totalPrice = $class_price + $taxAmount;
+                                            echo number_format($totalPrice,2);
+                                        ?>
+                                    </span></li>
+                                    </ul>
+                                    <p>
+                                        Additonal fees like baggage fee are calculated in tax.
+                                    </p>
+                                </div>
+
+                                <div class="grid gap-4 sm:grid-cols-1 mt-4">
+                                    <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
+
+                                    <div class="flex items-center">
+                                        <input type="radio" class="w-5 h-5 cursor-pointer" id="card" name="typeID" value="visa" />
+                                        <label for="card" class="ml-4 flex gap-2 cursor-pointer">
+                                        <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
+                                        <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
+                                        <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
+                                        </label>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input type="radio" class="w-5 h-5 cursor-pointer" name="typeID" value="paypal" id="paypal" />
+                                        <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
+                                        <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
+                                        </label>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="grid sm:col-span-2 sm:grid-cols-2 gap-4 mt-4">
+                                        <div>
+                                        <input type="text" placeholder="Name of card holder" name="name"
+                                            class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                        </div>
+                                        <div>
+                                        <input type="number" placeholder="CVV" name="securityCode"
+                                            class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                        </div>
+                                        <div>
+                                        <input type="number" placeholder="Card number" name="cardNo"
+                                            class="col-span-full px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                        </div>
+                                        <div>
+                                        <input type="date" placeholder="EXP." name="expireDate"
+                                            class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                        </div>
+                                </div>
+
+                                <div class="flex flex-wrap gap-4 mt-8">
+
+                                        <button type="button"
+                                        class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
+
+                                        <button type="submit" name="payAmount"
+                                        class="px-7 py-3.5 text-sm tracking-wide bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
+                                </div>
+
+                                
+
+                            </form>
+                        </div>
+
+                        
+                        </div>
+
+                        <!-- <div class="grid lg:grid-cols-3 gap-6 max-lg:gap-8 mt-16">
+                        <div class="lg:col-span-2">
+                            <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
+
+                            <div class="grid gap-4 sm:grid-cols-2 mt-4">
+                            <div class="flex items-center">
+                                <input type="radio" class="w-5 h-5 cursor-pointer" id="card" checked />
+                                <label for="card" class="ml-4 flex gap-2 cursor-pointer">
+                                <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
+                                <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
+                                <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
+                                </label>
+                            </div>
+
+                            <div class="flex items-center">
+
+                                <input type="radio" class="w-5 h-5 cursor-pointer" id="paypal" />
+                                <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
+                                <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
+                                </label>
+                            </div>
+                            </div>
+
+                            <form class="mt-8">
+                            <div class="grid sm:col-span-2 sm:grid-cols-2 gap-4">
+                                <div>
+                                <input type="text" placeholder="Name of card holder"
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="Postal code"
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="Card number"
+                                    class="col-span-full px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="EXP."
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                                <div>
+                                <input type="number" placeholder="CVV"
+                                    class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-4 mt-8">
+                                <button type="button"
+                                class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
+                                <button type="button"
+                                class="px-7 py-3.5 text-sm tracking-wide bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
+                            </div>
+                            </form>
+                        </div>
+                        <div class="bg-white p-6 rounded-md max-lg:-order-1">
+                            <h3 class="text-lg font-bold text-gray-800">Summary</h3>
+                            <ul class="text-gray-800 mt-6 space-y-3">
+                            <li class="flex flex-wrap gap-4 text-sm">Flight Base Fees<span class="ml-auto font-bold">$
+                                <?php
+                                    $feePerTicket = $flight['fee_per_ticket'] ?? '';
+                                    echo $feePerTicket;
+                                ?>
+                            </span></li>
+                            <li class="flex flex-wrap gap-4 text-sm">Class Type Charges<span class="ml-auto font-bold">$
+                                <?php
+                                    $classtypefees = $flight['base_fees'] ?? '';
+                                    echo $classtypefees;
+                                ?>
+                            </span></li>
+                            <li class="flex flex-wrap gap-4 text-sm">Trip type Charges
+                                <span class="ml-auto font-bold">$
+                                <?php
+                                    $triptypefees = $flight['priceCharge'];
+                                    echo $triptypefees;
+                                ?>
+                                </span></li>
+                                <li class="flex flex-wrap gap-4 text-sm">Tax
+                                <span class="ml-auto font-bold">$
+                                <?php
+                                    $tax = 0.15;
+                                    echo number_format($tax,2);
+                                ?>
+                                </span></li>
+                            <hr />
+                            <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$
+                                <?php
+                                    $class_price = $flight['classPrice'] ?? '';
+                                    $tax = 0.15;
+                                    $taxAmount = $class_price * $tax;
+                                    $totalPrice = $class_price + $taxAmount;
+                                    echo number_format($totalPrice,2);
+                                ?>
+                            </span></li>
+                            </ul>
+                            <p>
+                                Additonal fees like baggage fee are calculated in tax.
+                            </p>
+                        </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- show and hide flightInfo form and personal form -->
+        <script>
+            document.getElementById("nexttoPersonalInfo").addEventListener("click", function () {
+            document.getElementById("flightInfoForm").classList.toggle("hidden");
+            document.getElementById("flightInfoForm").classList.toggle("block");
+
+            document.getElementById("personalInfoForm").classList.toggle("hidden");
+            document.getElementById("personalInfoForm").classList.toggle("block");
+        });
+        </script>
+        
 </body>
 </html>

@@ -73,6 +73,7 @@
 
                         if($status){
                             $_SESSION['signUpSuccess'] = "User created successfully";
+                            $_SESSION['user_id'] = $user_id;
                             header('Location: cLogin.php');
                     }
                 }catch(PDOException $e){
