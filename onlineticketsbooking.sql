@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 06, 2025 at 09:12 PM
+-- Generation Time: Jan 08, 2025 at 07:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -78,16 +78,18 @@ CREATE TABLE `booking` (
   `seatNoId` int(11) DEFAULT NULL,
   `bookAt` timestamp NOT NULL DEFAULT current_timestamp(),
   `passenger_id` int(11) DEFAULT NULL,
-  `status` varchar(100) DEFAULT NULL
+  `status` varchar(100) DEFAULT NULL,
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `booking`
 --
 
-INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `triptype_id`, `seatNoId`, `bookAt`, `passenger_id`, `status`) VALUES
-(9, NULL, 2, 1, 1, 462, '2025-01-06 14:36:55', 10, 'pending'),
-(10, NULL, 2, 1, 1, 462, '2025-01-06 14:38:54', 11, 'pending');
+INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `triptype_id`, `seatNoId`, `bookAt`, `passenger_id`, `status`, `updated_at`) VALUES
+(55, 7, 2, 3, 1, 535, '2025-01-08 12:15:23', 70, 'pending', NULL),
+(56, 7, 2, 3, 1, 536, '2025-01-08 12:15:23', 71, 'pending', NULL),
+(57, 7, 2, 3, 1, 537, '2025-01-08 12:15:23', 72, 'pending', NULL);
 
 -- --------------------------------------------------------
 
@@ -209,8 +211,9 @@ CREATE TABLE `passengers` (
 --
 
 INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `nationality`, `phoneNo`, `IDcard`, `passportNo`) VALUES
-(10, 'Ingyin', 21, 'female', 'myanmar', 9876543, '3ef34 ', '3cex'),
-(11, 'Ingyin', 21, 'female', 'myanmar', 562432423, '3ef34 ', '3cex');
+(70, 'nora', 21, 'Female', 'Myanmar', 3345465, 'eve3', '3fc34c'),
+(71, 'nora', 34, 'Female', 'Myanmar', 536565, 'eve3', '3fc34c'),
+(72, 'tt', 34, 'Female', 'Myanmar', 54765756, 'eve3', 'b5h5');
 
 -- --------------------------------------------------------
 
@@ -225,7 +228,9 @@ CREATE TABLE `payment` (
   `expireDate` date DEFAULT NULL,
   `paymentType` int(11) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
-  `totalPrice` decimal(10,2) DEFAULT NULL
+  `totalPrice` decimal(10,2) DEFAULT NULL,
+  `bookingID` int(11) DEFAULT NULL,
+  `paymentDate` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -271,7 +276,7 @@ INSERT INTO `seat_layout` (`id`, `flight_id`, `class_id`, `seatNo`, `status`) VA
 (455, 2, 1, 'F3', 0),
 (456, 2, 1, 'F4', 0),
 (457, 2, 1, 'F5', 0),
-(458, 2, 1, 'F6', 0),
+(458, 2, 1, 'F6', 1),
 (459, 2, 1, 'F7', 0),
 (460, 2, 1, 'F8', 0),
 (461, 2, 1, 'F9', 0),
@@ -621,7 +626,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `cpassword`, `profile`) VALUES
-(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/download (3).jpg');
+(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/download (3).jpg'),
+(8, 'nora', 'nora@gmail.com', '$2y$10$ksnIcwgmMJT2/iHp1GnMO.81Qu8fVq9q80vuMP9a7AwPNVbiTpD1.', NULL, '../userPhoto/'),
+(9, 'Emma', 'emma@gmail.com', '$2y$10$oRFV38ZIColJW4obfMkv4u4da7Oc8W22qD/AoAjrrW6Q444wVVo4m', NULL, '../userPhoto/');
 
 --
 -- Indexes for dumped tables
@@ -643,7 +650,12 @@ ALTER TABLE `airline`
 -- Indexes for table `booking`
 --
 ALTER TABLE `booking`
-  ADD PRIMARY KEY (`booking_id`);
+  ADD PRIMARY KEY (`booking_id`),
+  ADD KEY `FK_flightbook` (`flight_id`),
+  ADD KEY `FK_seatNobook` (`seatNoId`),
+  ADD KEY `FK_classbook` (`class_id`),
+  ADD KEY `FK_passengerbook` (`passenger_id`),
+  ADD KEY `FK_userBook` (`user_id`);
 
 --
 -- Indexes for table `classes`
@@ -678,7 +690,8 @@ ALTER TABLE `passengers`
 --
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`paymentID`),
-  ADD KEY `FK_type` (`paymentType`);
+  ADD KEY `FK_paymenttype` (`paymentType`),
+  ADD KEY `FK_paybook` (`bookingID`);
 
 --
 -- Indexes for table `paymenttype`
@@ -732,7 +745,7 @@ ALTER TABLE `airline`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `classes`
@@ -756,13 +769,13 @@ ALTER TABLE `flightclasses`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `paymenttype`
@@ -792,11 +805,21 @@ ALTER TABLE `triptype`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `booking`
+--
+ALTER TABLE `booking`
+  ADD CONSTRAINT `FK_classbook` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`),
+  ADD CONSTRAINT `FK_flightbook` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
+  ADD CONSTRAINT `FK_passengerbook` FOREIGN KEY (`passenger_id`) REFERENCES `passengers` (`passenger_id`),
+  ADD CONSTRAINT `FK_seatNobook` FOREIGN KEY (`seatNoId`) REFERENCES `seat_layout` (`id`),
+  ADD CONSTRAINT `FK_userBook` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `flight`
@@ -816,7 +839,8 @@ ALTER TABLE `flightclasses`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
-  ADD CONSTRAINT `FK_type` FOREIGN KEY (`paymentType`) REFERENCES `payment` (`paymentID`);
+  ADD CONSTRAINT `FK_paybook` FOREIGN KEY (`bookingID`) REFERENCES `booking` (`booking_id`),
+  ADD CONSTRAINT `FK_paymenttype` FOREIGN KEY (`paymentType`) REFERENCES `paymenttype` (`typeID`);
 
 --
 -- Constraints for table `seat_layout`

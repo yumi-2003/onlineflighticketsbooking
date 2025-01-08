@@ -35,83 +35,75 @@
         echo "<script>alert('NO flight selected!!!')</script>";
     }
 
-    // if(isset($_SESSION['seat_layout'])){
-    //     $seats = $_SESSION['seat_layout'];
-    //     $seatId = $seats['id'];
-    //     $flightId = $seats['flight_id'];
-    //     $seatNo = $seats['seatNo'];
-    // }else{
-    //     echo "<script>alert('NO Seat selected!!!')</script>";
-    // }
-
-    if (isset($_SESSION['selectedSeats'])) {
-        $selectedSeats = $_SESSION['selectedSeats'];
-        foreach($selectedSeats as $seatId => $seatNo){
-            echo $seatId.":".$seatNo;
-        }
-    } else {
-        header('Location: showSeats.php');
+    if(isset($_SESSION['seat_layout'])){
+        $seats = $_SESSION['seat_layout'];
+        $seatId = $seats['id'];
+        $flightId = $seats['flight_id'];
+        $seatNo = $seats['seatNo'];
+    }else{
+        echo "<script>alert('NO Seat selected!!!')</script>";
     }
 
     //store personal information
-    // try{
-    //     $sql = "SELECT * FROM passengers";
-    //     $stmt =$conn->query($sql);
-    //     $personInfos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try{
+        $sql = "SELECT * FROM passengers";
+        $stmt =$conn->query($sql);
+        $personInfos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // }catch(PDOException $e){
-    //     echo $e->getMessage();
-    // }
+    }catch(PDOException $e){
+        echo $e->getMessage();
+    }
 
     if(isset($_POST['savePersonalInfo'])) {
-        $passengerData = [];
+
+        $fName = $_POST['fullName'];
+        $age = $_POST['age'];
+        $gender = $_POST['gender'];
+        $nationality = $_POST['nationality'];
+        $phoneNo = $_POST['phoneNo'];
+        $idCard = $_POST['IDcard'];
+        $passport = $_POST['passportNo'];
+
         $flight_id = $flight['flight_id'] ?? '';
         $classId = $flight['class_id'] ?? '';
         $triptypeId = $flight['triptypeId'] ?? '';
         $seatId = $seats['id'] ?? '';
         $book_at = date('Y-m-d H:i:s');
         
-        foreach ($_POST['fullName'] as $index => $fullName) {
-            $age = $_POST['age'][$index];
-            $gender = $_POST['gender'][$index];
-            $nationality = $_POST['nationality'][$index];
-            $phoneNo = $_POST['phoneNo'][$index];
-            $idCard = $_POST['IDcard'][$index];
-            $passport = $_POST['passportNo'][$index];
-            $seatId = $_POST['id'][$index];
-            $seatNo = $_POST['seatNo'][$index];
-            
-        
-        // Insert the passenger information into the database
         try {
-            $sql = "INSERT INTO passengers (fullName, age, gender, nationality, phoneNo, IDcard, passportNo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO passengers (fullName, age, gender, nationality, phoneNo, IDcard, passportNo) VALUES (?,?,?,?,?,?,?)";
             $stmt = $conn->prepare($sql);
-            $stmt->execute([$fullName, $age, $gender, $nationality, $phoneNo, $idCard, $passport]);
+            $status = $stmt->execute([$fName, $age, $gender, $nationality, $phoneNo, $idCard, $passport]);
 
-            $passengerId = $conn->lastInsertId(); // Get the newly inserted passenger ID
+            if ($status) {
+                $passengerId = $conn->lastInsertId(); // Get the newly inserted passenger ID'
+                $_SESSION['passengerId'] = $passengerId;
+                $_SESSION['completedPersonalInformation'] = "You Completed your personal information";
 
-            // Insert booking information for this passenger
-            $book_at = date('Y-m-d H:i:s');
-            $sql_booking = "INSERT INTO booking (user_id, flight_id, class_id, triptype_id, seatNoId, bookAt, passenger_id, status)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt_booking = $conn->prepare($sql_booking);
-            $stmt_booking->execute([$user_id, $flight_id, $classId, $triptypeId, $seatId, $book_at, $passengerId, 'pending']);
-            $bookingId = $conn->lastInsertId();
-            $bookingIds[] = $bookingId;
+                    try {
+                        $book = "INSERT INTO booking (user_id, flight_id, class_id, triptype_id, seatNoId, bookAt, passenger_id, status)
+                                VALUES (?,?,?,?,?,?,?,?)";
+                        $stmt_book = $conn->prepare($book);
+                        $stmt_book->execute([$user_id, $flight_id, $classId, $triptypeId, $seatId, $book_at, $passengerId, 'pending']);
+                        $booking = $conn->lastInsertId();
+                        $_SESSION['bookingId'] = $booking;
 
+                        $_SESSION['booking'] = [
+                            'passenger_id' => $passengerId,
+                            'booking_id' => $booking
+                        ];
+
+                    } catch (PDOException $e) {
+                        echo "Error inserting booking: " . $e->getMessage();
+                    }
+            }
+             header('Location:checkout.php');
+           
         } catch (PDOException $e) {
-            echo "Error inserting data: " . $e->getMessage();
+            echo "Error inserting passenger: " . $e->getMessage();
         }
-        }
-    
-    $_SESSION['bookingIds'] = $bookingIds;
-    // After inserting all passengers and bookings, redirect to checkout
-    $_SESSION['completedPersonalInformation'] = "You have successfully entered your personal information.";
-    header('Location: checkout.php');
-}
 
-
-    
+    }
    
 ?>
 <!DOCTYPE html>
@@ -208,56 +200,48 @@
             ?> -->
          </p>
             <div class="flex flex-col justify-items-center w-3/4 px-11 md:grid-cols-2 items-center gap-8 h-full">
-            
+
                 <form class="space-y-6 px-4 max-w-sm mx-auto font-[sans-serif]" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" method="POST">
-
-                <?php
-
-                    foreach($selectedSeats as $seatId => $seatNo) {
-                        var_dump($seatNo)
-                        ?>
-
-
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Full Name</label>
-                        <input type="text" name="fullName[]" placeholder="Enter your name"
+                        <input type="text" name="fullName" placeholder="Enter your name"
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Age</label>
-                        <input type="number" name="age[]" placeholder="Age"
-                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" min="1" required/>
+                        <input type="number" name="age" placeholder="Enter your email"
+                        class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Gender</label>
-                        <input type="text" name="gender[]" placeholder="Gender"
+                        <input type="text" name="gender" placeholder="Enter your phone no"
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Nationality</label>
-                        <input type="text" name="nationality[]" placeholder="Your Nationality"
+                        <input type="text" name="nationality" placeholder="Enter your state"
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 
                     
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Phone NO.</label>
-                        <input type="number" name="phoneNo[]" placeholder="Phone No."
+                        <input type="number" name="phoneNo" placeholder="Enter your state"
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">ID Card NO.</label>
-                        <input type="text" name="IDcard[]" placeholder="ID card No"
+                        <input type="text" name="IDcard" placeholder="Enter your state"
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">PassPort No.</label>
-                        <input type="text" name="passportNo[]" placeholder="Passport No"
+                        <input type="text" name="passportNo" placeholder="Enter your state"
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
                     <input type="hidden" name="passenger_id" value="<?php 
@@ -268,15 +252,6 @@
                     
                         echo isset($_SESSION['bookingId']) ? $_SESSION['bookingId'] : '';
                     ?>">
-
-                    <input type="hidden" name="id[]" value="<?php echo $seatId; ?>">
-                    <input type="hidden" name="seatNo[]" value="<?php echo $seatNo; ?>">
-                    <?php
-
-                    }
-
-                    ?>
-
                     <button type="submit" name="savePersonalInfo"
                     class="!mt-8 px-6 py-2 w-full bg-[#233d9a] hover:bg-[#444] text-sm text-white mx-auto block">Submit</button>
                 </form>

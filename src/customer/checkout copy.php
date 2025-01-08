@@ -35,101 +35,69 @@
         echo "<script>alert('NO flight selected!!!')</script>";
     }
 
-    if (isset($_SESSION['selectedSeats'])) {
-        $selectedSeats = $_SESSION['selectedSeats'];
-        foreach($selectedSeats as $seatId => $seatNo){
-            echo $seatId.":".$seatNo;
-        }
-    } else {
-        header('Location: showSeats.php');
-    }
-
-    if(isset($_SESSION['bookingIds'])){
-        $bookingIds = $_SESSION['bookingIds'];
-
+    if(isset($_SESSION['seat_layout'])){
+        $seats = $_SESSION['seat_layout'];
+        $seatId = $seats['id'];
+        $flightId = $seats['flight_id'];
+        $seatNo = $seats['seatNo'];
+    }else{
+        echo "<script>alert('NO Seat selected!!!')</script>";
     }
 
 
 
 
 // Check if the session variable 'booking' is set
-// if (isset($_SESSION['booking'])) {
-//     $passengerId = $_SESSION['booking']['passenger_id'];
-//     $bookingId = $_SESSION['booking']['booking_id'];
-// } else {
-//     echo "No booking information found in session.";
-// }
+if (isset($_SESSION['booking'])) {
+    $passengerId = $_SESSION['booking']['passenger_id'];
+    $bookingId = $_SESSION['booking']['booking_id'];
+} else {
+    echo "No booking information found in session.";
+}
 
 
     if(isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
-        
-        if(isset($_SERVER['bookingIds'])){
-            $bookingIds = $_SESSION['bookingIds'];
-            $class_price = $flight['classPrice'] ?? '';
+        $bookingId = $_SESSION['booking']['booking_id'] ?? '';
+        echo $bookingId;
+        $class_price = $flight['classPrice'] ?? '';
             $tax = 0.15;
             $taxAmount = $class_price * $tax;
             $totalPrice = $class_price + $taxAmount;                               
-            $typeId = $_POST['paymentType'];
-            $securityCode = $_POST['securityCode'];
-            $name = $_POST['name'];
-            $expDate = $_POST['expireDate'];
-            $cardNo = $_POST['cardNo'];
-            $date = date('Y-m-d H:i:s');
+        $typeId = $_POST['paymentType'];
+        $securityCode = $_POST['securityCode'];
+        $name = $_POST['name'];
+        $expDate = $_POST['expireDate'];
+        $cardNo = $_POST['cardNo'];
+        $date = date('Y-m-d H:i:s');
 
-            try{
+        try{
 
-                $sql = "INSERT INTO payment (cardNo, securityCode, expireDate, paymentType, name, totalPrice, bookingID, paymentDate ) VALUES (?,?,?,?,?,?,?,?)";
-                $stmt = $conn->prepare($sql);
-                
-                $status =$stmt->execute([$cardNo,$securityCode, $expDate,$typeId,$name,$totalPrice,$bookingId,$date]);
-    
-            if($status){
-                $paymentId = $conn->lastInsertId();
-                $_SESSION['paymentSuccess'] = "Successful payment!!!";
-    
-                foreach($bookingIds as $bookingId){
-
-                    //make payment for each booking
-                    $updatePayment = "UPDATE payment set bookingID = ? where bookingID = ?";
-                    $paystmt = $conn->prepare($updatePayment);
-                    $paystmt->execute([$bookingId,$bookingId]);
-
-                    //update each booking status
-                    $updateBook = "UPDATE booking set status = 'confirm',updated_at = NOW() where booking_id = ?";
-                    $bookStatus = $conn->prepare($updateBook);
-                    $bookStatus->execute([$bookingId]);
-
-                    //update seat id related to above each booking
-                    $bookedSeats = "SELECT seatNoId FROM booking where booking_id = ?";
-                    $stmtbookedSeats = $conn->prepare($bookedSeats);
-                    $stmtbookedSeats->execute([$bookingId]);
-                    $seatNoID = $stmtbookedSeats->fetchColumn(); // get the seat numbers from each bookings
-
-                    if($seatNo){
-                        //update each number to 1 which is booked
-                        
-                        $seatId = $seats['id'] ?? '';
-                        $updateSeat = "UPDATE seat_layout set status = 1 where id = ?";
-                        $seatStatus = $conn->prepare($updateSeat);
-                        $seatStatus->execute([$seatNoID]);
-
-                    }
-
-                }
-                
-                
-    
-                
-            }
-    
-            }catch(PDOException $e){
-                echo $e->getMessage();
-            }
+            $sql = "INSERT INTO payment (cardNo, securityCode, expireDate, paymentType, name, totalPrice, bookingID, paymentDate ) VALUES (?,?,?,?,?,?,?,?)";
+            $stmt = $conn->prepare($sql);
             
-            }
+            $status =$stmt->execute([$cardNo,$securityCode, $expDate,$typeId,$name,$totalPrice,$bookingId,$date]);
+
+        if($status){
+            $paymentId = $conn->lastInsertId();
+            $_SESSION['paymentSuccess'] = "Successful payment!!!";
+
+            $bookingId = $_SESSION['booking']['booking_id'] ?? '';
+            
+            $updateBook = "UPDATE booking set status = 'confirm',updated_at = NOW() where booking_id = ?";
+            $bookStatus = $conn->prepare($updateBook);
+            $bookStatus->execute([$bookingId]);
+
+            $seatId = $seats['id'] ?? '';
+            $updateSeat = "UPDATE seat_layout set status = 1 where id = ?";
+            $seatStatus = $conn->prepare($updateSeat);
+            $seatStatus->execute([$seatId]);
+        }
+
+        }catch(PDOException $e){
+            echo $e->getMessage();
         }
         
-        
+        }
 
     
     
