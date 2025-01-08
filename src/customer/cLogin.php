@@ -22,6 +22,7 @@
                     if($userInfo){
                         $password_hash = $userInfo['password'];
                         $profile= $userInfo['profile'];
+                        $user_id= $userInfo['user_id'];
                         
                         if(password_verify($password,$password_hash)){
                             $_SESSION['users'] = [

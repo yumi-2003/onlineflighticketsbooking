@@ -6,6 +6,10 @@
       session_start();
     }
 
+    if (isset($_SESSION['users'])) {
+        $user_id = $_SESSION['users']['user_id'];
+    }
+
     if (isset($_SESSION['flight'])) {
         // Retrieve the flight details from the session
         $flight = $_SESSION['flight'];
@@ -51,6 +55,7 @@
     }
 
     if(isset($_POST['savePersonalInfo'])) {
+
         $fName = $_POST['fullName'];
         $age = $_POST['age'];
         $gender = $_POST['gender'];
@@ -64,41 +69,42 @@
         $triptypeId = $flight['triptypeId'] ?? '';
         $seatId = $seats['id'] ?? '';
         $book_at = date('Y-m-d H:i:s');
-
+        
         try {
             $sql = "INSERT INTO passengers (fullName, age, gender, nationality, phoneNo, IDcard, passportNo) VALUES (?,?,?,?,?,?,?)";
             $stmt = $conn->prepare($sql);
             $status = $stmt->execute([$fName, $age, $gender, $nationality, $phoneNo, $idCard, $passport]);
 
             if ($status) {
-                $passengerId = $conn->lastInsertId(); // Get the newly inserted passenger ID
+                $passengerId = $conn->lastInsertId(); // Get the newly inserted passenger ID'
+                $_SESSION['passengerId'] = $passengerId;
                 $_SESSION['completedPersonalInformation'] = "You Completed your personal information";
+
+                    try {
+                        $book = "INSERT INTO booking (user_id, flight_id, class_id, triptype_id, seatNoId, bookAt, passenger_id, status)
+                                VALUES (?,?,?,?,?,?,?,?)";
+                        $stmt_book = $conn->prepare($book);
+                        $stmt_book->execute([$user_id, $flight_id, $classId, $triptypeId, $seatId, $book_at, $passengerId, 'pending']);
+                        $booking = $conn->lastInsertId();
+                        $_SESSION['bookingId'] = $booking;
+
+                        $_SESSION['booking'] = [
+                            'passenger_id' => $passengerId,
+                            'booking_id' => $booking
+                        ];
+
+                    } catch (PDOException $e) {
+                        echo "Error inserting booking: " . $e->getMessage();
+                    }
             }
-
-            if (isset($_SESSION['users']['user_id'])) {
-                $user_id = $_SESSION['users']['user_id'];
-
-                try {
-                    $book = "INSERT INTO booking (user_id, flight_id, class_id, triptype_id, seatNoId, bookAt, passenger_id, status)
-                            VALUES (?,?,?,?,?,?,?,?)";
-
-                    // Debug values
-                    var_dump([$user_id, $flight_id, $classId, $triptypeId, $seatId, $book_at, $passengerId, 'pending']);
-
-                    $stmt_book = $conn->prepare($book);
-                    $stmt_book->execute([$user_id, $flight_id, $classId, $triptypeId, $seatId, $book_at, $passengerId, 'pending']);
-                    $booking = $conn->lastInsertId();
-                } catch (PDOException $e) {
-                    echo "Error inserting booking: " . $e->getMessage();
-                }
-            }
+             header('Location:checkout.php');
+           
         } catch (PDOException $e) {
             echo "Error inserting passenger: " . $e->getMessage();
         }
 
     }
    
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -239,10 +245,12 @@
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
                     <input type="hidden" name="passenger_id" value="<?php 
-                        if(isset($passengers['passenger_id'])){
-                            echo $passengers['passenger_id'];
-                        }
+                            echo isset($_SESSION['passengerId']) ? $_SESSION['passengerId'] : '';  
                     
+                    ?>">
+                    <input type="hidden" name="booking_id" value="<?php 
+                    
+                        echo isset($_SESSION['bookingId']) ? $_SESSION['bookingId'] : '';
                     ?>">
                     <button type="submit" name="savePersonalInfo"
                     class="!mt-8 px-6 py-2 w-full bg-[#233d9a] hover:bg-[#444] text-sm text-white mx-auto block">Submit</button>

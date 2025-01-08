@@ -828,3 +828,13 @@
         <!-- main contents ends -->
     </body>
 </html>
+
+
+
+
+<input type="hidden" name="passenger_id" value="<?php 
+                        if(isset($_SESSION['passengerId'])){
+                            echo $_SESSION['passengerId'];
+                        }
+                    
+                    ?>">

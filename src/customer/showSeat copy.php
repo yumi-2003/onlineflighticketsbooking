@@ -6,20 +6,14 @@
         }
 
         //get the selected seat No
-        if (isset($_POST['submitSeats'])) {
-
-            if(isset($_POST['seats'])){
-                $selectedSeats = $_POST['seats'];
-
-                foreach($selectedSeats as $seatId => $seatNo){
-                    echo "You selected seat: $seatNo <br>";
-                }
-
-                $_SESSION['selectedSeats'] = $_POST['seats'];
-                header('Location: flightBook.php');
-                exit();
-            }
-            
+        if (isset($_POST['select'])) {
+            $_SESSION['seat_layout'] = [
+                'id' => $_POST['id'],
+                'flight_id' => $_POST['flight_id'],
+                'class_id' => $_POST['class_id'],
+                'seatNo' => $_POST['seatNo']
+            ];
+            header('Location: flightBook.php');
         }
 
         if (isset($_SESSION['flight'])) {
@@ -78,7 +72,6 @@
             $row = 1;
             $col = 1;
 
-            echo "<form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>";
             echo "<div class='seat-container w-full inline-block'>";
             foreach ($seats as $seat) {
                 if ($col > 10) {
@@ -95,7 +88,7 @@
                 if ($seat['status'] == 1) {
                     echo "
                             
-                                <button type='button' name='' class='focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'>{$seat['seatNo']}
+                                <button type='submit' name='' class='focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'>{$seat['seatNo']}
                                 
                                 </button>
                             ";
@@ -103,8 +96,8 @@
 
                     if ($seat['class_id'] == 1){
                         echo "
-                            
-                                <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800'>{$seat['seatNo']}
+                            <form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>
+                                <button type='submit' name='select' class='focus:outline-none text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
                                 <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
@@ -114,10 +107,12 @@
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
                                 </button>
+                            </form>
                             ";
                     }else if($seat['class_id'] == 2){
                         echo "
-                                <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800'>{$seat['seatNo']}
+                            <form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>
+                                <button type='submit' name='select' class='focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
                                 <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
@@ -127,11 +122,13 @@
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
                                 </button>
+                            </form>
                             ";
                     }
                     else if($seat['class_id'] == 3){
                         echo "
-                                <button type='button' name='select'  data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
+                            <form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>
+                                <button type='submit' name='select' class='focus:outline-none text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
                                 <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
@@ -141,10 +138,12 @@
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
                                 </button>
+                            </form>
                             ";
                     }else if($seat['class_id'] == 4){
                         echo "
-                                <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-black hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-black dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
+                            <form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>
+                                <button type='submit' name='select' class='focus:outline-none text-white bg-black hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-black dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
                                 <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
@@ -154,17 +153,13 @@
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
                                 </button>
-                            
+                            </form>
                             ";
                     }
                 }
                 $col++;
             }
             echo "</div>";
-            echo "<button type='submit' name='submitSeats' class='submit-seats-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 mt-4 rounded-lg'>
-                    Submit Selected Seats
-                </button>";
-            echo "</form>";
             ?>
 
         </div>
@@ -173,29 +168,6 @@
             <div class="">Available</div>
         </div>
     </div>
-
-    <script>
-        document.querySelectorAll('.select-seat-btn').forEach(button => {
-            button.addEventListener('click',function(){
-                const seatNo = this.dataset.seatNo;
-                const seatId = this.dataset.seatId;
-
-                //make sure you have already put the seat to the form or not
-                let existingSeat = document.querySelector(`input[name="seats[${seatId}]"]`);
-
-                //if not put that seat into th form
-                if(!existingSeat){
-                    const seatInsert =document.createElement('input');
-                    seatInsert.type = 'hidden';
-                    seatInsert.name = 'seats[' + seatId + ']';
-                    seatInsert.value = seatNo;
-
-                    //append the new hidden input fields to the form
-                    document.querySelector('form').appendChild(seatInsert);
-                }
-            })
-        })
-    </script>
 </body>
 
 </html>
