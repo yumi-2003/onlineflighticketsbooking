@@ -6,6 +6,7 @@
             session_start();
         }
 
+        
 
         function ispwdstrong($password)
         {
@@ -55,11 +56,8 @@
             $email = $_POST['email'];
             $password = $_POST['password'];
             $cpassword = $_POST['cpassword'];
-
             $filename = $_FILES['profile']['name'];
             $uploadPath = '../userPhoto/'.$filename;
-
-            
 
             if($password == $cpassword){
                 if(ispwdstrong($password)) {
@@ -71,9 +69,15 @@
                         $stmt = $conn->prepare($sql);
                         $status = $stmt->execute([$username,$email,$password_hash,$uploadPath]);
 
+
                         if($status){
+                            $user_id = $conn->lastInsertId();
+
+                            $_SESSION['users'] = [
+                                'user_id' => $user_id
+                            ];
+
                             $_SESSION['signUpSuccess'] = "User created successfully";
-                            $_SESSION['user_id'] = $user_id;
                             header('Location: cLogin.php');
                     }
                 }catch(PDOException $e){
@@ -136,9 +140,6 @@
                 <form class="max-w-lg w-full mx-auto" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" method="POST">
                     <div class="mb-12">
                     <h3 class="text-3xl font-bold text-yellow-400">Create an account</h3>
-                    </div>
-
-                    <div>
                     <label class="text-white text-xs block mb-2">Username</label>
                     <div class="relative flex items-center">
                         <input name="username" type="text" required class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none" placeholder="Enter name" />

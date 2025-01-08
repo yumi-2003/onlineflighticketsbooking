@@ -91,7 +91,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking</title>
+    <title>Flight Information</title>
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
@@ -325,13 +325,13 @@
                 <form action="<?php $_SERVER['REQUEST_URI']?>" enctype="multipart/form-data" method="POST" class="w-auto"> 
                 <div class="flex gap-x-6 mb-6">
                     <div class="w-full relative">
-                        <input type="hidden" name="flight_id" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="
+                        <input type="hidden" name="flight_id" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="
                         <?php
                         if(isset($flight['flight_id'])){
                             echo $flight['flight_id'];
                         }
                         ?>">
-                        <input type="hidden" name="id" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="
+                        <input type="hidden" name="id" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="
                         <?php
                         if(isset($seat['id'])){
                             echo $seat['id'];
@@ -339,7 +339,7 @@
                         ?>">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Airline Name
                         </label>
-                        <input type="text" name="airline_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="airline_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['airline_name'])){
                             echo $flight['airline_name'];
                         }
@@ -348,7 +348,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Flight Name
                         </label>
-                        <input type="text" name="flight_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="flight_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['flight_name'])){
                             echo $flight['flight_name'];
                         }
@@ -359,7 +359,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Class Name
                         </label>
-                        <input type="text" name="class_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="class_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['class_name'])){
                             echo $flight['class_name'];
                         }
@@ -368,7 +368,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Trip Type
                         </label>
-                        <input type="text" name="triptype_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="triptype_name" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['triptype_name'])){
                             echo $flight['triptype_name'];
                         }
@@ -377,7 +377,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Seat No
                         </label>
-                        <input type="text" name="seatNo" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="seatNo" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
 
                         if(isset($seats['seatNo'])){
                             echo $seats['seatNo'];
@@ -389,7 +389,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Source
                         </label>
-                        <input type="text" name="source" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="source" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['source'])){
                             echo $flight['source'];
                         }
@@ -398,7 +398,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Gate
                         </label>
-                        <input type="text" name="gate" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="gate" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['gate'])){
                             echo $flight['gate'];
                         }
@@ -407,7 +407,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Destination
                         </label>
-                        <input type="text" name="destination" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="text" name="destination" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['destination'])){
                             echo $flight['destination'];
                         }
@@ -418,7 +418,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Price
                         </label>
-                        <input type="number" name="classPrice" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="number" name="classPrice" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['classPrice'])){
                             echo $flight['classPrice'];
                         }
@@ -427,7 +427,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Depature  Time
                         </label>
-                        <input type="time" name="departure_time" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="time" name="departure_time" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['departure_time'])){
                             echo $flight['departure_time'];
                         }
@@ -436,7 +436,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Arrival Time
                         </label>
-                        <input type="time" name="arrival_time" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="time" name="arrival_time" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['arrival_time'])){
                             echo $flight['arrival_time'];
                         }
@@ -445,7 +445,7 @@
                     <div class="w-full relative">
                         <label class="flex  items-center mb-2 text-gray-600 text-sm font-medium">Flight Date
                         </label>
-                        <input type="date" name="flight_date" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" required="" value="<?php
+                        <input type="date" name="flight_date" id="default-search" class="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none " placeholder="" readonly value="<?php
                         if(isset($flight['flight_date'])){
                             echo $flight['flight_date'];
                         }

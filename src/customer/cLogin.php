@@ -11,8 +11,7 @@
             
             $email = $_POST['email'];
             $password = $_POST['password'];
-            
-
+        
             if(strlen($password) > 7){
                 try{
                     $sql = "SELECT * FROM users WHERE email = ?";
@@ -25,8 +24,10 @@
                         $profile= $userInfo['profile'];
                         
                         if(password_verify($password,$password_hash)){
+                            $_SESSION['users'] = [
+                                'user_id' => $user_id
+                            ];
                             $_SESSION['userLoginSuccess'] = 'Login Successful';
-                            $_SESSION['user_id'] = $user_id;
                             $_SESSION['userEmail'] = $email;
                             $_SESSION['userPhoto'] = $profile;
                             $_SESSION['userisLoggedIn'] = true;
@@ -96,7 +97,8 @@
                         <h3 class="text-gray-800 text-3xl font-extrabold">Login in</h3>
                         <p class="text-gray-500 text-sm mt-4 leading-relaxed">Sign in to your account and explore a world of possibilities. Your journey begins here.</p>
                     </div>
-
+                    
+                    
                     <div>
                         <label class="text-gray-800 text-sm mb-2 block">Email</label>
                         <div class="relative flex items-center">

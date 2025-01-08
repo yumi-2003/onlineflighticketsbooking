@@ -1,45 +1,45 @@
 <?php
-require_once 'dbconnect.php';
+        require_once 'dbconnect.php';
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+        if (!isset($_SESSION)) {
+            session_start();
+        }
 
-//get the selected seat No
-if (isset($_POST['select'])) {
-    $_SESSION['seat_layout'] = [
-        'id' => $_POST['id'],
-        'flight_id' => $_POST['flight_id'],
-        'class_id' => $_POST['class_id'],
-        'seatNo' => $_POST['seatNo']
-    ];
-    header('Location: booking.php');
-}
+        //get the selected seat No
+        if (isset($_POST['select'])) {
+            $_SESSION['seat_layout'] = [
+                'id' => $_POST['id'],
+                'flight_id' => $_POST['flight_id'],
+                'class_id' => $_POST['class_id'],
+                'seatNo' => $_POST['seatNo']
+            ];
+            header('Location: flightBook.php');
+        }
 
-if (isset($_SESSION['flight'])) {
-    // Retrieve the flight details from the session
-    $flight = $_SESSION['flight'];
-    $flight_id = $flight['flight_id'];
-    $photo = $flight['photo'];
-    $class_id = $flight['class_id'];
-    $feePerTicket = $flight['fee_per_ticket'];
-    $classtypefees = $flight['base_fees'];
-    $triptypefees = $flight['priceCharge'];
-    $airline_name = $flight['airline_name'];
-    $flight_name = $flight['flight_name'];
-    $class_name = $flight['class_name'];
-    $class_price = $flight['classPrice'];
-    $source = $flight['source'];
-    $destination = $flight['destination'];
-    $gate = $flight['gate'];
-    $flight_date = $flight['flight_date'];
-    $departure_time = $flight['departure_time'];
-    $arrival_time = $flight['arrival_time'];
-    $triptypeId = $flight['triptypeId'];
-    $triptype_name = $flight['triptype_name'];
-} else {
-    echo "<script>alert('NO flight selected!!!')</script>";
-}
+        if (isset($_SESSION['flight'])) {
+            // Retrieve the flight details from the session
+            $flight = $_SESSION['flight'];
+            $flight_id = $flight['flight_id'];
+            $photo = $flight['photo'];
+            $class_id = $flight['class_id'];
+            $feePerTicket = $flight['fee_per_ticket'];
+            $classtypefees = $flight['base_fees'];
+            $triptypefees = $flight['priceCharge'];
+            $airline_name = $flight['airline_name'];
+            $flight_name = $flight['flight_name'];
+            $class_name = $flight['class_name'];
+            $class_price = $flight['classPrice'];
+            $source = $flight['source'];
+            $destination = $flight['destination'];
+            $gate = $flight['gate'];
+            $flight_date = $flight['flight_date'];
+            $departure_time = $flight['departure_time'];
+            $arrival_time = $flight['arrival_time'];
+            $triptypeId = $flight['triptypeId'];
+            $triptype_name = $flight['triptype_name'];
+        } else {
+            echo "<script>alert('NO flight selected!!!')</script>";
+        }
 
 
 ?>
@@ -277,7 +277,6 @@ if (isset($_SESSION['flight'])) {
                                 <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
-                                
                                 </button>
                             </form>
                             ";
@@ -286,7 +285,7 @@ if (isset($_SESSION['flight'])) {
                         echo "
                             <form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>
                                 <button type='submit' name='select' class='focus:outline-none text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
-                                <<input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
+                                <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
                                 <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
                                 <input type='hidden' name='class_id' value='{$flight['class_id']}'>
