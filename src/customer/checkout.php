@@ -63,12 +63,15 @@
 
     if(isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
         
-        if(isset($_SERVER['bookingIds'])){
+        if(isset($_SESSION['bookingIds'])){
             $bookingIds = $_SESSION['bookingIds'];
-            $class_price = $flight['classPrice'] ?? '';
+            $flight_id = $flight['flight_id'];
+            $classId = $flight['class_id'];
+            $selectedSeats = $_SESSION['selectedSeats'];
+            $class_price = $flight['classPrice'] ?? 0;
             $tax = 0.15;
             $taxAmount = $class_price * $tax;
-            $totalPrice = $class_price + $taxAmount;                               
+            $totalPrice = ($class_price + $taxAmount) * count($bookingIds);                               
             $typeId = $_POST['paymentType'];
             $securityCode = $_POST['securityCode'];
             $name = $_POST['name'];
@@ -77,57 +80,45 @@
             $date = date('Y-m-d H:i:s');
 
             try{
-
-                $sql = "INSERT INTO payment (cardNo, securityCode, expireDate, paymentType, name, totalPrice, bookingID, paymentDate ) VALUES (?,?,?,?,?,?,?,?)";
-                $stmt = $conn->prepare($sql);
-                
-                $status =$stmt->execute([$cardNo,$securityCode, $expDate,$typeId,$name,$totalPrice,$bookingId,$date]);
-    
-            if($status){
-                $paymentId = $conn->lastInsertId();
-                $_SESSION['paymentSuccess'] = "Successful payment!!!";
-    
-                foreach($bookingIds as $bookingId){
-
-                    //make payment for each booking
-                    $updatePayment = "UPDATE payment set bookingID = ? where bookingID = ?";
-                    $paystmt = $conn->prepare($updatePayment);
-                    $paystmt->execute([$bookingId,$bookingId]);
-
-                    //update each booking status
-                    $updateBook = "UPDATE booking set status = 'confirm',updated_at = NOW() where booking_id = ?";
-                    $bookStatus = $conn->prepare($updateBook);
-                    $bookStatus->execute([$bookingId]);
-
-                    //update seat id related to above each booking
-                    $bookedSeats = "SELECT seatNoId FROM booking where booking_id = ?";
-                    $stmtbookedSeats = $conn->prepare($bookedSeats);
-                    $stmtbookedSeats->execute([$bookingId]);
-                    $seatNoID = $stmtbookedSeats->fetchColumn(); // get the seat numbers from each bookings
-
-                    if($seatNo){
-                        //update each number to 1 which is booked
+                        $sql = "INSERT INTO payment (cardNo, securityCode, expireDate, paymentType, name, totalPrice,paymentDate ) VALUES (?,?,?,?,?,?,?)";
+                        $stmt = $conn->prepare($sql);
                         
-                        $seatId = $seats['id'] ?? '';
-                        $updateSeat = "UPDATE seat_layout set status = 1 where id = ?";
-                        $seatStatus = $conn->prepare($updateSeat);
-                        $seatStatus->execute([$seatNoID]);
+                        $status =$stmt->execute([$cardNo,$securityCode, $expDate,$typeId,$name,$totalPrice,$date]);
+            
+                    if($status){
+                        $paymentId = $conn->lastInsertId();
+                        $bookingIds = $_SESSION['bookingIds'];
+                        $flight_id = $flight['flight_id'];
+                        $classId = $flight['class_id'];
+                        $selectedSeats = $_SESSION['selectedSeats'];
+                        $_SESSION['paymentSuccess'] = "Successful payment!!!";
+
+                        foreach($bookingIds as $bookingId){
+                            //update each booking status
+                            $updateBook = "UPDATE booking set status = 'confirm',updated_at = NOW(),payment_id = $paymentId where booking_id = ?";
+                            $bookStatus = $conn->prepare($updateBook);
+                            $bookStatus->execute([$bookingId]);
+
+                            foreach($selectedSeats as $seatNo){
+                                $seatUpdate = "UPDATE seat_layout set status = 1 WHERE flight_id = ? AND class_id = ? AND seatNo = ?";
+                                $seatStmt = $conn->prepare($seatUpdate);
+                                $seatStmt->execute([$flight_id, $classId, $seatNo]);
+                            }
+
+                            
+                        }
 
                     }
 
+                }catch(PDOException $e){
+                    echo $e->getMessage();
+                
+                
                 }
-                
-                
-    
-                
-            }
-    
-            }catch(PDOException $e){
-                echo $e->getMessage();
             }
             
             }
-        }
+        
         
         
 
@@ -242,7 +233,7 @@
                                     <li class="flex flex-wrap gap-4 text-sm">Flight Base Fees<span class="ml-auto font-bold">$
                                         <?php
                                             $feePerTicket = $flight['fee_per_ticket'] ?? '';
-                                            echo $feePerTicket;
+                                            echo $feePerTicket ;
                                         ?>
                                     </span></li>
                                     <li class="flex flex-wrap gap-4 text-sm">Class Type Charges<span class="ml-auto font-bold">$
@@ -269,9 +260,10 @@
                                     <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$
                                         <?php
                                             $class_price = $flight['classPrice'] ?? '';
+                                            $bookingAmount = count($bookingIds);
                                             $tax = 0.15;
                                             $taxAmount = $class_price * $tax;
-                                            $totalPrice = $class_price + $taxAmount;
+                                            $totalPrice = ($class_price + $taxAmount) * $bookingAmount ;
                                             echo number_format($totalPrice,2);
                                         ?>
                                     </span></li>

@@ -180,7 +180,7 @@
                 const seatNo = this.dataset.seatNo;
                 const seatId = this.dataset.seatId;
 
-                //make sure you have already put the seat to the form or not
+                //make sure  already put the seat to the form or not
                 let existingSeat = document.querySelector(`input[name="seats[${seatId}]"]`);
 
                 //if not put that seat into th form
