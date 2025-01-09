@@ -133,6 +133,8 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
+
+    
     <!-- slider starts -->
     <div id="default-carousel" class="relative w-full mt-14" data-carousel="slide">
         <!-- Carousel wrapper -->
@@ -202,13 +204,13 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         </ol>
         <p>
             <?php
-            // if(isset($_SESSION['completedPersonalInformation'])){
-            //    echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
-            //             <span class='font-medium'>$_SESSION[completedPersonalInformation]</span>
-            //          </div>
-            //          ";
-            //    unset($_SESSION['completedPersonalInformation']);
-            // }
+            if(isset($_SESSION['paymentSuccess'])){
+               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50       dark:text-green-400' role='alert'>
+                        <span class='font-medium'>$_SESSION[paymentSuccess]</span>
+                     </div>
+                     ";
+               unset($_SESSION['paymentSuccess']);
+            }
             ?>
         </p>
 

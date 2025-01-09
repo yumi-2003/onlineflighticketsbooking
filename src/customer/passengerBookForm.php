@@ -130,7 +130,8 @@
 </head>
 <body>
         
-    
+        
+
         <!-- slider starts -->
         <div id="default-carousel" class="relative w-full mt-14" data-carousel="slide">
             <!-- Carousel wrapper -->
@@ -199,25 +200,25 @@
                 </li>
             </ol>
             <p>
-            <!-- <?php
-            // if(isset($_SESSION['completedPersonalInformation'])){
-            //    echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
-            //             <span class='font-medium'>$_SESSION[completedPersonalInformation]</span>
-            //          </div>
-            //          ";
-            //    unset($_SESSION['completedPersonalInformation']);
-            // }
-            ?> -->
+            <?php
+            if(isset($_SESSION['completedPersonalInformation'])){
+               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
+                        <span class='font-medium'>$_SESSION[completedPersonalInformation]</span>
+                     </div>
+                     ";
+               unset($_SESSION['completedPersonalInformation']);
+            }
+            ?>
          </p>
             <div class="flex flex-col justify-items-center w-3/4 px-11 md:grid-cols-2 items-center gap-8 h-full">
             
                 <form class="space-y-6 px-4 max-w-sm mx-auto font-[sans-serif]" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" method="POST">
 
-                <?php
+                    <?php
 
                     foreach($selectedSeats as $seatId => $seatNo) {
-                        var_dump($seatNo)
-                        ?>
+                        //var_dump($seatNo)
+                    ?> 
  
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Full Name</label>
@@ -274,7 +275,7 @@
                     <input type="hidden" name="seatNo[]" value="<?php echo $seatNo; ?>">
                     <?php
 
-                    }
+}
 
                     ?>
 

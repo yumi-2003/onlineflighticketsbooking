@@ -128,7 +128,7 @@ if (isset($_POST['find'])) {
         $stmt->execute();
         $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('There is no available flight for your search')</script>";
     }
 }
 
@@ -527,6 +527,7 @@ if (isset($_POST['airlineSearch'])) {
                             <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="primaryeco-class" value="4" onchange="this.form.submit();" <?php echo (isset($_POST['classPrice']) && $_POST['classPrice'] == '4') ? 'checked' : ''; ?>>
                             <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Economy</span>
                         </label>
+                        
                     </div>
                 </form>
             </div>
