@@ -6,6 +6,8 @@
       session_start();
     }
 
+    
+
     if (isset($_SESSION['users'])) {
         $user_id = $_SESSION['users']['user_id'];
     }
@@ -216,8 +218,7 @@
                     foreach($selectedSeats as $seatId => $seatNo) {
                         var_dump($seatNo)
                         ?>
-
-
+ 
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Full Name</label>
                         <input type="text" name="fullName[]" placeholder="Enter your name"

@@ -496,7 +496,7 @@ if (isset($_POST['airlineSearch'])) {
 
     <!-- main contents starts -->
     <div class="p-4 grid grid-cols-5 gap-1">
-        <div class="col-span-1 grid-row-4">
+        <div class="col-span-1 grid-row-4 gap-1">
             <!-- filter section -->
             <div class="flex justify-start rounded-lg text-black">
                 <h3 class="font-[sans-serif] text-2xl">Filter Flight Information</h3>
@@ -504,10 +504,9 @@ if (isset($_POST['airlineSearch'])) {
 
             <!-- search by classes -->
             <div class="flex justify-start rounded-lg text-black">
-                <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="classPriceSearch">
+                <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-1" id="classPriceSearch">
                     <label for="">Choose Flight Classes
                     </label>
-
                     <div class="grid space-y-3 pt-3" id="classPriceSearch">
                         <label for="hs-vertical-radio-in-form" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
                             <input type="radio" name="classPrice" class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="first-class" value="1" onchange="this.form.submit();" <?php echo (isset($_POST['classPrice']) && $_POST['classPrice'] == '1') ? 'checked' : ''; ?>>

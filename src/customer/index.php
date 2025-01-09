@@ -156,43 +156,13 @@ try {
                       About Us
                     </a>
                   </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Library
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Resources
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Pro Version
-                    </a>
-                  </li>
                 </ul>
               </div>
               <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                 <ul class="space-y-4">
                   <li>
                     <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Blog
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                       Newsletter
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Playground
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      License
                     </a>
                   </li>
                 </ul>
@@ -268,12 +238,7 @@ try {
             </select>
             <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" />
             <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
-            <button name="find" class="bg-white py-3.5 min-w-[200px] shadow-xl shadow-blue-200 text-black text-sm tracking-wider font-medium outline-none border border-blue-600 active:shadow-inner">Explore</button>
-            <a href="flightSearch.php">
-              <button type="button"
-                class="bg-white py-3.5 min-w-[200px] shadow-xl shadow-blue-200 text-black text-sm tracking-wider font-medium outline-none border border-blue-600 active:shadow-inner">Show More Flights</button>
-            </a>
-
+            <button name="find" class="bg-white py-3.5 min-w-[200px] shadow-xl shadow-blue-200 text-black text-sm tracking-wider font-medium outline-none border border-blue-600 active:shadow-inner">Search</button>
           </div>
         </form>
 
