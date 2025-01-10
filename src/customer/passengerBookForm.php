@@ -247,7 +247,7 @@
                     
                     <div class="flex items-center">
                         <label class="text-gray-400 w-36 text-sm">Phone NO.</label>
-                        <input type="number" name="phoneNo[]" placeholder="Phone No."
+                        <input type="text" name="phoneNo[]" placeholder="Phone No."
                         class="px-2 py-2 w-full border-b-2 focus:border-[#333] outline-none text-sm bg-white" required/>
                     </div>
 

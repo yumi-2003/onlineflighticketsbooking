@@ -127,8 +127,6 @@ try {
 
         ?>
 
-
-
         <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
           <span class="sr-only">Open main menu</span>
           <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
@@ -196,12 +194,9 @@ try {
           </li>
         </ul>
       </div>
-
-
     </div>
   </nav>
   <!-- nav ends -->
-
 
   <!-- Hero section starts -->
   <div class=" font-[sans-serif] p-6 mt-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">

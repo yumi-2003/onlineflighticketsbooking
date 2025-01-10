@@ -304,11 +304,11 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                                         class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
                                 </div>
                                 <div>
-                                    <input type="number" placeholder="CVV" name="securityCode"
+                                    <input type="text" placeholder="CVV" name="securityCode"
                                         class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
                                 </div>
                                 <div>
-                                    <input type="number" placeholder="Card number" name="cardNo"
+                                    <input type="text" placeholder="Card number" name="cardNo"
                                         class="col-span-full px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
                                 </div>
                                 <div>
