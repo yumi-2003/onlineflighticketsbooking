@@ -9,7 +9,7 @@ if (!isset($_SESSION)) {
     if (isset($_SESSION['users'])) {
       $user_id = $_SESSION['users']['user_id'];
     } else {
-      echo "<script>alert('NO user ID selected!!!')</script>";
+      //echo "<script>alert('NO user ID selected!!!')</script>";
     }
 
   $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
@@ -74,9 +74,9 @@ try {
 
 </head>
 
-<body>
+<body class="bg-[#f2f1ef]">
   <!-- nav starts -->
-  <nav class="fixed top-0 z-50 w-full bg-[#0463ca]">
+  <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
     <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
       <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
         <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
@@ -84,21 +84,15 @@ try {
       </a>
 
       <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
-
         <?php
-
         if (isset($_SESSION['userisLoggedIn'])) {
         ?>
-
           <div class="flex items-center">
             <div class="flex items-center ms-3">
               <div>
                 <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
                   <span class="sr-only">Open user menu</span>
-
-
                   <img class="w-10 h-10 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
-
                 </button>
               </div>
 
@@ -121,10 +115,13 @@ try {
               </div>
             </div>
           </div>
-
+        <?php
+        } else {
+        ?>
+          <a href="clogin.php" class="text-white px-4 py-2 rounded-md">Login</a>
+          <a href="cSignUp.php" class="text-blue hover:text-white px-4 py-2 rounded-md bg-[#f5effb] hover:bg-[#00103c]">Sign Up</a>
         <?php
         }
-
         ?>
 
         <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
@@ -147,45 +144,32 @@ try {
               </svg>
             </button>
             <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
-              <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      About Us
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                <ul class="space-y-4">
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Newsletter
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div class="p-4">
-                <ul class="space-y-4">
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Contact Us
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Support Center
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Terms
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </li>
+                                <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                                    <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                About Us
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                Newsletter
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                Conatct Us
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                Support Center
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
           <li>
             <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
           </li>
@@ -198,21 +182,20 @@ try {
   </nav>
   <!-- nav ends -->
 
-  <!-- Hero section starts -->
-  <div class=" font-[sans-serif] p-6 mt-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
-    <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
-      <div class="text-center">
-        <form action="" method="POST" class="space-y-4">
-          <div>
-            <h1 class="text-4xl font-extrabold text-white">Welcome to SwiftMiles</h1>
-          </div>
+  <!-- banner starts -->
+  <div class="font-[sans-serif]">
+      <div class=" w-full h-60 mt-10" >
+      <img src="/images/banner5.png" alt="Banner Image" class="w-full h-full object-cover"/>
+      </div>
 
-          <div>
-            <p class="text-white text-lg mt-4 leading-relaxed">Affordable Flights, Unforgettable Journeys </p>
-          </div>
+      <div class="-mt-28 mb-6 px-4">
+        <div class="mx-auto max-w-6xl shadow-lg p-8 relative rounded bg-[#f5f5f5]">
+          <h2 class="text-xl text-gray-800 font-bold">Search Your Destination</h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
-            <select id="source" name="source" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+          <form class="mt-8 grid sm:grid-cols-4 gap-2" action="" method="POST">
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2">Source</label> -->
+              <select id="source" name="source" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
               <option selected>From: City</option>
               <?php
               $uniqueSources = array_unique(array_column($flights, 'source'));
@@ -221,8 +204,10 @@ try {
               }
               ?>
             </select>
-
-            <select id="destination" name="destination" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
+            </div>
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2">Destination</label> -->
+              <select id="destination" name="destination" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
               <option selected>To: City</option>
               <?php
               $uniqueDestin = array_unique(array_column($flights, 'destination'));
@@ -231,23 +216,29 @@ try {
               }
               ?>
             </select>
-            <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" />
-            <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
-            <button name="find" class="bg-white py-3.5 min-w-[200px] shadow-xl shadow-blue-200 text-black text-sm tracking-wider font-medium outline-none border border-blue-600 active:shadow-inner">Search</button>
-          </div>
-        </form>
-
+            </div>
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2">Depature Time</label> -->
+              <input type="date" name="flight_date" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none" id="depDate" name='flight_date' placeholder="Departure Date" />
+            </div>
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2"></label> -->
+              <button name="find" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm text-[#f2f2ef] focus:border-blue-600 outline-none w-60 bg-[#173187]">Search</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Hero section ends -->
-
+    <!-- banner ends -->
   <!-- cards show -->
-  <div class='flex min-h-screen items-center justify-center bg-cyan-50'>
-
+  <div class="text-center font-semibold text-2xl my-2">
+      Available Flights
+  </div>
+  <div class='flex h-auto items-center justify-center'>
+    
     <?php
     if (isset($flights)) {
-      echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3'>";
+      echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3 h-60'>";
       foreach ($flights as $flight) {
         echo "
             <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30'>
@@ -274,6 +265,78 @@ try {
     }
     ?>
   </div>
+
+  <div class="max-w-7xl max-md:max-w-xl mx-auto font-[sans-serif] mt-10">
+      <div class="grid xl:grid-cols-3 md:grid-cols-2 gap-12 items-center">
+        <div>
+          <img src="/images/christmas-travel-concept-with-airplane.jpg" class="w-full rounded-md" />
+        </div>
+
+        <div class="xl:col-span-2 max-md:px-6">
+          <div>
+            <h2 class="text-gray-800 sm:text-3xl text-2xl font-extrabold">Discover Our Exclusive Features</h2>
+            <p class="text-sm text-gray-800 leading-relaxed mt-6">Unlock a world of possibilities with our exclusive features. Explore how our unique offerings can transform your journey and empower you to achieve more.</p>
+          </div>
+
+          <div class="grid xl:grid-cols-3 sm:grid-cols-2 gap-6 mt-12">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Customization</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Security</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Support</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Performance</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Global Reach</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Communication</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Integration</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Scalability</h6>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+              </svg>
+              <h6 class="text-base text-gray-800">Security</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <!-- Testimonials section starts -->
   <div class="my-6 font-[sans-serif] max-w-6xl mx-auto">
@@ -414,7 +477,7 @@ try {
   <!-- Testimonials section ends -->
 
   <!-- footer starts -->
-  <footer class="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 py-10 px-10 font-sans tracking-wide">
+  <footer class="py-10 px-10 font-sans tracking-wide bg-[#00103c]">
     <div class="max-w-2xl mx-auto text-center">
       <!-- <a href='javascript:void(0)' class="inline-block"><img src="https://readymadeui.com/readymadeui-light.svg" alt="logo"
           class='w-44' /></a> -->
