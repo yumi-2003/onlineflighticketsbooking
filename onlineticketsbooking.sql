@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 11, 2025 at 05:52 AM
+-- Generation Time: Jan 11, 2025 at 08:49 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -288,8 +288,8 @@ CREATE TABLE `review` (
 --
 
 INSERT INTO `review` (`review_id`, `user_id`, `rating`, `review_text`, `created_at`) VALUES
-(1, 7, 5, 'it was excellent', '2025-01-10 23:21:09'),
-(2, 7, 5, 'it was excellent', '2025-01-10 23:21:54');
+(2, 7, 5, 'it was excellent', '2025-01-10 23:21:54'),
+(3, 9, 3, 'the function needs to be improved', '2025-01-11 02:02:45');
 
 -- --------------------------------------------------------
 
@@ -667,7 +667,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `cpassword`, `profile`) VALUES
 (7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/download (3).jpg'),
 (8, 'nora', 'nora@gmail.com', '$2y$10$ksnIcwgmMJT2/iHp1GnMO.81Qu8fVq9q80vuMP9a7AwPNVbiTpD1.', NULL, '../userPhoto/'),
-(9, 'Emma', 'emma@gmail.com', '$2y$10$oRFV38ZIColJW4obfMkv4u4da7Oc8W22qD/AoAjrrW6Q444wVVo4m', NULL, '../userPhoto/');
+(9, 'Emma', 'emma@gmail.com', '$2y$10$oRFV38ZIColJW4obfMkv4u4da7Oc8W22qD/AoAjrrW6Q444wVVo4m', NULL, '../userPhoto/d7ca1bbb-d965-4630-b386-0598a38917d1.jpg'),
+(10, 'yumi', 'yumi@gmail.com', '$2y$10$iOl7fR5lS.BkV.fuXiOzUuMtuPmEVJUarfU8P9OQa2mZ3PaSpWIAi', NULL, '../userPhoto/');
 
 --
 -- Indexes for dumped tables
@@ -742,7 +743,8 @@ ALTER TABLE `paymenttype`
 -- Indexes for table `review`
 --
 ALTER TABLE `review`
-  ADD PRIMARY KEY (`review_id`);
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `seat_layout`
@@ -832,7 +834,7 @@ ALTER TABLE `paymenttype`
 -- AUTO_INCREMENT for table `review`
 --
 ALTER TABLE `review`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `seat_layout`
@@ -856,7 +858,7 @@ ALTER TABLE `triptype`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -892,6 +894,12 @@ ALTER TABLE `flightclasses`
 --
 ALTER TABLE `payment`
   ADD CONSTRAINT `FK_paymenttype` FOREIGN KEY (`paymentType`) REFERENCES `paymenttype` (`typeID`);
+
+--
+-- Constraints for table `review`
+--
+ALTER TABLE `review`
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `seat_layout`

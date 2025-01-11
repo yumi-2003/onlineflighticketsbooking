@@ -2,9 +2,9 @@
 
 require_once 'dbconnect.php';
 
-if (!isset($_SESSION)) {
-  session_start();
-}
+  if (!isset($_SESSION)) {
+    session_start();
+  }
 
     if (isset($_SESSION['users'])) {
       $user_id = $_SESSION['users']['user_id'];
@@ -14,52 +14,75 @@ if (!isset($_SESSION)) {
 
   $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
 
-try {
-  $stmt = $conn->query($sql);
-  $status = $stmt->execute();
-
-  if ($status) {
-    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-} catch (PDOException $e) {
-  echo $e->getMessage();
-}
-
-//search by source, destin, flight date
-if (isset($_POST['find'])) {
-  $source = $_POST['source'];
-  $desti = $_POST['destination'];
-  $date = $_POST['flight_date'];
-
   try {
-    $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
+    $stmt = $conn->query($sql);
+    $status = $stmt->execute();
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(1, $source, PDO::PARAM_STR);
-    $stmt->bindParam(2, $desti, PDO::PARAM_STR);
-    $stmt->bindParam(3, $date, PDO::PARAM_STR);
-    $stmt->execute();
-    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($status) {
+      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
   } catch (PDOException $e) {
     echo $e->getMessage();
   }
-}
 
-//get user information
-$sql = "SELECT * FROM users";
-try {
-  $stmt = $conn->query($sql);
-  $status = $stmt->execute();
+  //search by source, destin, flight date
+  if (isset($_POST['find'])) {
+    $source = $_POST['source'];
+    $desti = $_POST['destination'];
+    $date = $_POST['flight_date'];
 
-  if ($status) {
-    $users = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+      $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
+
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(1, $source, PDO::PARAM_STR);
+      $stmt->bindParam(2, $desti, PDO::PARAM_STR);
+      $stmt->bindParam(3, $date, PDO::PARAM_STR);
+      $stmt->execute();
+      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      echo $e->getMessage();
+    }
   }
+
+  //get user information
+  $sql = "SELECT * FROM users WHERE user_id = :user_id";
+  try {
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $users = $stmt->fetch(PDO::FETCH_ASSOC);
+  } catch (PDOException $e) {
+    echo $e->getMessage();
+  }
+
+  //fetch review data
+
+// MySQL query to fetch reviews with user details
+$reviewsql = "SELECT *
+              FROM review 
+              INNER JOIN users ON review.user_id = users.user_id";
+
+try {
+    // Prepare and execute the query
+    $reviewstmt = $conn->prepare($reviewsql);
+    $status = $reviewstmt->execute();
+
+    // Fetch all reviews as an associative array
+    if ($status) {
+        $reviews = $reviewstmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $reviews = [];
+    }
+
 } catch (PDOException $e) {
-  echo $e->getMessage();
+    // Handle exceptions
+    echo "Error: " . $e->getMessage();
 }
-
-
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -266,7 +289,9 @@ try {
     ?>
   </div>
  <hr>
-  <div class="max-w-7xl max-md:max-w-xl mx-auto font-[sans-serif] mt-10">
+    
+    <!-- features of this web -->
+    <div class="max-w-7xl max-md:max-w-xl mx-auto font-[sans-serif] mt-10">
       <div class="grid xl:grid-cols-3 md:grid-cols-2 gap-12 items-center">
         <div>
           <img src="/images/christmas-travel-concept-with-airplane.jpg" class="w-full rounded-md" />
@@ -338,131 +363,55 @@ try {
       </div>
     </div>
 
-    <div class="my-6 font-[sans-serif]">
-      <div class="text-center max-w-3xl mx-auto">
-        <h2 class="text-3xl font-extrabold text-gray-800">Testimonials</h2>
-        <p class="text-sm text-gray-800 mt-4 leading-relaxed">Veniam proident aute magna anim excepteur et ex consectetur velit ullamco veniam minim aute sit. Elit occaecat officia et laboris Lorem minim. Officia do aliqua adipisicing ullamco in</p>
+    <!-- show review -->
+    <div class="my-6 font-[sans-serif] max-w-6xl mx-auto">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-3xl font-extrabold text-gray-800">What our happy client say</h2>
+        <p class="text-sm mt-4 leading-relaxed text-gray-800">Veniam proident aute magna anim excepteur et ex consectetur velit ullamco veniam minim aute sit. Elit occaecat officia et laboris Lorem minim. Officia do aliqua adipisicing ullamco in</p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-6 max-w-6xl max-md:gap-16 max-md:max-w-lg mx-auto mt-20">
-        <div class="w-full p-6 rounded-lg mx-auto shadow-[0_4px_14px_-6px_rgba(93,96,127,0.4)] bg-white relative">
-          <img src="https://readymadeui.com/team-2.webp" class="w-14 h-14 rounded-full absolute right-0 left-0 mx-auto -top-7" />
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-800 leading-relaxed">The service was amazing. I never had to wait that long for my food. The staff was friendly and attentive, and the delivery was impressively prompt at the all time.</p>
-          </div>
-
-          <div class="flex justify-center space-x-1 mt-6">
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#CED5D8]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-          </div>
-
-          <div class="mt-6 text-center">
-            <h4 class="text-sm whitespace-nowrap font-bold">John Doe</h4>
-          </div>
+            <div class="grid md:grid-cols-3 gap-6 max-md:gap-12 max-md:justify-center text-center max-md:max-w-lg mx-auto mt-16">
+            <?php 
+              if(isset($reviews)){
+              foreach($reviews as $review){
+                echo "<div class='rounded-md'>";
+                echo "<div class='flex flex-col items-center grid-auto-cols'>";
+                echo "<img src='$review[profile]' class='w-24 h-24 rounded-full shadow-xl border-2 border-white' />";
+                echo "<div class='mt-4'>";
+                echo "<h4 class='text-sm font-extrabold text-gray-800'>$review[username]</h4>";
+                echo "<p class='text-xs text-blue-600 font-bold mt-1'>$review[email]</p>";
+                echo "</div>";
+                echo "<div class='mt-4'>";
+                echo "<p class='text-sm leading-relaxed text-gray-800'>$review[review_text]</p>";
+                echo "<p class='text-sm leading-relaxed text-gray-800'>$review[created_at]</p>";
+                echo "</div>";
+                echo "<div class='flex justify-center space-x-1 mt-4'>";
+                if(isset($review['rating'])){
+                $rating = $review['rating'];
+                for($i = 1; $i <= 5; $i++){
+                  if($i <= $rating){
+                  echo "<svg class='w-4 fill-[#007bff]' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path d='M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z' />
+                      </svg>";
+                  } else {
+                  echo "<svg class='w-4 fill-[#CED5D8]' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path d='M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z' />
+                      </svg>";
+                  }
+                }
+                }
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
+              }
+              }
+            ?>
+            </div>
         </div>
+      
 
-        <div class="w-full p-6 rounded-lg mx-auto shadow-[0_4px_14px_-6px_rgba(93,96,127,0.4)] bg-white relative">
-          <img src="https://readymadeui.com/team-3.webp" class="w-14 h-14 rounded-full absolute right-0 left-0 mx-auto -top-7" />
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-800 leading-relaxed">The service was amazing. I never had to wait that long for my food. The staff was friendly and attentive, and the delivery was impressively prompt at the all time.</p>
-          </div>
-
-          <div class="flex justify-center space-x-1 mt-6">
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#CED5D8]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-          </div>
-
-          <div class="mt-6 text-center">
-            <h4 class="text-sm whitespace-nowrap font-bold">Karolina Adair</h4>
-          </div>
-        </div>
-
-        <div class="w-full p-6 rounded-lg mx-auto shadow-[0_4px_14px_-6px_rgba(93,96,127,0.4)] bg-white relative">
-          <img src="https://readymadeui.com/team-4.webp" class="w-14 h-14 rounded-full absolute right-0 left-0 mx-auto -top-7" />
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-800 leading-relaxed">The service was amazing. I never had to wait that long for my food. The staff was friendly and attentive, and the delivery was impressively prompt at the all time.</p>
-          </div>
-
-          <div class="flex justify-center space-x-1 mt-6">
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#facc15]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-            <svg class="w-4 fill-[#CED5D8]" viewBox="0 0 14 13" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-            </svg>
-          </div>
-
-          <div class="mt-6 text-center">
-            <h4 class="text-sm whitespace-nowrap font-bold">Simon Konecki</h4>
-          </div>
-        </div>
-      </div>
-    </div>
+    
+       
 
   <!-- footer starts -->
   <footer class="py-10 px-10 font-sans tracking-wide bg-[#00103c]">

@@ -287,14 +287,13 @@ if(isset($_POST['submit'])){
         $review_id= $conn->lastInsertId();
 
         if($status){
-            echo "Thanks for your time";
+            $_SESSION['completed_review'] = "Thanks for your time, Enjoy your journey with SwiftMiles";
         }
 
     }catch(PDOException $e){
         echo $e->getMessage();
     }
     
-
 }
 
 
