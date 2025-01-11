@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2025 at 07:14 PM
+-- Generation Time: Jan 11, 2025 at 05:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,7 +59,7 @@ CREATE TABLE `airline` (
 --
 
 INSERT INTO `airline` (`airline_id`, `airline_name`, `photo`) VALUES
-(2, 'Myanmar International Airways(MNA)', '../flightImg/MNA.webp'),
+(2, 'Myanmar National Airways(MNA)                                        ', '../flightImg/MNA.webp'),
 (5, 'Myanmar Airway International                                ', '../flightImg/MAI.png'),
 (6, 'Singapore Airlines(QA)                                                              ', '../flightImg/SA.png');
 
@@ -79,17 +79,21 @@ CREATE TABLE `booking` (
   `bookAt` timestamp NOT NULL DEFAULT current_timestamp(),
   `passenger_id` int(11) DEFAULT NULL,
   `status` varchar(100) DEFAULT NULL,
-  `updated_at` date DEFAULT NULL
+  `updated_at` date DEFAULT NULL,
+  `payment_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `booking`
 --
 
-INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `triptype_id`, `seatNoId`, `bookAt`, `passenger_id`, `status`, `updated_at`) VALUES
-(55, 7, 2, 3, 1, 535, '2025-01-08 12:15:23', 70, 'pending', NULL),
-(56, 7, 2, 3, 1, 536, '2025-01-08 12:15:23', 71, 'pending', NULL),
-(57, 7, 2, 3, 1, 537, '2025-01-08 12:15:23', 72, 'pending', NULL);
+INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `triptype_id`, `seatNoId`, `bookAt`, `passenger_id`, `status`, `updated_at`, `payment_id`) VALUES
+(73, 7, 2, 2, 1, 463, '2025-01-08 23:24:41', 88, 'confirm', '2025-01-09', 59),
+(74, 7, 2, 2, 1, 464, '2025-01-08 23:24:41', 89, 'confirm', '2025-01-09', 59),
+(75, 7, 2, 1, 1, 454, '2025-01-09 10:12:29', 90, 'confirm', '2025-01-09', 62),
+(76, 7, 2, 4, 1, 543, '2025-01-09 17:17:23', 91, 'confirm', '2025-01-10', 63),
+(77, 7, 2, 3, 1, 538, '2025-01-10 23:20:29', 92, 'confirm', '2025-01-11', 64),
+(78, 7, 2, 3, 1, 539, '2025-01-10 23:20:29', 93, 'confirm', '2025-01-11', 64);
 
 -- --------------------------------------------------------
 
@@ -142,8 +146,8 @@ CREATE TABLE `flight` (
 --
 
 INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `placeImg`) VALUES
-(2, 5, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bk.jpg'),
-(4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/Chiang Mai, Thailand.jpg');
+(2, 5, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
+(4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/chaingmai.jpg');
 
 -- --------------------------------------------------------
 
@@ -201,7 +205,7 @@ CREATE TABLE `passengers` (
   `age` int(11) NOT NULL,
   `gender` varchar(100) NOT NULL,
   `nationality` varchar(100) NOT NULL,
-  `phoneNo` int(11) NOT NULL,
+  `phoneNo` varchar(100) NOT NULL,
   `IDcard` varchar(100) NOT NULL,
   `passportNo` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -211,9 +215,13 @@ CREATE TABLE `passengers` (
 --
 
 INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `nationality`, `phoneNo`, `IDcard`, `passportNo`) VALUES
-(70, 'nora', 21, 'Female', 'Myanmar', 3345465, 'eve3', '3fc34c'),
-(71, 'nora', 34, 'Female', 'Myanmar', 536565, 'eve3', '3fc34c'),
-(72, 'tt', 34, 'Female', 'Myanmar', 54765756, 'eve3', 'b5h5');
+(87, 'Nway thu', 19, 'Female', 'Myanmar', '988765544', 'brvrv4', '3fc34c'),
+(88, 'phoo nge', 23, 'Female', 'Myanmar', '54657657', 'brvrv4', '3fc34c'),
+(89, 'nora', 34, 'Female', 'Myanmar', '454645', 'eve3', '557657'),
+(90, 'nora', 21, 'Female', 'Myanmar', '43545646', 'brvrv4', '3fc34c'),
+(91, 'Ingyin', 22, 'Female', 'Myanmar', '2147483647', 'brvrv4', '3fc34c'),
+(92, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'eve3', '557657'),
+(93, 'ju', 32, 'Female', 'Myanmar', '09786993707', 'eve3', '557657');
 
 -- --------------------------------------------------------
 
@@ -223,15 +231,24 @@ INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `national
 
 CREATE TABLE `payment` (
   `paymentID` int(11) NOT NULL,
-  `cardNo` int(11) DEFAULT NULL,
-  `securityCode` int(11) DEFAULT NULL,
+  `cardNo` varchar(100) DEFAULT NULL,
+  `securityCode` varchar(100) DEFAULT NULL,
   `expireDate` date DEFAULT NULL,
   `paymentType` int(11) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `totalPrice` decimal(10,2) DEFAULT NULL,
-  `bookingID` int(11) DEFAULT NULL,
   `paymentDate` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`paymentID`, `cardNo`, `securityCode`, `expireDate`, `paymentType`, `name`, `totalPrice`, `paymentDate`) VALUES
+(59, '13131', '131', '0031-12-01', 1, '12312', 1380.00, '2025-01-09'),
+(62, '3243432', '23432543', '2025-01-25', 1, 'Ingyin', 1035.00, '2025-01-09'),
+(63, '43543534', '34543543', '2025-01-18', 1, 'Ingyin', 172.50, '2025-01-09'),
+(64, '34534', '454654', '2025-01-14', 2, 'Phoo Nge', 690.00, '2025-01-11');
 
 -- --------------------------------------------------------
 
@@ -255,6 +272,28 @@ INSERT INTO `paymenttype` (`typeID`, `paymentName`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `review`
+--
+
+CREATE TABLE `review` (
+  `review_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `rating` tinyint(4) DEFAULT NULL CHECK (`rating` between 1 and 5),
+  `review_text` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `review`
+--
+
+INSERT INTO `review` (`review_id`, `user_id`, `rating`, `review_text`, `created_at`) VALUES
+(1, 7, 5, 'it was excellent', '2025-01-10 23:21:09'),
+(2, 7, 5, 'it was excellent', '2025-01-10 23:21:54');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `seat_layout`
 --
 
@@ -272,17 +311,17 @@ CREATE TABLE `seat_layout` (
 
 INSERT INTO `seat_layout` (`id`, `flight_id`, `class_id`, `seatNo`, `status`) VALUES
 (453, 2, 1, 'F1', 1),
-(454, 2, 1, 'F2', 0),
-(455, 2, 1, 'F3', 0),
-(456, 2, 1, 'F4', 0),
-(457, 2, 1, 'F5', 0),
+(454, 2, 1, 'F2', 1),
+(455, 2, 1, 'F3', 1),
+(456, 2, 1, 'F4', 1),
+(457, 2, 1, 'F5', 1),
 (458, 2, 1, 'F6', 1),
-(459, 2, 1, 'F7', 0),
-(460, 2, 1, 'F8', 0),
-(461, 2, 1, 'F9', 0),
-(462, 2, 1, 'F10', 0),
-(463, 2, 2, 'B1', 0),
-(464, 2, 2, 'B2', 0),
+(459, 2, 1, 'F7', 1),
+(460, 2, 1, 'F8', 1),
+(461, 2, 1, 'F9', 1),
+(462, 2, 1, 'F10', 1),
+(463, 2, 2, 'B1', 1),
+(464, 2, 2, 'B2', 1),
 (465, 2, 2, 'B3', 0),
 (466, 2, 2, 'B4', 0),
 (467, 2, 2, 'B5', 0),
@@ -356,12 +395,12 @@ INSERT INTO `seat_layout` (`id`, `flight_id`, `class_id`, `seatNo`, `status`) VA
 (535, 2, 3, 'P43', 0),
 (536, 2, 3, 'P44', 0),
 (537, 2, 3, 'P45', 0),
-(538, 2, 3, 'P46', 0),
-(539, 2, 3, 'P47', 0),
+(538, 2, 3, 'P46', 1),
+(539, 2, 3, 'P47', 1),
 (540, 2, 3, 'P48', 0),
 (541, 2, 3, 'P49', 0),
 (542, 2, 3, 'P50', 0),
-(543, 2, 4, 'E1', 0),
+(543, 2, 4, 'E1', 1),
 (544, 2, 4, 'E2', 0),
 (545, 2, 4, 'E3', 0),
 (546, 2, 4, 'E4', 0),
@@ -655,7 +694,8 @@ ALTER TABLE `booking`
   ADD KEY `FK_seatNobook` (`seatNoId`),
   ADD KEY `FK_classbook` (`class_id`),
   ADD KEY `FK_passengerbook` (`passenger_id`),
-  ADD KEY `FK_userBook` (`user_id`);
+  ADD KEY `FK_userBook` (`user_id`),
+  ADD KEY `FK_payBook` (`payment_id`);
 
 --
 -- Indexes for table `classes`
@@ -690,14 +730,19 @@ ALTER TABLE `passengers`
 --
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`paymentID`),
-  ADD KEY `FK_paymenttype` (`paymentType`),
-  ADD KEY `FK_paybook` (`bookingID`);
+  ADD KEY `FK_paymenttype` (`paymentType`);
 
 --
 -- Indexes for table `paymenttype`
 --
 ALTER TABLE `paymenttype`
   ADD PRIMARY KEY (`typeID`);
+
+--
+-- Indexes for table `review`
+--
+ALTER TABLE `review`
+  ADD PRIMARY KEY (`review_id`);
 
 --
 -- Indexes for table `seat_layout`
@@ -745,7 +790,7 @@ ALTER TABLE `airline`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT for table `classes`
@@ -769,19 +814,25 @@ ALTER TABLE `flightclasses`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `paymenttype`
 --
 ALTER TABLE `paymenttype`
   MODIFY `typeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `review`
+--
+ALTER TABLE `review`
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `seat_layout`
@@ -818,6 +869,7 @@ ALTER TABLE `booking`
   ADD CONSTRAINT `FK_classbook` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`),
   ADD CONSTRAINT `FK_flightbook` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
   ADD CONSTRAINT `FK_passengerbook` FOREIGN KEY (`passenger_id`) REFERENCES `passengers` (`passenger_id`),
+  ADD CONSTRAINT `FK_payBook` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`paymentID`),
   ADD CONSTRAINT `FK_seatNobook` FOREIGN KEY (`seatNoId`) REFERENCES `seat_layout` (`id`),
   ADD CONSTRAINT `FK_userBook` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
@@ -839,7 +891,6 @@ ALTER TABLE `flightclasses`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
-  ADD CONSTRAINT `FK_paybook` FOREIGN KEY (`bookingID`) REFERENCES `booking` (`booking_id`),
   ADD CONSTRAINT `FK_paymenttype` FOREIGN KEY (`paymentType`) REFERENCES `paymenttype` (`typeID`);
 
 --

@@ -6,8 +6,6 @@
       session_start();
     }
 
-    
-
     if (isset($_SESSION['users'])) {
         $user_id = $_SESSION['users']['user_id'];
     }

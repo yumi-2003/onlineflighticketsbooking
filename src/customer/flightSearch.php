@@ -8,6 +8,7 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
     $user_id = $_SESSION['users']['user_id'];
+
 } else {
     echo "<script>alert('NO user ID selected!!!')</script>";
 }
@@ -118,7 +119,7 @@ if (isset($_POST['find'])) {
                 ON
                     flightclasses.triptype = triptype.triptypeId
                 ON 
-                    flightclasses.class_id = classes.class_id WHERE source = ? AND destination = ? AND flight_date = ?;;
+                    flightclasses.class_id = classes.class_id WHERE source = ? AND destination = ? AND flight_date = ?
                 ";
 
         $stmt = $conn->prepare($sql);
@@ -275,7 +276,27 @@ if (isset($_POST['airlineSearch'])) {
     $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-//search by departure time and arrival time
+if(isset($_POST['submit'])){
+    $rating = $_POST['rating'];
+    $text = $_POST['review_text'];
+    $createdAt = date('Y-m-d H:i:s');
+    try{
+        $reviewSql = "INSERT INTO review (user_id,rating,review_text,created_at) VALUES (?,?,?,?)";
+        $revStmt = $conn->prepare($reviewSql);
+        $status = $revStmt->execute([$user_id,$rating,$text,$createdAt]);
+        $review_id= $conn->lastInsertId();
+
+        if($status){
+            echo "Thanks for your time";
+        }
+
+    }catch(PDOException $e){
+        echo $e->getMessage();
+    }
+    
+
+}
+
 
 
 
@@ -294,204 +315,161 @@ if (isset($_POST['airlineSearch'])) {
 </head>
 
 <body>
-    <!-- nav starts -->
-    <nav class=" bg-[#0463ca] ">
-        <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-            <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
-                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
-            </a>
+     <!-- nav starts -->
+  <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
+    <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
+      <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+        <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
+        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
+      </a>
 
-            <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
-
-                <?php
-
-                if (isset($_SESSION['userisLoggedIn'])) {
-                ?>
-
-                    <div class="flex items-center">
-                        <div class="flex items-center ms-3">
-                            <div>
-                                <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
-                                    <span class="sr-only">Open user menu</span>
-
-
-                                    <img class="w-8 h-8 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
-
-                                </button>
-                            </div>
-
-                            <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                                <div class="px-4 py-3" role="none">
-                                    <p class="text-sm text-gray-900 dark:text-white" role="none">
-                                        <?php
-                                        echo $_SESSION['userEmail'];
-                                        ?>
-                                    </p>
-                                    <!-- <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                              </p> -->
-                                </div>
-                                <ul class="py-1" role="none">
-                                    <li>
-                                        <a href="editUProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
-                                    </li>
-                                    <li>
-                                        <a href="cLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                <?php
-                }
-
-                ?>
-
-
-
-                <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
-                    <span class="sr-only">Open main menu</span>
-                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-                    </svg>
+      <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
+        <?php
+        if (isset($_SESSION['userisLoggedIn'])) {
+        ?>
+          <div class="flex items-center">
+            <div class="flex items-center ms-3">
+              <div>
+                <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
+                  <span class="sr-only">Open user menu</span>
+                  <img class="w-10 h-10 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
                 </button>
-            </div>
+              </div>
 
-            <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-                <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
-                    <li>
-                        <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
-                    </li>
-                    <li>
-                        <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
-                            Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                            </svg>
-                        </button>
-                        <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
-                            <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            About Us
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Library
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Resources
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Pro Version
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                <ul class="space-y-4">
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Blog
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Newsletter
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Playground
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            License
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="p-4">
-                                <ul class="space-y-4">
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Contact Us
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Support Center
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Terms
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
-                    </li>
-                    <li>
-                        <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-                    </li>
+              <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                <div class="px-4 py-3" role="none">
+                  <p class="text-sm text-gray-900 dark:text-white" role="none">
+                    <?php
+                    echo $_SESSION['userEmail'];
+                    ?>
+                  </p>
+                </div>
+                <ul class="py-1" role="none">
+                  <li>
+                    <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
+                  </li>
+                  <li>
+                    <a href="cLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                  </li>
                 </ul>
+              </div>
             </div>
+          </div>
+        <?php
+        } else {
+        ?>
+          <a href="clogin.php" class="text-white px-4 py-2 rounded-md">Login</a>
+          <a href="cSignUp.php" class="text-blue hover:text-white px-4 py-2 rounded-md bg-[#f5effb] hover:bg-[#00103c]">Sign Up</a>
+        <?php
+        }
+        ?>
 
-        </div>
-    </nav>
+        <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
+          <span class="sr-only">Open main menu</span>
+          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+          </svg>
+        </button>
+      </div>
 
-    <div class="font-[sans-serif] p-6 sticky top-0 z-10" style="background-image: url('/images/airplane\ \(1\).jpg'); background-size: cover;">
-        <div class="grid md:grid-cols-1 items-center gap-10 max-w-5xl max-md:max-w-md mx-auto">
-            <div class="text-center">
-                <form action="" method="POST" class="space-y-4">
-                    <div>
-                        <h1 class="text-4xl font-extrabold text-white">Welcome to SwiftMiles</h1>
-                    </div>
-
-                    <div>
-                        <p class="text-white text-lg mt-4 leading-relaxed">Affordable Flights, Unforgettable Journeys </p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
-                        <select id="source" name="source" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
-                            <option selected>From: City</option>
-                            <?php
-                            $uniqueSources = array_unique(array_column($flights, 'source'));
-                            foreach ($uniqueSources as $source) {
-                                echo "<option value='$source'>$source</option>";
-                            }
-                            ?>
-                        </select>
-
-                        <select id="destination" name="destination" class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 focus:outline-none">
-                            <option selected>To: City</option>
-                            <?php
-                            $uniqueDestin = array_unique(array_column($flights, 'destination'));
-                            foreach ($uniqueDestin as $destin) {
-                                echo "<option value='$destin'>$destin</option>";
-                            }
-                            ?>
-                        </select>
-                        <input type="date" name="flight_date" class="w-full p-2 rounded-md" id="depDate" name='flight_date' placeholder="Departure Date" />
-                        <!-- <input type="date" class="w-full p-2 rounded-md" id="retDate" placeholder="Return Date" /> -->
-                        <button name="find" class="w-full p-2 text-white bg-blue-600 rounded-md col-span-full lg:col-span-1">Explore</button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
+      <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
+        <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
+          <li>
+            <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+          </li>
+          <li>
+            <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
+              Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+              </svg>
+            </button>
+            <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
+                                <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                                    <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                About Us
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                Newsletter
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                Conatct Us
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                                Support Center
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+          <li>
+            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
+          </li>
+          <li>
+            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
+  <!-- nav ends -->
+
+  <!-- banner starts -->
+  <div class="font-[sans-serif]">
+      <div class=" w-full h-60 mt-10" >
+      <img src="/images/banner5.png" alt="Banner Image" class="w-full h-full object-cover"/>
+      </div>
+
+      <div class="-mt-28 mb-6 px-4">
+        <div class="mx-auto max-w-6xl shadow-lg p-8 relative rounded bg-[#f5f5f5]">
+          <h2 class="text-xl text-gray-800 font-bold">Search Your Destination</h2>
+
+          <form class="mt-8 grid sm:grid-cols-4 gap-2" action="" method="POST">
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2">Source</label> -->
+              <select id="source" name="source" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
+              <option selected>From: City</option>
+              <?php
+              $uniqueSources = array_unique(array_column($flights, 'source'));
+              foreach ($uniqueSources as $source) {
+                echo "<option value='$source'>$source</option>";
+              }
+              ?>
+            </select>
+            </div>
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2">Destination</label> -->
+              <select id="destination" name="destination" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
+              <option selected>To: City</option>
+              <?php
+              $uniqueDestin = array_unique(array_column($flights, 'destination'));
+              foreach ($uniqueDestin as $destin) {
+                echo "<option value='$destin'>$destin</option>";
+              }
+              ?>
+            </select>
+            </div>
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2">Depature Time</label> -->
+              <input type="date" name="flight_date" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none" id="depDate" name='flight_date' placeholder="Departure Date" />
+            </div>
+            <div>
+              <!-- <label class="text-gray-800 text-sm block mb-2"></label> -->
+              <button name="find" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm text-[#f2f2ef] focus:border-blue-600 outline-none w-60 bg-[#173187]">Search</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- banner ends -->
 
 
     <!-- main contents starts -->
@@ -744,6 +722,51 @@ if (isset($_POST['airlineSearch'])) {
                     class="px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700 mt-6">
                     Subscribe
                 </button>
+            </div>
+            <div class="bg-white shadow-[0_4px_12px_-5px_rgba(0,0,0,0.4)] p-6 w-auto rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
+                
+                <h2>How is yours experiences?</h2>
+                <!-- Open the modal using ID.showModal() method -->
+                    <!-- You can open the modal using ID.showModal() method -->
+                <button class="btn px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700 " onclick="my_modal_3.showModal()">Rate us please!!!</button>
+                <dialog id="my_modal_3" class="modal shadow rounded-lg">
+                    <div class="modal-box w-96">
+                        <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-0">✕</button>
+                        </form>
+                            <form class="max-w-md mx-auto p-4 bg-white" method="POST" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data">
+                            <h2 class="text-2xl font-bold mb-4">Feedback Form</h2>
+                            <!-- <div class="mb-4">
+                                <label for="name" class="block mb-1">Name</label>
+                                <input type="text" id="name" class="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="block mb-1">Email</label>
+                                <input type="email" id="email" class="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div> -->
+                            <div class="mb-4">
+                                <label class="block mb-1">Rating</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="rating" id="rating1" value="1" class="focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label for="rating1">1</label>
+                                        <input type="radio" name="rating" id="rating2" value="2" class="focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label for="rating2">2</label>
+                                        <input type="radio" name="rating" id="rating3" value="3" class="focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label for="rating3">3</label>
+                                        <input type="radio" name="rating" id="rating4" value="4" class="focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label for="rating4">4</label>
+                                        <input type="radio" name="rating" id="rating5" value="5" class="focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label for="rating5">5</label>
+                                    </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="message" class="block mb-1">Message</label>
+                                <textarea id="message" name="review_text" class="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <button type="submit" name="submit" class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Submit</button>
+                            </form>
+                    </div>
+                </dialog>
             </div>
         </div>
 
