@@ -246,7 +246,7 @@ try {
             </div>
             <div>
               <!-- <label class="text-gray-800 text-sm block mb-2"></label> -->
-              <button name="find" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm text-[#f2f2ef] focus:border-blue-600 outline-none w-60 bg-[#173187]">Search</button>
+              <button name="find" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm text-[#f2f2ef] focus:border-blue-600 outline-none w-60 bg-[#1367ff]">Search</button>
             </div>
           </form>
         </div>
@@ -384,6 +384,7 @@ try {
                 echo "<div class='mt-4'>";
                 echo "<p class='text-sm leading-relaxed text-gray-800'>$review[review_text]</p>";
                 echo "<p class='text-sm leading-relaxed text-gray-800'>$review[created_at]</p>";
+              
                 echo "</div>";
                 echo "<div class='flex justify-center space-x-1 mt-4'>";
                 if(isset($review['rating'])){
@@ -399,9 +400,25 @@ try {
                       </svg>";
                   }
                 }
+                
                 }
                 echo "</div>";
-                echo "</div>";
+    echo "</div>";
+    if (isset($_SESSION['users']) && $_SESSION['users']['user_id'] == $review['user_id']) {
+      echo "
+            <button class='btn' onclick='document.getElementById(\"my_modal_5\").showModal()'>Edit</button>
+            <dialog id='my_modal_5' class='modal modal-bottom sm:modal-middle'>
+               <div class='modal-box w-auto rounded-lg'>
+                <h3 class='text-lg font-bold'>Edit your review!!!</h3>
+                  <textarea class='textarea textarea-info' placeholder='Bio'></textarea>
+              <div class='modal-action'>
+              <form method='dialog'>
+              <button class='btn'>Close</button>
+              </form>
+              </div>
+              </div>
+            </dialog>";
+                }
                 echo "</div>";
               }
               }
