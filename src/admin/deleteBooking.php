@@ -1,23 +1,21 @@
 <?php
         require_once "dbconnect.php";
 
-
-
         if(!isset($_SESSION)){
             session_start();
         }
 
-        if(isset($_GET['fid'])){
+        if(isset($_GET['bid'])){
 
-            $flightId = $_GET['fid'];
-            $sql = "delete from flight where flight_id = ?";
+            $bookingId = $_GET['bid'];
+            $sql = "delete from booking where booking_id=?";
             $stmt = $conn->prepare($sql);
-            $status = $stmt->execute([$flightId]);
+            $status = $stmt->execute([$bookingId]);
             
         }
 
         if($status){
             //$_SESSION['']
-            header('Location:viewFlight.php');
+            header('Location:viewBooking.php');
         }
 ?>

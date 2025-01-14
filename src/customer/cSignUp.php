@@ -106,7 +106,7 @@
     <body>
 
 
-        <!-- nav starts -->
+  <!-- nav starts -->
   <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
     <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
       <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
