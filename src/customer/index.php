@@ -2,61 +2,61 @@
 
 require_once 'dbconnect.php';
 
-  if (!isset($_SESSION)) {
-    session_start();
+if (!isset($_SESSION)) {
+  session_start();
+}
+
+if (isset($_SESSION['users'])) {
+  $user_id = $_SESSION['users']['user_id'];
+} else {
+  //echo "<script>alert('NO user ID selected!!!')</script>";
+}
+
+$sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
+
+try {
+  $stmt = $conn->query($sql);
+  $status = $stmt->execute();
+
+  if ($status) {
+    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+} catch (PDOException $e) {
+  echo $e->getMessage();
+}
 
-    if (isset($_SESSION['users'])) {
-      $user_id = $_SESSION['users']['user_id'];
-    } else {
-      //echo "<script>alert('NO user ID selected!!!')</script>";
-    }
-
-  $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
+//search by source, destin, flight date
+if (isset($_POST['find'])) {
+  $source = $_POST['source'];
+  $desti = $_POST['destination'];
+  $date = $_POST['flight_date'];
 
   try {
-    $stmt = $conn->query($sql);
-    $status = $stmt->execute();
+    $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
 
-    if ($status) {
-      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-  } catch (PDOException $e) {
-    echo $e->getMessage();
-  }
-
-  //search by source, destin, flight date
-  if (isset($_POST['find'])) {
-    $source = $_POST['source'];
-    $desti = $_POST['destination'];
-    $date = $_POST['flight_date'];
-
-    try {
-      $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
-
-      $stmt = $conn->prepare($sql);
-      $stmt->bindParam(1, $source, PDO::PARAM_STR);
-      $stmt->bindParam(2, $desti, PDO::PARAM_STR);
-      $stmt->bindParam(3, $date, PDO::PARAM_STR);
-      $stmt->execute();
-      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      echo $e->getMessage();
-    }
-  }
-
-  //get user information
-  $sql = "SELECT * FROM users WHERE user_id = :user_id";
-  try {
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(1, $source, PDO::PARAM_STR);
+    $stmt->bindParam(2, $desti, PDO::PARAM_STR);
+    $stmt->bindParam(3, $date, PDO::PARAM_STR);
     $stmt->execute();
-    $users = $stmt->fetch(PDO::FETCH_ASSOC);
+    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
   } catch (PDOException $e) {
     echo $e->getMessage();
   }
+}
 
-  //fetch review data
+//get user information
+$sql = "SELECT * FROM users WHERE user_id = :user_id";
+try {
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+  $stmt->execute();
+  $users = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo $e->getMessage();
+}
+
+//fetch review data
 
 // MySQL query to fetch reviews with user details
 $reviewsql = "SELECT *
@@ -64,20 +64,19 @@ $reviewsql = "SELECT *
               INNER JOIN users ON review.user_id = users.user_id";
 
 try {
-    // Prepare and execute the query
-    $reviewstmt = $conn->prepare($reviewsql);
-    $status = $reviewstmt->execute();
+  // Prepare and execute the query
+  $reviewstmt = $conn->prepare($reviewsql);
+  $status = $reviewstmt->execute();
 
-    // Fetch all reviews as an associative array
-    if ($status) {
-        $reviews = $reviewstmt->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        $reviews = [];
-    }
-
+  // Fetch all reviews as an associative array
+  if ($status) {
+    $reviews = $reviewstmt->fetchAll(PDO::FETCH_ASSOC);
+  } else {
+    $reviews = [];
+  }
 } catch (PDOException $e) {
-    // Handle exceptions
-    echo "Error: " . $e->getMessage();
+  // Handle exceptions
+  echo "Error: " . $e->getMessage();
 }
 ?>
 
@@ -107,16 +106,38 @@ try {
       </a>
 
       <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
+        <div class="flex items-center">
+          <a href="wishlist.php" class="text-white px-4 py-2 rounded-md">
+            <div class="flex items-center space-x-4">
+              <a href="wishlist.php" class="text-white px-4 py-2 rounded-md"><svg style="color: white" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-labelledby="favouriteIconTitle">
+                  <title id="favouriteIconTitle">Favourite</title>
+                  <path d="M12,21 L10.55,19.7051771 C5.4,15.1242507 2,12.1029973 2,8.39509537 C2,5.37384196 4.42,3 7.5,3 C9.24,3 10.91,3.79455041 12,5.05013624 C13.09,3.79455041 14.76,3 16.5,3 C19.58,3 22,5.37384196 22,8.39509537 C22,12.1029973 18.6,15.1242507 13.45,19.7149864 L12,21 Z" fill="white"></path>
+                </svg></a>
+            </div>
+          </a>
+          <a href="cart.php" class="text-white px-4 py-2 rounded-md">
+            <svg width="45" height="45" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="42" width="26" height="38" rx="2" transform="rotate(-90 5 42)" fill="none" stroke="white" stroke-width="1" stroke-linejoin="round" />
+              <path d="M9.00002 16L32 5L37 16" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="13" cy="23" r="2" fill="white" />
+              <circle cx="13" cy="29" r="2" fill="white" />
+              <circle cx="13" cy="35" r="2" fill="white" />
+              <path d="M21 35H25L36 23" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M24 29H30" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
         <?php
         if (isset($_SESSION['userisLoggedIn'])) {
         ?>
           <div class="flex items-center">
             <div class="flex items-center ms-3">
               <div>
-                <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
+                <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 ml-2" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
                   <span class="sr-only">Open user menu</span>
                   <img class="w-10 h-10 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
                 </button>
+
               </div>
 
               <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
@@ -128,6 +149,9 @@ try {
                   </p>
                 </div>
                 <ul class="py-1" role="none">
+                <li>
+                    <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Your Profile</a>
+                  </li>
                   <li>
                     <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>
                   </li>
@@ -141,6 +165,7 @@ try {
         <?php
         } else {
         ?>
+
           <a href="clogin.php" class="text-white px-4 py-2 rounded-md">Login</a>
           <a href="cSignUp.php" class="text-blue hover:text-white px-4 py-2 rounded-md bg-[#f5effb] hover:bg-[#00103c]">Sign Up</a>
         <?php
@@ -167,32 +192,32 @@ try {
               </svg>
             </button>
             <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
-                                <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                    <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                About Us
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Newsletter
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Conatct Us
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Support Center
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </li>
+              <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                  <li>
+                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                      Newsletter
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                      Conatct Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                      Support Center
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </li>
           <li>
             <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
           </li>
@@ -205,20 +230,21 @@ try {
   </nav>
   <!-- nav ends -->
 
+
   <!-- banner starts -->
   <div class="font-[sans-serif]">
-      <div class=" w-full h-60 mt-10" >
-      <img src="/images/banner5.png" alt="Banner Image" class="w-full h-full object-cover"/>
-      </div>
+    <div class=" w-full h-60 mt-10">
+      <img src="/images/banner5.png" alt="Banner Image" class="w-full h-full object-cover" />
+    </div>
 
-      <div class="-mt-28 mb-6 px-4">
-        <div class="mx-auto max-w-6xl shadow-lg p-8 relative rounded bg-[#f5f5f5]">
-          <h2 class="text-xl text-gray-800 font-bold">Search Your Destination</h2>
+    <div class="-mt-28 mb-6 px-4">
+      <div class="mx-auto max-w-6xl shadow-lg p-8 relative rounded bg-[#f5f5f5]">
+        <h2 class="text-xl text-gray-800 font-bold">Search Your Destination</h2>
 
-          <form class="mt-8 grid sm:grid-cols-4 gap-2" action="" method="POST">
-            <div>
-              <!-- <label class="text-gray-800 text-sm block mb-2">Source</label> -->
-              <select id="source" name="source" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
+        <form class="mt-8 grid sm:grid-cols-4 gap-2" action="" method="POST">
+          <div>
+            <!-- <label class="text-gray-800 text-sm block mb-2">Source</label> -->
+            <select id="source" name="source" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
               <option selected>From: City</option>
               <?php
               $uniqueSources = array_unique(array_column($flights, 'source'));
@@ -227,10 +253,10 @@ try {
               }
               ?>
             </select>
-            </div>
-            <div>
-              <!-- <label class="text-gray-800 text-sm block mb-2">Destination</label> -->
-              <select id="destination" name="destination" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
+          </div>
+          <div>
+            <!-- <label class="text-gray-800 text-sm block mb-2">Destination</label> -->
+            <select id="destination" name="destination" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none">
               <option selected>To: City</option>
               <?php
               $uniqueDestin = array_unique(array_column($flights, 'destination'));
@@ -239,173 +265,182 @@ try {
               }
               ?>
             </select>
-            </div>
-            <div>
-              <!-- <label class="text-gray-800 text-sm block mb-2">Depature Time</label> -->
-              <input type="date" name="flight_date" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none" id="depDate" name='flight_date' placeholder="Departure Date" />
-            </div>
-            <div>
-              <!-- <label class="text-gray-800 text-sm block mb-2"></label> -->
-              <button name="find" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm text-[#f2f2ef] focus:border-blue-600 outline-none w-60 bg-[#1367ff]">Search</button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div>
+            <!-- <label class="text-gray-800 text-sm block mb-2">Depature Time</label> -->
+            <input type="date" name="flight_date" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm focus:border-blue-600 outline-none" id="depDate" name='flight_date' placeholder="Departure Date" />
+          </div>
+          <div>
+            <!-- <label class="text-gray-800 text-sm block mb-2"></label> -->
+            <button name="find" class="w-full rounded py-2.5 px-4 border border-gray-300 text-sm text-[#f2f2ef] focus:border-blue-600 outline-none w-60 bg-[#1367ff]">Search</button>
+          </div>
+        </form>
       </div>
     </div>
-    <!-- banner ends -->
+  </div>
+  <!-- banner ends -->
   <!-- cards show -->
   <div class="text-center font-semibold text-2xl my-2">
-      Available Flights
+    Available Flights
   </div>
   <div class='flex h-auto items-center justify-center'>
-    
+
     <?php
     if (isset($flights)) {
       echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3 h-60'>";
       foreach ($flights as $flight) {
         echo "
-            <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30'>
-            <div class='h-96 w-72'>
-              <img class='h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125' src='{$flight['placeImg']}' alt='' />
-            </div>
+        <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30'>
+        <div class='h-96 w-72'>
+          <img class='h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125' src='{$flight['placeImg']}' alt='' />
+          <div class='absolute top-2 right-2'>
+          <a href=''>
+          <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6 text-white hover:text-red-500'>
+            <path stroke-linecap='round' stroke-linejoin='round' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' />
+          </svg> 
+          </a>
+          
+          </div>
+        </div>
 
-            <div class='absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black group-hover:from-black/70 group-hover:via-black/60 group-hover:to-black/70'></div>
+        <div class='absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black group-hover:from-black/70 group-hover:via-black/60 group-hover:to-black/70'></div>
 
-            <div class='absolute inset-0 flex translate-y-[43%] flex-col items-center justify-center px-9 text-center transition-all duration-500 group-hover:translate-y-0'>
+        <div class='absolute inset-0 flex translate-y-[43%] flex-col items-center justify-center px-9 text-center transition-all duration-500 group-hover:translate-y-0'>
 
-              <h1 class='font-dmserif text-3xl font-bold text-white'>{$flight['flight_name']}</h1>
+          <h1 class='font-dmserif text-3xl font-bold text-white'>{$flight['flight_name']}</h1>
 
-              <p class='mb-3 text-lg italic text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100'>From: {$flight['source']} To: {$flight['destination']}</p>
+          <p class='mb-3 text-lg italic text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100'>From: {$flight['source']} To: {$flight['destination']}</p>
 
-              <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>
-              <a  href='flightSearch.php'>Flight Details</a>
-              </button>
+          <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>
+          <a  href='flightSearch.php'>Flight Details</a>
+          </button>
 
-            </div>
-          </div>";
+        </div>
+        </div>";
       }
       echo "</div>";
     }
     ?>
   </div>
- <hr>
-    
-    <!-- features of this web -->
-    <div class="max-w-7xl max-md:max-w-xl mx-auto font-[sans-serif] mt-10">
-      <div class="grid xl:grid-cols-3 md:grid-cols-2 gap-12 items-center">
+  <hr>
+
+  <!-- features of this web -->
+  <div class="max-w-7xl max-md:max-w-xl mx-auto font-[sans-serif] mt-10">
+    <div class="grid xl:grid-cols-3 md:grid-cols-2 gap-12 items-center">
+      <div>
+        <img src="/images/christmas-travel-concept-with-airplane.jpg" class="w-full rounded-md" />
+      </div>
+
+      <div class="xl:col-span-2 max-md:px-6">
         <div>
-          <img src="/images/christmas-travel-concept-with-airplane.jpg" class="w-full rounded-md" />
+          <h2 class="text-gray-800 sm:text-3xl text-2xl font-extrabold">Discover Our Exclusive Features</h2>
+          <p class="text-sm text-gray-800 leading-relaxed mt-6">Unlock a world of possibilities with our exclusive features. Explore how our unique offerings can transform your journey and empower you to achieve more.</p>
         </div>
 
-        <div class="xl:col-span-2 max-md:px-6">
-          <div>
-            <h2 class="text-gray-800 sm:text-3xl text-2xl font-extrabold">Discover Our Exclusive Features</h2>
-            <p class="text-sm text-gray-800 leading-relaxed mt-6">Unlock a world of possibilities with our exclusive features. Explore how our unique offerings can transform your journey and empower you to achieve more.</p>
+        <div class="grid xl:grid-cols-3 sm:grid-cols-2 gap-6 mt-12">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Customization</h6>
           </div>
-
-          <div class="grid xl:grid-cols-3 sm:grid-cols-2 gap-6 mt-12">
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Customization</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Security</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Support</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Performance</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Global Reach</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Communication</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Integration</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Scalability</h6>
-            </div>
-            <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
-                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
-              </svg>
-              <h6 class="text-base text-gray-800">Security</h6>
-            </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Security</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Support</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Performance</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Global Reach</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Communication</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Integration</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Scalability</h6>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" class="fill-green-500 shrink-0" viewBox="0 0 24 24">
+              <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z" data-original="#000000"></path>
+            </svg>
+            <h6 class="text-base text-gray-800">Security</h6>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- show review -->
-    <div class="my-6 font-[sans-serif] max-w-6xl mx-auto">
-      <div class="max-w-2xl mx-auto text-center">
-        <h2 class="text-3xl font-extrabold text-gray-800">What our happy client say</h2>
-        <p class="text-sm mt-4 leading-relaxed text-gray-800">Veniam proident aute magna anim excepteur et ex consectetur velit ullamco veniam minim aute sit. Elit occaecat officia et laboris Lorem minim. Officia do aliqua adipisicing ullamco in</p>
-      </div>
+  <!-- show review -->
+  <div class="my-6 font-[sans-serif] max-w-6xl mx-auto">
+    <div class="max-w-2xl mx-auto text-center">
+      <h2 class="text-3xl font-extrabold text-gray-800">What Our Customers Love About Us
 
-            <div class="grid md:grid-cols-3 gap-6 max-md:gap-12 max-md:justify-center text-center max-md:max-w-lg mx-auto mt-16">
-            <?php 
-              if(isset($reviews)){
-              foreach($reviews as $review){
-                echo "<div class='rounded-md'>";
-                echo "<div class='flex flex-col items-center grid-auto-cols'>";
-                echo "<img src='$review[profile]' class='w-24 h-24 rounded-full shadow-xl border-2 border-white' />";
-                echo "<div class='mt-4'>";
-                echo "<h4 class='text-sm font-extrabold text-gray-800'>$review[username]</h4>";
-                echo "<p class='text-xs text-blue-600 font-bold mt-1'>$review[email]</p>";
-                echo "</div>";
-                echo "<div class='mt-4'>";
-                echo "<p class='text-sm leading-relaxed text-gray-800'>$review[review_text]</p>";
-                echo "<p class='text-sm leading-relaxed text-gray-800'>$review[created_at]</p>";
-              
-                echo "</div>";
-                echo "<div class='flex justify-center space-x-1 mt-4'>";
-                if(isset($review['rating'])){
-                $rating = $review['rating'];
-                for($i = 1; $i <= 5; $i++){
-                  if($i <= $rating){
-                  echo "<svg class='w-4 fill-[#007bff]' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg'>
+</h2>
+      <p class="text-sm mt-4 leading-relaxed text-gray-800">Great service, amazing experience, and results we love. Thank you for making it easy!</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 max-md:gap-12 max-md:justify-center text-center max-md:max-w-lg mx-auto mt-16">
+      <?php
+      if (isset($reviews)) {
+        foreach ($reviews as $review) {
+          echo "<div class='rounded-md'>";
+          echo "<div class='flex flex-col items-center grid-auto-cols'>";
+          echo "<img src='$review[profile]' class='w-24 h-24 rounded-full shadow-xl border-2 border-white' />";
+          echo "<div class='mt-4'>";
+          echo "<h4 class='text-sm font-extrabold text-gray-800'>$review[username]</h4>";
+          echo "<p class='text-xs text-blue-600 font-bold mt-1'>$review[email]</p>";
+          echo "</div>";
+          echo "<div class='mt-4'>";
+          echo "<p class='text-sm leading-relaxed text-gray-800'>$review[review_text]</p>";
+          echo "<p class='text-sm leading-relaxed text-gray-800'>$review[created_at]</p>";
+
+          echo "</div>";
+          echo "<div class='flex justify-center space-x-1 mt-4'>";
+          if (isset($review['rating'])) {
+            $rating = $review['rating'];
+            for ($i = 1; $i <= 5; $i++) {
+              if ($i <= $rating) {
+                echo "<svg class='w-4 fill-[#007bff]' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path d='M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z' />
                       </svg>";
-                  } else {
-                  echo "<svg class='w-4 fill-[#CED5D8]' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              } else {
+                echo "<svg class='w-4 fill-[#CED5D8]' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path d='M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z' />
                       </svg>";
-                  }
-                }
-                
-                }
-                echo "</div>";
-    echo "</div>";
-    if (isset($_SESSION['users']) && $_SESSION['users']['user_id'] == $review['user_id']) {
-      echo "
+              }
+            }
+          }
+          echo "</div>";
+          echo "</div>";
+          if (isset($_SESSION['users']) && $_SESSION['users']['user_id'] == $review['user_id']) {
+            echo "
             <button class='btn' onclick='document.getElementById(\"my_modal_5\").showModal()'>Edit</button>
             <dialog id='my_modal_5' class='modal modal-bottom sm:modal-middle'>
                <div class='modal-box w-auto rounded-lg'>
@@ -418,17 +453,17 @@ try {
               </div>
               </div>
             </dialog>";
-                }
-                echo "</div>";
-              }
-              }
-            ?>
-            </div>
-        </div>
-      
+          }
+          echo "</div>";
+        }
+      }
+      ?>
+    </div>
+  </div>
 
-    
-       
+
+
+
 
   <!-- footer starts -->
   <footer class="py-10 px-10 font-sans tracking-wide bg-[#00103c]">

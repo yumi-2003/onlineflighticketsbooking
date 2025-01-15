@@ -232,7 +232,7 @@
                     $user[email]
                     </td>
                     <td class='p-4 text-[15px] text-gray-800'>
-                    <img src='$user[profile]' class='w-32 h-24'>
+                  <img src='$user[profile]' class='w-10 h-10 rounded-full'>
                     </td>
                     <td class='p-4'>
                     <button class='mr-4' title='Edit'>
