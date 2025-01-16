@@ -279,11 +279,11 @@ if (isset($_POST['airlineSearch'])) {
 if(isset($_POST['submit'])){
     $rating = $_POST['rating'];
     $text = $_POST['review_text'];
-    $createdAt = date('Y-m-d H:i:s');
+   
     try{
-        $reviewSql = "INSERT INTO review (user_id,rating,review_text,created_at) VALUES (?,?,?,?)";
+        $reviewSql = "INSERT INTO review (user_id,rating,review_text,created_at) VALUES (?,?,?)";
         $revStmt = $conn->prepare($reviewSql);
-        $status = $revStmt->execute([$user_id,$rating,$text,$createdAt]);
+        $status = $revStmt->execute([$user_id,$rating,$text]);
         $review_id= $conn->lastInsertId();
 
         if($status){

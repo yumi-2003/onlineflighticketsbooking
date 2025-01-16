@@ -78,9 +78,43 @@ try {
   // Handle exceptions
   echo "Error: " . $e->getMessage();
 }
+
+function getAirlineInfo($arid)
+{
+    global $conn;
+    $sql = "SELECT * FROM airline where airline_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$arid]);
+    $airline = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $airline;
+}
+
+if (isset($_POST['close'])) {
+
+  
+    $rating = $_POST['rating'];
+    $text = $_POST['review_text'];
+    
+    try {
+        $sql = "Update review set rating= :rating, review_text= :text where review_id =:id";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':air_name', $airname, PDO::PARAM_STR);
+        $stmt->bindParam(':photo', $uploadPath, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $airline_Id, PDO::PARAM_INT);
+        $status = $stmt->execute();
+
+        echo $status;
+
+        if ($status) {
+            $_SESSION['updateAirlineComplete'] = "Fligth ID $airline_Id information has been updated";
+            header("Location:viewAirline.php");
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -149,7 +183,7 @@ try {
                   </p>
                 </div>
                 <ul class="py-1" role="none">
-                <li>
+                  <li>
                     <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Your Profile</a>
                   </li>
                   <li>
@@ -402,7 +436,7 @@ try {
     <div class="max-w-2xl mx-auto text-center">
       <h2 class="text-3xl font-extrabold text-gray-800">What Our Customers Love About Us
 
-</h2>
+      </h2>
       <p class="text-sm mt-4 leading-relaxed text-gray-800">Great service, amazing experience, and results we love. Thank you for making it easy!</p>
     </div>
 
@@ -419,8 +453,6 @@ try {
           echo "</div>";
           echo "<div class='mt-4'>";
           echo "<p class='text-sm leading-relaxed text-gray-800'>$review[review_text]</p>";
-          echo "<p class='text-sm leading-relaxed text-gray-800'>$review[created_at]</p>";
-
           echo "</div>";
           echo "<div class='flex justify-center space-x-1 mt-4'>";
           if (isset($review['rating'])) {
@@ -441,18 +473,41 @@ try {
           echo "</div>";
           if (isset($_SESSION['users']) && $_SESSION['users']['user_id'] == $review['user_id']) {
             echo "
-            <button class='btn' onclick='document.getElementById(\"my_modal_5\").showModal()'>Edit</button>
-            <dialog id='my_modal_5' class='modal modal-bottom sm:modal-middle'>
-               <div class='modal-box w-auto rounded-lg'>
-                <h3 class='text-lg font-bold'>Edit your review!!!</h3>
-                  <textarea class='textarea textarea-info' placeholder='Bio'></textarea>
-              <div class='modal-action'>
-              <form method='dialog'>
-              <button class='btn'>Close</button>
-              </form>
-              </div>
+            <button class='btn' onclick='document.getElementById(\"my_modal_5\").showModal()'>
+            <a href=''> Edit </a>
+            
+            </button>
+            <dialog id='my_modal_5' class='modal modal-bottom rounded-lg lg:modal-middle bg-black'>
+               <div class='modal-box w-96 rounded-lg px-4'>
+               <form >
+                <input type='hidden' name='review_id'>
+                <input type='hidden' name='user_id'>
+
+                <div class='mb-4'>
+                                <label class='block mb-1'>Rating</label>
+                                    <div class='flex items-center space-x-2'>
+                                        <input type='radio' name='rating' id='rating1' value='1' class='focus:outline-none focus:ring-2 focus:ring-blue-500>
+                                        <label for='rating1' class='text-white'>1</label>
+                                        <input type='radio' name='rating' id='rating2' value='2' class='focus:outline-none focus:ring-2 focus:ring-blue-500'>
+                                        <label for='rating2' class='text-white'>2</label>
+                                        <input type='radio' name='rating' id='rating3' value='3' class='focus:outline-none focus:ring-2 focus:ring-blue-500'>
+                                        <label for='rating3' class='text-white'>3</label>
+                                        <input type='radio' name='rating' id='rating4' value='4' class='focus:outline-none focus:ring-2 focus:ring-blue-500'>
+                                        <label for='rating4' class='text-white'>4</label>
+                                        <input type='radio' name='rating' id='rating5' value='5' class='focus:outline-none focus:ring-2 focus:ring-blue-500'>
+                                        <label for='rating5' class='text-white'>5</label>
+                                    </div>
+                            </div>
+                <label for='message' class='block mb-2 text-m font-medium text-gray-900 dark:text-black'>Edit Your Review</label>
+                  <textarea id='message' name='review_text' rows='6' class='block p-2.5 w-full text-m text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Write your thoughts here...'>$review[review_text]
+                  </textarea>
+                <div class='modal-action'>
+                  <button type='submit' name='close' class='btn text-white'>Close</button>
+                </div>
+               </form>
               </div>
             </dialog>";
+
           }
           echo "</div>";
         }
@@ -461,20 +516,20 @@ try {
     </div>
   </div>
 
-
-
-
-
   <!-- footer starts -->
   <footer class="py-10 px-10 font-sans tracking-wide bg-[#00103c]">
+  <div class="bg-[#00103c] py-10 px-6 font-[sans-serif]">
+      <div class="max-w-lg mx-auto text-center">
+        <h2 class="text-2xl font-bold mb-6 text-white">Subscribe to Our Newsletter</h2>
+        <div class="mt-12 flex items-center overflow-hidden bg-gray-50 rounded-md max-w-xl mx-auto">
+          <input type="email" placeholder="Enter your email" class="w-full bg-transparent py-3.5 px-4 text-gray-800 text-base focus:outline-none" />
+          <button class="bg-[#004be4] hover:bg-[#a91079e2] text-white text-base tracking-wide py-3.5 px-6 hover:shadow-md hover:transition-transform transition-transform hover:scale-105 focus:outline-none">
+            Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
     <div class="max-w-2xl mx-auto text-center">
-      <!-- <a href='javascript:void(0)' class="inline-block"><img src="https://readymadeui.com/readymadeui-light.svg" alt="logo"
-          class='w-44' /></a> -->
-      <p class="text-sm mt-8 text-gray-300">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean gravida,
-        mi eu pulvinar cursus, sem elit interdum mauris dipiscing elit. Aenean gravida,
-        mi eu pulvinar cursus. <a href='javascript:void(0)' class="text-sm font-semibold text-blue-500">Read
-          more...</a></p>
-
       <ul class="flex flex-wrap justify-center gap-6 mt-8">
         <li>
           <a href='javascript:void(0)'>

@@ -176,8 +176,6 @@ require_once 'dbconnect.php';
     </nav>
     <!-- nav ends -->
 
-    
-
     <div class="font-sans bg-gray-100 px-4 py-20">
         <div class="grid lg:grid-cols-2 gap-12 lg:max-w-6xl max-w-2xl mx-auto">
             <div class="text-left">

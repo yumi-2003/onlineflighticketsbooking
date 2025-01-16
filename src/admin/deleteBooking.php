@@ -19,3 +19,4 @@
             header('Location:viewBooking.php');
         }
 ?>
+
