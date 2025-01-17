@@ -91,24 +91,24 @@ function getAirlineInfo($arid)
 
 if (isset($_POST['close'])) {
 
-  
     $rating = $_POST['rating'];
     $text = $_POST['review_text'];
+    $review_id = $_POST['review_id'];
     
     try {
-        $sql = "Update review set rating= :rating, review_text= :text where review_id =:id";
+        $sql = "UPDATE review SET rating = :rating, review_text = :text WHERE review_id = :id";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':air_name', $airname, PDO::PARAM_STR);
-        $stmt->bindParam(':photo', $uploadPath, PDO::PARAM_STR);
-        $stmt->bindParam(':id', $airline_Id, PDO::PARAM_INT);
+        $stmt->bindParam(':rating', $rating, PDO::PARAM_INT);
+        $stmt->bindParam(':text', $text, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $review_id, PDO::PARAM_INT);
         $status = $stmt->execute();
 
         echo $status;
 
         if ($status) {
-            $_SESSION['updateAirlineComplete'] = "Fligth ID $airline_Id information has been updated";
-            header("Location:viewAirline.php");
+            $_SESSION['updateReviewComplete'] = "Review ID $review_id has been updated";
+            header("Location:viewReview.php");
         }
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -475,13 +475,12 @@ if (isset($_POST['close'])) {
             echo "
             <button class='btn' onclick='document.getElementById(\"my_modal_5\").showModal()'>
             <a href=''> Edit </a>
-            
             </button>
             <dialog id='my_modal_5' class='modal modal-bottom rounded-lg lg:modal-middle bg-black'>
                <div class='modal-box w-96 rounded-lg px-4'>
-               <form >
-                <input type='hidden' name='review_id'>
-                <input type='hidden' name='user_id'>
+               <form>
+                <input type='hidden' name='review_id' value='$review[review_id]'>
+                <input type='hidden' name='user_id' value='$review[user_id]'>
 
                 <div class='mb-4'>
                                 <label class='block mb-1'>Rating</label>
@@ -517,7 +516,7 @@ if (isset($_POST['close'])) {
   </div>
 
   <!-- footer starts -->
-  <footer class="py-10 px-10 font-sans tracking-wide bg-[#00103c]">
+  <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">
   <div class="bg-[#00103c] py-10 px-6 font-[sans-serif]">
       <div class="max-w-lg mx-auto text-center">
         <h2 class="text-2xl font-bold mb-6 text-white">Subscribe to Our Newsletter</h2>
@@ -529,6 +528,7 @@ if (isset($_POST['close'])) {
         </div>
       </div>
     </div>
+    
     <div class="max-w-2xl mx-auto text-center">
       <ul class="flex flex-wrap justify-center gap-6 mt-8">
         <li>
@@ -580,7 +580,7 @@ if (isset($_POST['close'])) {
       </ul>
     </div>
 
-    <ul class="grid max-sm:grid-cols-1 max-lg:grid-cols-2 lg:grid-cols-4 gap-12 mt-20">
+    <!-- <ul class="grid max-sm:grid-cols-1 max-lg:grid-cols-2 lg:grid-cols-4 gap-12 mt-20">
       <li class="flex items-center">
         <div class="bg-gray-900 h-10 w-10 rounded-full flex items-center justify-center shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill='#007bff' viewBox="0 0 482.6 482.6">
@@ -636,7 +636,7 @@ if (isset($_POST['close'])) {
           <strong>+1-548-2588</strong>
         </a>
       </li>
-    </ul>
+    </ul> -->
 
     <hr class="my-10 border-gray-500" />
 

@@ -143,8 +143,6 @@
         </nav>
         <!-- nav ends -->
 
-        
-
         <form class="max-w-sm mx-auto mt-16">
         <div class="mb-5">
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
