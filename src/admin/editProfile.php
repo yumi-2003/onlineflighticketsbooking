@@ -137,7 +137,7 @@ if (isset($_POST['editProfile'])) {
                             class="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
                             placeholder="Name">
                     </div>
-                    <div class="w-full  mb-4 lg:mt-6">
+                    <div class="w-full  mb-4 mt-6">
                         <label for="" name="admin_email" class=" dark:text-gray-300">Email</label>
                         <input type="email"
                             name="admin_email"

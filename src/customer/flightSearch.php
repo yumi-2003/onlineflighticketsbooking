@@ -63,7 +63,6 @@ try {
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
     $stmt->bindParam(':start', $start, PDO::PARAM_INT);
-
     $stmt->execute();
     $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {

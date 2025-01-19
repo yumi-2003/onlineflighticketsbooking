@@ -8,6 +8,7 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
   $user_id = $_SESSION['users']['user_id'];
+  $username = $_SESSION['users']['username'];
 } else {
   //echo "<script>alert('NO user ID selected!!!')</script>";
 }
@@ -130,8 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
   <link href="./output.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
-
-
 </head>
 
 <body class="bg-[#f2f1ef]">
@@ -155,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
                 </svg></a>
             </div>
           </a>
-          <a href="cart.php" class="text-white px-4 py-2 rounded-md">
+          <a href="bookingCart.php" class="text-white px-4 py-2 rounded-md">
             <svg width="45" height="45" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="5" y="42" width="26" height="38" rx="2" transform="rotate(-90 5 42)" fill="none" stroke="white" stroke-width="1" stroke-linejoin="round" />
               <path d="M9.00002 16L32 5L37 16" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
@@ -190,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
                 </div>
                 <ul class="py-1" role="none">
                   <li>
-                    <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Your Profile</a>
+                    <a href="viewProfile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Your Profile</a>
                   </li>
                   <li>
                     <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Your Profile</a>

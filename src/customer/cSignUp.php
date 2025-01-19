@@ -6,8 +6,6 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
-
-
 function ispwdstrong($password)
 {
     if (strlen($password) < 8) {
@@ -69,10 +67,13 @@ if (isset($_POST['signup']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $user_id = $conn->lastInsertId();
 
                     $_SESSION['users'] = [
-                        'user_id' => $user_id
+                        'user_id' => $user_id,
                     ];
 
-                    $_SESSION['signUpSuccess'] = "User created successfully";
+                    $_SESSION['username'] = $username;
+
+                    $_SESSION['signUpSuccess'] = 'Sign Up Successful';
+                    
                     header('Location: cLogin.php');
                 }
             } catch (PDOException $e) {
@@ -172,7 +173,7 @@ if (isset($_POST['signup']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Login Page -->
 
-    <div class="font-[sans-serif] bg-white max-w-4xl flex items-center mx-auto md:h-screen p-4 mt-28">
+    <div class="font-[sans-serif] bg-white max-w-4xl flex items-center mx-auto md:h-screen p-4 mt-28 ">
         <div class="grid md:grid-cols-3 items-center shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-xl overflow-hidden">
             <div class="max-md:order-1 flex flex-col justify-center md:space-y-16 space-y-8 max-md:mt-16 min-h-full bg-gradient-to-r from-blue-900 to-blue-700 lg:px-8 px-4 py-4">
                 <div>

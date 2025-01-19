@@ -32,10 +32,6 @@ try {
 
 ?>
 
-
-
-
-
 <!doctype html>
 <html>
 
@@ -208,15 +204,15 @@ try {
                <a href="viewBooking.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Booking</span>
                   <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:text-white">
-                     
-                  <?php
+
+                     <?php
                      $sql = "SELECT * FROM booking";
                      $result = $conn->query($sql);
                      $bookingCount = $result->rowCount();
                      echo $bookingCount;
 
-                  ?>
-               
+                     ?>
+
                   </span>
                </a>
             </li>
@@ -225,9 +221,9 @@ try {
                <a href="viewTickets.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Tickets</span>
                   <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
-                     
-                  <!-- //count of bookings -->
-               
+
+                     <!-- //count of bookings -->
+
                   </span>
                </a>
             </li>
@@ -255,7 +251,7 @@ try {
       <div class="grid grid-cols-3 grid-rows-5">
          <!-- Search Bar -->
          <div class="col-span-3 bg-blue-100 py-10 h-28">
-            
+
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                <div class="flex rounded-md border-2 border-blue-500 overflow-hidden max-w-md mx-auto font-[sans-serif]">
                   <input type="text" name="searchInput" placeholder="Search Flight Name..."
@@ -272,13 +268,40 @@ try {
          </div>
 
          <!-- Flight Info Section -->
-         <div class="col-span-1 row-span-4 row-start-2">
+         <div class="col-span-1 row-span-6 row-start-2">
             <h3 class="font-semibold text-lg">Flight Info</h3>
-            <!-- Add the flight details here (you can dynamically populate this as needed) -->
+            <!-- card info -->
+            <?php
+               if(isset($flights)){
+                  foreach($flights as $flight){
+                     echo "<div class='relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-80'>";
+                     echo "<div class='relative h-56 m-2.5 overflow-hidden text-white rounded-md'>
+                           <img src='$flight[placeImg]' alt='card-image' />
+                           </div>";
+                     echo "<div class='p-4'>";
+                     echo "<h6 class='mb-2 text-slate-800 text-xl font-semibold'>
+                              $flight[flight_name]
+                           </h6>";
+                     echo "<span>Source: $flight[source] </span><br>
+                           <span>Destination: $flight[destination] </span><br>
+                           <span>Departure Date: $flight[flight_date]</span><br>
+                           <span>Departure Time: $flight[departure_time] </span><br>
+                           <span>Arrival Time: $flight[arrival_time]</span><br>";
+                     echo "</div>";
+                     echo "<div class='px-4 pb-4 pt-0 mt-2'>
+                           <button class='rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none' type='submit'>
+                           View Available Seats
+                           </button>
+                           </div>";
+                     echo "</div>";
+                  }
+               }
+            ?>
+            </div>
          </div>
 
          <!-- Show Seats Section -->
-         <div class="col-span-2 row-span-4 row-start-2">
+         <div class="col-span-2 row-span-6 row-start-3">
             <h3 class="font-semibold text-lg">Show Seats</h3>
             <?php
             // Fetch seats for a specific flight and class
@@ -301,7 +324,7 @@ try {
                   $row++;
                   echo "<br>";
                }
-               
+
                if ($row > 15) {
                   break;
                }

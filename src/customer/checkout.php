@@ -49,7 +49,7 @@ if (isset($_SESSION['flight'])) {
 if (isset($_SESSION['selectedSeats'])) {
     $selectedSeats = $_SESSION['selectedSeats'];
     foreach ($selectedSeats as $seatId => $seatNo) {
-        echo $seatId . ":" . $seatNo;
+        //echo $seatId . ":" . $seatNo;
     }
 } else {
     header('Location: showSeats.php');
@@ -59,6 +59,17 @@ if (isset($_SESSION['bookingIds'])) {
     $bookingIds = $_SESSION['bookingIds'];
 }
 
+try {
+    $sql = "SELECT * FROM discount";
+    $stmt = $conn->prepare($sql);
+    $status = $stmt->execute();
+
+    if ($status) {
+        $discounts = $stmt->fetchAll();
+    }
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
 
 if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -72,12 +83,13 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $taxAmount = $class_price * $tax;
         $totalPrice = ($class_price + $taxAmount) * count($bookingIds);
         $typeId = intval($_POST['paymentType']);
-        echo var_dump($typeId);
         $securityCode = $_POST['securityCode'];
         $name = $_POST['name'];
         $expDate = $_POST['expireDate'];
         $cardNo = $_POST['cardNo'];
         $date = date('Y-m-d H:i:s');
+
+
 
         try {
             $sql = "INSERT INTO payment (cardNo, securityCode, expireDate, paymentType, name, totalPrice,paymentDate ) VALUES (?,?,?,?,?,?,?)";
@@ -112,22 +124,22 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-if(isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST"){
+if (isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST") {
 
-        $_SESSION['flight_id'] = $_POST['flight_id'];
-        $_SESSION['flight_name'] = $_POST['flight_name'];
-        $_SESSION['class_id'] = $_POST['class_id'];
-        $_SESSION['class_name'] = $_POST['class_name'];
-        $_SESSION['flight_date'] = $_POST['flight_date'];
-        $_SESSION['triptypeId'] = $_POST['triptypeId'];
-        $_SESSION['triptype_name'] = $_POST['triptype_name'];
-        $_SESSION['selectedSeats'] = $_POST['selectedSeats'];
-        $_SESSION['total_price'] = $_POST['total_price'];
+    $_SESSION['flight_id'] = $_POST['flight_id'];
+    $_SESSION['flight_name'] = $_POST['flight_name'];
+    $_SESSION['class_id'] = $_POST['class_id'];
+    $_SESSION['class_name'] = $_POST['class_name'];
+    $_SESSION['flight_date'] = $_POST['flight_date'];
+    $_SESSION['triptypeId'] = $_POST['triptypeId'];
+    $_SESSION['triptype_name'] = $_POST['triptype_name'];
+    $_SESSION['selectedSeats'] = $_POST['selectedSeats'];
+    $_SESSION['total_price'] = $_POST['total_price'];
 
-        header("Location: bookingCart.php");
-        exit;
-
+    header("Location: bookingCart.php");
+    exit;
 }
+
 
 
 ?>
@@ -270,89 +282,121 @@ if(isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST"){
                                     <hr />
                                     <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$
                                             <?php
+                                            $discountPercentage = 0; //default if there is no promo
                                             $class_price = $flight['classPrice'] ?? '';
                                             $bookingAmount = count($bookingIds);
                                             $tax = 0.15;
                                             $taxAmount = $class_price * $tax;
                                             $totalPrice = ($class_price + $taxAmount) * $bookingAmount;
-                                            echo number_format($totalPrice, 2);
+                                            if ($discountPercentage = 0) {
+                                                echo number_format($totalPrice, 2);
+                                            } else {
+                                                if (isset($_POST['promoCode']) && isset($_POST['applyCode'])) {
+                                                    $promoCode = trim($_POST['promoCode']);
+                                                    $promoCode = strtoupper($promoCode);
+                                                    //check if promo code is valid
+                                                    $currentDate = date('Y-m-d');
+                                                    $promoSql = "SELECT discount_percentage FROM discount WHERE promoCode = ? AND valid_date >= ?";
+                                                    $stmt = $conn->prepare($promoSql);
+                                                    $stmt->bindParam(1, $promoCode, PDO::PARAM_STR);
+                                                    $stmt->bindParam(2, $currentDate, PDO::PARAM_STR);
+                                                    $stmt->execute();
+
+                                                    if ($stmt->rowCount() > 0) {
+                                                        $discountPercentage = $stmt->fetchColumn();
+                                                        $totalPrice = $totalPrice - ($totalPrice * $discountPercentage / 100);
+                                                    }
+                                                    echo number_format($totalPrice, 2);
+                                                }
+                                            }
                                             ?>
                                         </span></li>
                                 </ul>
+                                <div class="mt-8">
+                                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
+                                        <h3 class="text-lg font-bold text-gray-800 mb-4">Do you have a promo code?</h3>
+                                        <div class="flex border border-blue-600 overflow-hidden rounded-lg max-w-md">
+                                            <input type="text" placeholder="Promo code" name="promoCode"
+                                                class="w-full outline-none bg-white text-gray-600 text-sm px-4 py-2.5" />
+                                            <button type='submit' name="applyCode" class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 px-5 text-sm text-white">
+                                                Apply
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                                 <p>
                                     Additonal fees like baggage fee are calculated in tax.
                                 </p>
-                            </div>
 
-                            <div class="grid gap-4 sm:grid-cols-1 mt-4">
-                                <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
+                                <div class="grid gap-4 sm:grid-cols-1 mt-4">
+                                    <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
 
-                                <div class="flex items-center">
+                                    <div class="flex items-center">
 
 
-                                    <div>
-                                        <input type="radio" class="w-5 h-5 cursor-pointer" id="card" name="paymentType" value="1" />
+                                        <div>
+                                            <input type="radio" class="w-5 h-5 cursor-pointer" id="card" name="paymentType" value="1" />
+                                        </div>
+
+
+                                        <label for="card" class="ml-4 flex gap-2 cursor-pointer">
+                                            <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
+                                            <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
+                                            <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
+                                        </label>
                                     </div>
 
-
-                                    <label for="card" class="ml-4 flex gap-2 cursor-pointer">
-                                        <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
-                                        <img src="https://readymadeui.com/images/american-express.webp" class="w-12" alt="card2" />
-                                        <img src="https://readymadeui.com/images/master.webp" class="w-12" alt="card3" />
-                                    </label>
+                                    <div class="flex items-center">
+                                        <input type="radio" class="w-5 h-5 cursor-pointer" name="paymentType" value="2" id="paypal" />
+                                        <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
+                                            <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
+                                        </label>
+                                    </div>
                                 </div>
 
-                                <div class="flex items-center">
-                                    <input type="radio" class="w-5 h-5 cursor-pointer" name="paymentType" value="2" id="paypal" />
-                                    <label for="paypal" class="ml-4 flex gap-2 cursor-pointer">
-                                        <img src="https://readymadeui.com/images/paypal.webp" class="w-20" alt="paypalCard" />
-                                    </label>
-                                </div>
-                            </div>
 
+                                <div class="grid sm:col-span-2 sm:grid-cols-2 gap-4 mt-4">
+                                    <div>
+                                        <input type="text" placeholder="Name of card holder" name="name"
+                                            class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder="CVV" name="securityCode"
+                                            class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder="Card number" name="cardNo"
+                                            class="col-span-full px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                    </div>
+                                    <div>
+                                        <input type="date" placeholder="EXP." name="expireDate"
+                                            class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
+                                    </div>
+                                </div>
 
-                            <div class="grid sm:col-span-2 sm:grid-cols-2 gap-4 mt-4">
-                                <div>
-                                    <input type="text" placeholder="Name of card holder" name="name"
-                                        class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
-                                </div>
-                                <div>
-                                    <input type="text" placeholder="CVV" name="securityCode"
-                                        class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
-                                </div>
-                                <div>
-                                    <input type="text" placeholder="Card number" name="cardNo"
-                                        class="col-span-full px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
-                                </div>
-                                <div>
-                                    <input type="date" placeholder="EXP." name="expireDate"
-                                        class="px-4 py-3.5 bg-white text-gray-800 w-full text-sm border rounded-md focus:border-[#007bff] outline-none" />
-                                </div>
-                            </div>
+                                <div class="flex flex-wrap gap-4 mt-8">
 
-                            <div class="flex flex-wrap gap-4 mt-8">
+                                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                                        <input type="hidden" name="flight_id" value="<?php echo $flight_id; ?>">
+                                        <input type="hidden" name="flight_name" value="<?php echo $flight_name; ?>">
+                                        <input type="hidden" name="class_id" value="<?php echo  $classId; ?>">
+                                        <input type="hidden" name="class_name" value="<?php echo  $class_name; ?>">
+                                        <input type="hidden" name="triptypeId" value="<?php echo  $triptypeId; ?>">
+                                        <input type="hidden" name="triptype_name" value="<?php echo  $triptype_name; ?>">
+                                        <input type="hidden" name="flight_date" value="<?php echo  $flightDate; ?>">
 
-                                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                                    <input type="hidden" name="flight_id" value="<?php echo $flight_id; ?>">
-                                    <input type="hidden" name="flight_name" value="<?php echo $flight_name; ?>">
-                                    <input type="hidden" name="class_id" value="<?php echo  $classId; ?>">
-                                    <input type="hidden" name="class_name" value="<?php echo  $class_name; ?>">
-                                    <input type="hidden" name="triptypeId" value="<?php echo  $triptypeId; ?>">
-                                    <input type="hidden" name="triptype_name" value="<?php echo  $triptype_name; ?>">
-                                    <input type="hidden" name="flight_date" value="<?php echo  $flightDate; ?>">
-                                    
-                                    <?php
-                                    foreach ($selectedSeats as $seatId => $seatNo) {
-                                        echo "<input type='hidden' name='selectedSeats[$seatId]' value='$seatNo'>";
-                                    }
-                                    ?>
-                                    <input type="hidden" name="total_price" value="<?php echo  $totalPrice; ?>">
-                                    <button type="submit" name="addToCart"
-                                        class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
-                                </form>
-                                <button type="submit" name="payAmount"
-                                    class="px-7 py-3.5 text-sm tracking-wide bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
-                            </div>
+                                        <?php
+                                        foreach ($selectedSeats as $seatId => $seatNo) {
+                                            echo "<input type='hidden' name='selectedSeats[$seatId]' value='$seatNo'>";
+                                        }
+                                        ?>
+                                        <input type="hidden" name="total_price" value="<?php echo  $totalPrice; ?>">
+                                        <button type="submit" name="addToCart"
+                                            class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
+                                    </form>
+                                    <button type="submit" name="payAmount"
+                                        class="px-7 py-3.5 text-sm tracking-wide bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
+                                </div>
                         </form>
                     </div>
                 </div>
