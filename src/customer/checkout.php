@@ -32,6 +32,7 @@ if (isset($_SESSION['flight'])) {
     $triptypefees = $flight['priceCharge'];
     $classId = $flight['class_id'];
     $class_name = $flight['class_name'];
+    $flightDate = $flight['flight_date'];
     $class_price = $flight['classPrice'];
     $source = $flight['source'];
     $destination = $flight['destination'];
@@ -111,10 +112,22 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+if(isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST"){
 
+        $_SESSION['flight_id'] = $_POST['flight_id'];
+        $_SESSION['flight_name'] = $_POST['flight_name'];
+        $_SESSION['class_id'] = $_POST['class_id'];
+        $_SESSION['class_name'] = $_POST['class_name'];
+        $_SESSION['flight_date'] = $_POST['flight_date'];
+        $_SESSION['triptypeId'] = $_POST['triptypeId'];
+        $_SESSION['triptype_name'] = $_POST['triptype_name'];
+        $_SESSION['selectedSeats'] = $_POST['selectedSeats'];
+        $_SESSION['total_price'] = $_POST['total_price'];
 
+        header("Location: bookingCart.php");
+        exit;
 
-
+}
 
 
 ?>
@@ -134,7 +147,7 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <body>
 
-    
+
     <!-- slider starts -->
     <div id="default-carousel" class="relative w-full mt-14" data-carousel="slide">
         <!-- Carousel wrapper -->
@@ -204,18 +217,17 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         </ol>
         <p>
             <?php
-            if(isset($_SESSION['paymentSuccess'])){
-               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50       dark:text-green-400' role='alert'>
+            if (isset($_SESSION['paymentSuccess'])) {
+                echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50       dark:text-green-400' role='alert'>
                         <span class='font-medium'>$_SESSION[paymentSuccess]</span>
                      </div>
                      ";
-               unset($_SESSION['paymentSuccess']);
+                unset($_SESSION['paymentSuccess']);
             }
             ?>
         </p>
 
         <div class="font-[sans-serif] bg-white p-4 mt-28 mx-8">
-
             <div class="font-[sans-serif] lg:flex lg:items-center lg:justify-center lg:h-screen max-lg:py-4">
                 <div class="bg-purple-100 p-8 w-full max-w-5xl max-lg:max-w-xl mx-auto rounded-md">
                     <h2 class="text-3xl font-extrabold text-gray-800 text-center">Checkout</h2>
@@ -226,6 +238,7 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="bg-white p-6 rounded-md max-lg:-order-1">
                                 <h3 class="text-lg font-bold text-gray-800">Summary</h3>
                                 <ul class="text-gray-800 mt-6 space-y-3">
+
                                     <li class="flex flex-wrap gap-4 text-sm">Flight Base Fees<span class="ml-auto font-bold">$
                                             <?php
                                             $feePerTicket = $flight['fee_per_ticket'] ?? '';
@@ -275,12 +288,12 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <h3 class="text-lg font-bold text-gray-800">Choose your payment method</h3>
 
                                 <div class="flex items-center">
-                                   
-                                
-                                            <div>
-                                                <input type="radio" class="w-5 h-5 cursor-pointer" id="card" name="paymentType" value="1" />
-                                            </div>
-                                    
+
+
+                                    <div>
+                                        <input type="radio" class="w-5 h-5 cursor-pointer" id="card" name="paymentType" value="1" />
+                                    </div>
+
 
                                     <label for="card" class="ml-4 flex gap-2 cursor-pointer">
                                         <img src="https://readymadeui.com/images/visa.webp" class="w-12" alt="card1" />
@@ -319,19 +332,30 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <div class="flex flex-wrap gap-4 mt-8">
 
-                                <button type="button"
-                                    class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
-
+                                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                                    <input type="hidden" name="flight_id" value="<?php echo $flight_id; ?>">
+                                    <input type="hidden" name="flight_name" value="<?php echo $flight_name; ?>">
+                                    <input type="hidden" name="class_id" value="<?php echo  $classId; ?>">
+                                    <input type="hidden" name="class_name" value="<?php echo  $class_name; ?>">
+                                    <input type="hidden" name="triptypeId" value="<?php echo  $triptypeId; ?>">
+                                    <input type="hidden" name="triptype_name" value="<?php echo  $triptype_name; ?>">
+                                    <input type="hidden" name="flight_date" value="<?php echo  $flightDate; ?>">
+                                    
+                                    <?php
+                                    foreach ($selectedSeats as $seatId => $seatNo) {
+                                        echo "<input type='hidden' name='selectedSeats[$seatId]' value='$seatNo'>";
+                                    }
+                                    ?>
+                                    <input type="hidden" name="total_price" value="<?php echo  $totalPrice; ?>">
+                                    <button type="submit" name="addToCart"
+                                        class="px-7 py-3.5 text-sm tracking-wide bg-white hover:bg-gray-50 text-gray-800 rounded-md">Pay later</button>
+                                </form>
                                 <button type="submit" name="payAmount"
                                     class="px-7 py-3.5 text-sm tracking-wide bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
                             </div>
                         </form>
                     </div>
-
-
                 </div>
-
-
 </body>
 
 </html>
