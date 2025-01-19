@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 11, 2025 at 08:49 AM
+-- Generation Time: Jan 20, 2025 at 12:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`admin_id`, `admin_uname`, `admin_email`, `admin_pwd`, `profile`) VALUES
-(1, 'admin', 'admin@gmail.com', '$2y$10$0PqW2uHfQzVsSEjZppGriOzo5Cm4RfsDDmjOM3ch9Q0Ld8o8lQCM6', '../userPhoto/. d7ca1bbb-d965-4630-b386-0598a38917d1.jpg');
+(1, 'admin', 'admin@gmail.com', '$2y$10$0PqW2uHfQzVsSEjZppGriOzo5Cm4RfsDDmjOM3ch9Q0Ld8o8lQCM6', '../userPhoto/. stitch.jpg');
 
 -- --------------------------------------------------------
 
@@ -59,7 +59,7 @@ CREATE TABLE `airline` (
 --
 
 INSERT INTO `airline` (`airline_id`, `airline_name`, `photo`) VALUES
-(2, 'Myanmar National Airways(MNA)                                        ', '../flightImg/MNA.webp'),
+(2, 'Myanmar National Airways                                                            ', '../flightImg/MNA.webp'),
 (5, 'Myanmar Airway International                                ', '../flightImg/MAI.png'),
 (6, 'Singapore Airlines(QA)                                                              ', '../flightImg/SA.png');
 
@@ -93,7 +93,12 @@ INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `tripty
 (75, 7, 2, 1, 1, 454, '2025-01-09 10:12:29', 90, 'confirm', '2025-01-09', 62),
 (76, 7, 2, 4, 1, 543, '2025-01-09 17:17:23', 91, 'confirm', '2025-01-10', 63),
 (77, 7, 2, 3, 1, 538, '2025-01-10 23:20:29', 92, 'confirm', '2025-01-11', 64),
-(78, 7, 2, 3, 1, 539, '2025-01-10 23:20:29', 93, 'confirm', '2025-01-11', 64);
+(78, 7, 2, 3, 1, 539, '2025-01-10 23:20:29', 93, 'confirm', '2025-01-11', 64),
+(79, 7, 2, 2, 1, 465, '2025-01-12 23:56:29', 94, 'confirm', '2025-01-13', 65),
+(80, 7, 2, 2, 1, 466, '2025-01-12 23:56:29', 95, 'confirm', '2025-01-13', 65),
+(82, 11, 2, 2, 1, 477, '2025-01-13 23:10:45', 97, 'confirm', '2025-01-14', 66),
+(83, 11, 2, 2, 1, 489, '2025-01-18 18:56:33', 98, 'pending', NULL, NULL),
+(84, 11, 4, 2, 1, 613, '2025-01-19 11:39:33', 99, 'confirm', '2025-01-20', 67);
 
 -- --------------------------------------------------------
 
@@ -120,6 +125,26 @@ INSERT INTO `classes` (`class_id`, `class_name`, `base_fees`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `discount`
+--
+
+CREATE TABLE `discount` (
+  `discount_id` int(11) NOT NULL,
+  `promoCode` varchar(100) DEFAULT NULL,
+  `discount_percentage` decimal(10,2) DEFAULT NULL,
+  `valid_date` date DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `discount`
+--
+
+INSERT INTO `discount` (`discount_id`, `promoCode`, `discount_percentage`, `valid_date`) VALUES
+(1, 'SWIFT10', 15.00, '2025-02-28');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `flight`
 --
 
@@ -135,8 +160,6 @@ CREATE TABLE `flight` (
   `departure_time` time NOT NULL,
   `arrival_time` time NOT NULL,
   `capacity` int(11) NOT NULL,
-  `seats_researved` int(11) NOT NULL,
-  `seats_available` int(11) NOT NULL,
   `gate` varchar(255) NOT NULL,
   `placeImg` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -145,9 +168,9 @@ CREATE TABLE `flight` (
 -- Dumping data for table `flight`
 --
 
-INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `seats_researved`, `seats_available`, `gate`, `placeImg`) VALUES
-(2, 5, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 130, 20, 'A1', '../flightImg/bangkok.jpg'),
-(4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 100, 50, 'A2', '../flightImg/chaingmai.jpg');
+INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `gate`, `placeImg`) VALUES
+(2, 5, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 'A1', '../flightImg/bangkok.jpg'),
+(4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 'A2', '../flightImg/cm.jpg');
 
 -- --------------------------------------------------------
 
@@ -221,7 +244,13 @@ INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `national
 (90, 'nora', 21, 'Female', 'Myanmar', '43545646', 'brvrv4', '3fc34c'),
 (91, 'Ingyin', 22, 'Female', 'Myanmar', '2147483647', 'brvrv4', '3fc34c'),
 (92, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'eve3', '557657'),
-(93, 'ju', 32, 'Female', 'Myanmar', '09786993707', 'eve3', '557657');
+(93, 'ju', 32, 'Female', 'Myanmar', '09786993707', 'eve3', '557657'),
+(94, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'eve3', '3fc34c'),
+(95, 'phoo nge', 34, 'Female', 'Myanmar', '09786993707', 'eve3', '557657'),
+(96, 'phoo nge', 31, 'Female', 'Myanmar', '09788976544', 'brvrv4', '557657'),
+(97, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '557657'),
+(98, 'phoo nge', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(99, 'nora', 21, 'Female', 'Myanmar', '09788976544', 'brvrv4', '557657');
 
 -- --------------------------------------------------------
 
@@ -248,7 +277,10 @@ INSERT INTO `payment` (`paymentID`, `cardNo`, `securityCode`, `expireDate`, `pay
 (59, '13131', '131', '0031-12-01', 1, '12312', 1380.00, '2025-01-09'),
 (62, '3243432', '23432543', '2025-01-25', 1, 'Ingyin', 1035.00, '2025-01-09'),
 (63, '43543534', '34543543', '2025-01-18', 1, 'Ingyin', 172.50, '2025-01-09'),
-(64, '34534', '454654', '2025-01-14', 2, 'Phoo Nge', 690.00, '2025-01-11');
+(64, '34534', '454654', '2025-01-14', 2, 'Phoo Nge', 690.00, '2025-01-11'),
+(65, '2435', '2445', '2025-01-23', 1, 'nway', 1380.00, '2025-01-13'),
+(66, '224343', '32342', '2025-01-24', 2, 'yumi', 690.00, '2025-01-14'),
+(67, '34354', '424242', '2025-02-08', 1, 'Phoo Nge', 460.00, '2025-01-19');
 
 -- --------------------------------------------------------
 
@@ -279,17 +311,16 @@ CREATE TABLE `review` (
   `review_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `rating` tinyint(4) DEFAULT NULL CHECK (`rating` between 1 and 5),
-  `review_text` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `review_text` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `review`
 --
 
-INSERT INTO `review` (`review_id`, `user_id`, `rating`, `review_text`, `created_at`) VALUES
-(2, 7, 5, 'it was excellent', '2025-01-10 23:21:54'),
-(3, 9, 3, 'the function needs to be improved', '2025-01-11 02:02:45');
+INSERT INTO `review` (`review_id`, `user_id`, `rating`, `review_text`) VALUES
+(2, 7, 3, 'it needs to make fast process\r\n                  '),
+(3, 9, 3, 'the function needs to be improved');
 
 -- --------------------------------------------------------
 
@@ -322,8 +353,8 @@ INSERT INTO `seat_layout` (`id`, `flight_id`, `class_id`, `seatNo`, `status`) VA
 (462, 2, 1, 'F10', 1),
 (463, 2, 2, 'B1', 1),
 (464, 2, 2, 'B2', 1),
-(465, 2, 2, 'B3', 0),
-(466, 2, 2, 'B4', 0),
+(465, 2, 2, 'B3', 1),
+(466, 2, 2, 'B4', 1),
 (467, 2, 2, 'B5', 0),
 (468, 2, 2, 'B6', 0),
 (469, 2, 2, 'B7', 0),
@@ -334,7 +365,7 @@ INSERT INTO `seat_layout` (`id`, `flight_id`, `class_id`, `seatNo`, `status`) VA
 (474, 2, 2, 'B12', 0),
 (475, 2, 2, 'B13', 0),
 (476, 2, 2, 'B14', 0),
-(477, 2, 2, 'B15', 0),
+(477, 2, 2, 'B15', 1),
 (478, 2, 2, 'B16', 0),
 (479, 2, 2, 'B17', 0),
 (480, 2, 2, 'B18', 0),
@@ -470,7 +501,7 @@ INSERT INTO `seat_layout` (`id`, `flight_id`, `class_id`, `seatNo`, `status`) VA
 (610, 4, 1, 'F8', 0),
 (611, 4, 1, 'F9', 0),
 (612, 4, 1, 'F10', 0),
-(613, 4, 2, 'B1', 0),
+(613, 4, 2, 'B1', 1),
 (614, 4, 2, 'B2', 0),
 (615, 4, 2, 'B3', 0),
 (616, 4, 2, 'B4', 0),
@@ -665,10 +696,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `cpassword`, `profile`) VALUES
-(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/download (3).jpg'),
+(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/photo_2024-01-07_17-04-55.jpg'),
 (8, 'nora', 'nora@gmail.com', '$2y$10$ksnIcwgmMJT2/iHp1GnMO.81Qu8fVq9q80vuMP9a7AwPNVbiTpD1.', NULL, '../userPhoto/'),
 (9, 'Emma', 'emma@gmail.com', '$2y$10$oRFV38ZIColJW4obfMkv4u4da7Oc8W22qD/AoAjrrW6Q444wVVo4m', NULL, '../userPhoto/d7ca1bbb-d965-4630-b386-0598a38917d1.jpg'),
-(10, 'yumi', 'yumi@gmail.com', '$2y$10$iOl7fR5lS.BkV.fuXiOzUuMtuPmEVJUarfU8P9OQa2mZ3PaSpWIAi', NULL, '../userPhoto/');
+(11, 'Phoo Nge', 'phoonge@gmail.com', '$2y$10$ud8MojGtInBQOjtJcU1VXORnI038poy3y5.RMoNQW7S7z3RvJ6Gdi', NULL, '../userPhoto/dog.jpg'),
+(12, 'maymon', 'maymon@gmail.com', '$2y$10$CClct0GlCvdHtyFo7rBWCu3VSwuEkdRSoyGQJuS.z6tBAK6MD20iO', NULL, '../userPhoto/dog.jpg'),
+(14, 'nwaythu', 'nwaythu@gmail.com', '$2y$10$I2n.1PaeZEbogs4ioBeYfuDgiUNkWvaO2fF/16K0bSsjSrkuBLkoS', NULL, '../userPhoto/'),
+(15, 'swarsi', 'swarsi@gmail.com', '$2y$10$/IE6X9BWou3WLYPwSjm2p.tdMVfp6kFw7GEU9SGD.pCZlp4kKhosi', NULL, '../userPhoto/');
 
 --
 -- Indexes for dumped tables
@@ -703,6 +737,12 @@ ALTER TABLE `booking`
 --
 ALTER TABLE `classes`
   ADD PRIMARY KEY (`class_id`);
+
+--
+-- Indexes for table `discount`
+--
+ALTER TABLE `discount`
+  ADD PRIMARY KEY (`discount_id`);
 
 --
 -- Indexes for table `flight`
@@ -792,13 +832,19 @@ ALTER TABLE `airline`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
 
 --
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
   MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `discount`
+--
+ALTER TABLE `discount`
+  MODIFY `discount_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `flight`
@@ -816,13 +862,13 @@ ALTER TABLE `flightclasses`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `paymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `paymenttype`
@@ -858,7 +904,7 @@ ALTER TABLE `triptype`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
