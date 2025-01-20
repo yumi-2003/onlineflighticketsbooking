@@ -1,5 +1,5 @@
 <?php
-require_once "dbconnect.php";
+require_once 'dbconnect.php';
 
 if (!isset($_SESSION)) {
     session_start();
@@ -7,39 +7,43 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
     $user_id = $_SESSION['users']['user_id'];
-    //$username = $_SESSION['users']['username'];
 }
 
-
-//$username = $_SESSION['username'];
-$profile = $_SESSION['userPhoto'];
-$email = $_SESSION['userEmail'];
-
-$sql = "SELECT * FROM users WHERE user_id = :user_id";
+$sql = "SELECT * FROM wishlist 
+    INNER JOIN flightclasses ON wishlist.flightclasses_id = flightclasses.flightclasses_id
+    INNER JOIN users ON wishlist.user_id = users.user_id";
 try {
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $users = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->query($sql);
+    $status = $stmt->execute();
+
+    if ($status) {
+        $wishlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // foreach ($wishlists as $wishlist) {
+        //     echo $wishlist['flightclasses_id'];
+        //     echo $wishlist['user_id'];
+        //     echo $wishlist['created_at'];
+        // }
+    }
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "Error: " . $e->getMessage();
 }
+
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User's Profile</title>
+    <title>Document</title>
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
 </head>
 
 <body>
+
     <!-- nav starts -->
     <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
         <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
@@ -173,32 +177,52 @@ try {
     </nav>
     <!-- nav ends -->
 
-    <!-- view Profile -->
-    <h6 class="text-center text-2xl pt-24">WELCOME <?php echo $users['username'] ?></h6>
-    <div class="card bg-base-100 w-80 shadow-xl mx-auto my-16 h-30 px-4 text-center">
-        <h2 class="card-title">WELCOME to SwiftMiles</h2>
-        <figure class="flex justify-center items-center pt-10">
-            <img
-                src="<?php if (isset($_SESSION['userPhoto'])) {
-                            echo $profile;
-                        } ?>"
-                alt="profile"
-                class="rounded-lg w-24 h-25" />
-        </figure>
-        <span>
-            <?php
-            echo "<strong>Username:</strong> " . $users['username'];
-            ?>
-        </span><br>
-        <span>
-            <?php if (isset($_SESSION['userEmail'])) {
-                echo "<strong>Email:</strong> " . $email;
-            }
-            ?>
-        </span><br>
-        <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="">
-            <button class="inline-flex h-8 items-center justify-center rounded-md bg-blue-500 px-6 font-medium text-neutral-50 shadow-lg shadow-neutral-500/20 transition active:scale-95 my-4">Edit Profile</button>
-        </a>
+    <div class="p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto my-24">
+        <!-- Start of a Flight Card -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-4">
+                <img src="airline-logo.jpg" alt="Airline Logo" class="w-16 h-12 rounded-full">
+                <div>
+                    <p class="text-lg font-semibold text-gray-800">Airline Name</p>
+                    <p class="text-sm text-gray-500">Flight Name</p>
+                </div>
+            </div>
+            <p class="text-xl font-bold text-blue-600">Class Name</p>
+            <p class="text-xl font-bold text-blue-600"><span class="text-xl font-bold text-blue-600">$</span>Class Price</p>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+            <div class="text-center">
+                <p class="text-lg font-semibold text-gray-800">From</p>
+                <p class="text-sm text-gray-500">Source City</p>
+                <p class="text-sm text-gray-500">Departure Time</p>
+            </div>
+            <div class="text-center text-gray-500">
+                <div class="flex items-center space-x-2">
+                    <span class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.293 15.707a1 1 0 010-1.414l3-3H3a1 1 0 110-2h10.586l-3-3a1 1 0 011.414-1.414l4.707 4.707a1 1 0 010 1.414l-4.707 4.707a1 1 0 01-1.414 0z" />
+                        </svg>
+                    </span>
+                    <p class="text-sm">Total Distance km</p>
+                </div>
+                <p class="text-xs">Gate Name: Gate 1</p>
+                <p class="text-xs">Trip Type: One-way</p>
+            </div>
+            <div class="text-center">
+                <p class="text-lg font-semibold text-gray-800">To</p>
+                <p class="text-sm text-gray-500">Destination City</p>
+                <p class="text-sm text-gray-500">Arrival Time</p>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <p class="text-sm text-gray-500">Flight Date</p>
+
+            <form action="">
+                <button type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Book Now</button>
+            </form>
+        </div>
     </div>
 
     <!-- footer starts -->
@@ -285,6 +309,8 @@ try {
         </div>
     </footer>
     <!-- footer ends -->
+
+
 </body>
 
 </html>

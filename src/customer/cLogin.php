@@ -8,10 +8,8 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
     $user_id = $_SESSION['users']['user_id'];
-  } else {
-
+    $username = $_SESSION['users']['username'];
   }
-$username = $_SESSION['username'];
 
 if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -36,7 +34,7 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_SESSION['userLoginSuccess'] = 'Login Successful';
                     $_SESSION['userEmail'] = $email;
                     $_SESSION['userPhoto'] = $profile;
-                    $_SESSION['username'] = $username;
+                   // $_SESSION['username'] = $username;
                     $_SESSION['userisLoggedIn'] = true;
                     header('Location: index.php');
                 } else {

@@ -47,7 +47,32 @@
             echo "<script>alert('NO flight selected!!!')</script>";
         }
 
+        if (isset($_SESSION['wishlist'])) {
+            // Retrieve the flight details from the session
+            $wishlist = $_SESSION['wishlist'];
+            $flight_id = $wishlist['flight_id'];
+            // $photo = $wishlist['photo'];
+            $class_id = $wishlist['class_id'];
+            $feePerTicket = $wishlist['fee_per_ticket'];
+            $classtypefees = $wishlist['base_fees'];
+            $triptypefees = $wishlist['priceCharge'];
+            $airline_name = $wishlist['airline_name'];
+            $flight_name = $wishlist['flight_name'];
+            $class_name = $wishlist['class_name'];
+            $class_price = $wishlist['classPrice'];
+            $source = $wishlist['source'];
+            $destination = $wishlist['destination'];
+            $gate = $wishlist['gate'];
+            $flight_date = $wishlist['flight_date'];
+            $departure_time = $wishlist['departure_time'];
+            $arrival_time = $wishlist['arrival_time'];
+            $triptypeId = $wishlist['triptypeId'];
+            $triptype_name = $wishlist['triptype_name'];
+        } else {
+            echo "<script>alert('NO flight selected!!!')</script>";
+        }
 
+        
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -107,12 +132,23 @@
                                 <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
+
                                 <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
                                 <input type='hidden' name='class_id' value='{$flight['class_id']}'>
                                 <input type='hidden' name='triptypeId' value='{$flight['triptypeId']}'>
                                 <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
+
+                                <input type='hidden' name='flight_id' value='{$wishlist['flight_id']}'>
+                                <input type='hidden' name='class_id' value='{$wishlist['class_id']}'>
+                                <input type='hidden' name='triptypeId' value='{$wishlist['triptypeId']}'>
+                                <input type='hidden' name='fee_per_ticket' value='{$wishlist['fee_per_ticket']}'>
+                                <input type='hidden' name='base_fees' value='{$wishlist['base_fees']}'>
+                                <input type='hidden' name='priceCharge' value='{$wishlist['priceCharge']}'>
+
+
+
                                 </button>
                             ";
                     }else if($seat['class_id'] == 2){
@@ -126,6 +162,13 @@
                                 <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
+
+                                <input type='hidden' name='flight_id' value='{$wishlist['flight_id']}'>
+                                <input type='hidden' name='class_id' value='{$wishlist['class_id']}'>
+                                <input type='hidden' name='triptypeId' value='{$wishlist['triptypeId']}'>
+                                <input type='hidden' name='fee_per_ticket' value='{$wishlist['fee_per_ticket']}'>
+                                <input type='hidden' name='base_fees' value='{$wishlist['base_fees']}'>
+                                <input type='hidden' name='priceCharge' value='{$wishlist['priceCharge']}'>
                                 </button>
                             ";
                     }
@@ -140,6 +183,13 @@
                                 <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
+
+                                <input type='hidden' name='flight_id' value='{$wishlist['flight_id']}'>
+                                <input type='hidden' name='class_id' value='{$wishlist['class_id']}'>
+                                <input type='hidden' name='triptypeId' value='{$wishlist['triptypeId']}'>
+                                <input type='hidden' name='fee_per_ticket' value='{$wishlist['fee_per_ticket']}'>
+                                <input type='hidden' name='base_fees' value='{$wishlist['base_fees']}'>
+                                <input type='hidden' name='priceCharge' value='{$wishlist['priceCharge']}'>
                                 </button>
                             ";
                     }else if($seat['class_id'] == 4){
@@ -153,6 +203,13 @@
                                 <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
                                 <input type='hidden' name='base_fees' value='{$flight['base_fees']}'>
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
+
+                                <input type='hidden' name='flight_id' value='{$wishlist['flight_id']}'>
+                                <input type='hidden' name='class_id' value='{$wishlist['class_id']}'>
+                                <input type='hidden' name='triptypeId' value='{$wishlist['triptypeId']}'>
+                                <input type='hidden' name='fee_per_ticket' value='{$wishlist['fee_per_ticket']}'>
+                                <input type='hidden' name='base_fees' value='{$wishlist['base_fees']}'>
+                                <input type='hidden' name='priceCharge' value='{$wishlist['priceCharge']}'>
                                 </button>
                             
                             ";

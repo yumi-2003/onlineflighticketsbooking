@@ -30,13 +30,11 @@
             $uploadPath = "../flightImg/".$filename;
             move_uploaded_file($_FILES['placeImg']['tmp_name'], $uploadPath);
 
-            
             try{
                 $sql = "INSERT INTO flight (airline_id,flight_name,flight_date,destination,source,total_distance,fee_per_ticket,departure_time,arrival_time,capacity,seats_researved,seats_available,gate,placeImg) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $stmt = $conn->prepare($sql);
                 $status = $stmt->execute([$airname,$fname,$date,$des,$ori,$tdistance,$price,$deptime,$arrtime,$cap,$rerseat,$avaseat,$gate,$uploadPath]);
                 $flightId = $conn->lastInsertId();
-
 
                 if($status){
                     header("Location:viewFlight.php");

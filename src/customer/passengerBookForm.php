@@ -16,7 +16,7 @@
         $flight_id = $flight['flight_id'];
         $airline_name = $flight['airline_name'];
         $flight_name = $flight['flight_name'];
-        $feePerTicket = $flight['fee_per_ticket'];
+        $feePerTicket = (float)$flight['fee_per_ticket'];
         $classtypefees = $flight['base_fees'];
         $triptypefees = $flight['priceCharge'];
         $classId = $flight['class_id'];
@@ -87,9 +87,9 @@
             $sql = "INSERT INTO passengers (fullName, age, gender, nationality, phoneNo, IDcard, passportNo) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$fullName, $age, $gender, $nationality, $phoneNo, $idCard, $passport]);
-
+            
             $passengerId = $conn->lastInsertId(); // Get the newly inserted passenger ID
-
+            
             // Insert booking information for this passenger
             $book_at = date('Y-m-d H:i:s');
             $sql_booking = "INSERT INTO booking (user_id, flight_id, class_id, triptype_id, seatNoId, bookAt, passenger_id, status)

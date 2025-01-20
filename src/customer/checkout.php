@@ -89,8 +89,6 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $cardNo = $_POST['cardNo'];
         $date = date('Y-m-d H:i:s');
 
-
-
         try {
             $sql = "INSERT INTO payment (cardNo, securityCode, expireDate, paymentType, name, totalPrice,paymentDate ) VALUES (?,?,?,?,?,?,?)";
             $stmt = $conn->prepare($sql);
@@ -243,7 +241,7 @@ if (isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST") {
             <div class="font-[sans-serif] lg:flex lg:items-center lg:justify-center lg:h-screen max-lg:py-4">
                 <div class="bg-purple-100 p-8 w-full max-w-5xl max-lg:max-w-xl mx-auto rounded-md">
                     <h2 class="text-3xl font-extrabold text-gray-800 text-center">Checkout</h2>
-
+                    
                     <div class="grid lg:grid-cols-1 gap-6 max-lg:gap-8 mt-16">
                         <form class="lg:col-span-1" action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
 
@@ -283,12 +281,12 @@ if (isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST") {
                                     <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$
                                             <?php
                                             $discountPercentage = 0; //default if there is no promo
-                                            $class_price = $flight['classPrice'] ?? '';
+                                            // $class_price = $flight['classPrice'] ?? '';
                                             $bookingAmount = count($bookingIds);
                                             $tax = 0.15;
                                             $taxAmount = $class_price * $tax;
                                             $totalPrice = ($class_price + $taxAmount) * $bookingAmount;
-                                            if ($discountPercentage = 0) {
+                                            if ($discountPercentage === 0) {
                                                 echo number_format($totalPrice, 2);
                                             } else {
                                                 if (isset($_POST['promoCode']) && isset($_POST['applyCode'])) {

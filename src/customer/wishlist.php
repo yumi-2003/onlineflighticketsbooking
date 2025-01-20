@@ -1,5 +1,5 @@
 <?php
-require_once "dbconnect.php";
+require_once 'dbconnect.php';
 
 if (!isset($_SESSION)) {
     session_start();
@@ -7,39 +7,93 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
     $user_id = $_SESSION['users']['user_id'];
-    //$username = $_SESSION['users']['username'];
 }
 
-
-//$username = $_SESSION['username'];
-$profile = $_SESSION['userPhoto'];
-$email = $_SESSION['userEmail'];
-
-$sql = "SELECT * FROM users WHERE user_id = :user_id";
+$sql = "SELECT 
+    *
+FROM 
+    wishlist w
+JOIN 
+    flightclasses fc 
+ON 
+    w.flightclasses_id = fc.flightclasses_id
+JOIN 
+    flight f 
+ON 
+    fc.flight_id = f.flight_id
+JOIN
+	classes c
+ON
+	fc.class_id = c.class_id
+JOIN
+	triptype tt
+ON 
+	fc.triptype = tt.triptypeId
+JOIN
+	airline a
+ON
+	f.flight_id = a.airline_id
+JOIN
+    users u
+ON
+    w.user_id = u.user_id
+WHERE
+    w.user_id = $user_id";
 try {
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $users = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->query($sql);
+    $status = $stmt->execute();
+
+    if ($status) {
+        $wishlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "Error: " . $e->getMessage();
+}
+
+if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    // Store the selected flight data in the session
+    $_SESSION['wishlist'] = [
+        'flight_id' => $_POST['flight_id'],
+        'flightClasses_id' => $_POST['flightclasses_id'],
+        'airline_name' => $_POST['airline_name'],
+        'photo' => $_POST['photo'],
+        'fee_per_ticket' => $_POST['fee_per_ticket'],
+        'base_fees' => $_POST['base_fees'],
+        'priceCharge' => $_POST['priceCharge'],
+        'flight_name' => $_POST['flight_name'],
+        'flight_date' => $_POST['flight_date'],
+        'class_name' => $_POST['class_name'],
+        'classPrice' => $_POST['classPrice'],
+        'source' => $_POST['source'],
+        'destination' => $_POST['destination'],
+        'gate' => $_POST['gate'],
+        'departure_time' => $_POST['departure_time'],
+        'arrival_time' => $_POST['arrival_time'],
+        'triptypeId' => $_POST['triptypeId'],
+        'triptype_name' => $_POST['triptype_name'],
+        'class_id' => $_POST['class_id']
+    ];
+
+    header("Location: showSeat.php");
+    exit;
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User's Profile</title>
+    <title>Document</title>
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
 </head>
 
 <body>
+
     <!-- nav starts -->
     <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
         <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
@@ -173,33 +227,91 @@ try {
     </nav>
     <!-- nav ends -->
 
-    <!-- view Profile -->
-    <h6 class="text-center text-2xl pt-24">WELCOME <?php echo $users['username'] ?></h6>
-    <div class="card bg-base-100 w-80 shadow-xl mx-auto my-16 h-30 px-4 text-center">
-        <h2 class="card-title">WELCOME to SwiftMiles</h2>
-        <figure class="flex justify-center items-center pt-10">
-            <img
-                src="<?php if (isset($_SESSION['userPhoto'])) {
-                            echo $profile;
-                        } ?>"
-                alt="profile"
-                class="rounded-lg w-24 h-25" />
-        </figure>
-        <span>
-            <?php
-            echo "<strong>Username:</strong> " . $users['username'];
-            ?>
-        </span><br>
-        <span>
-            <?php if (isset($_SESSION['userEmail'])) {
-                echo "<strong>Email:</strong> " . $email;
+    <!-- disply flight information -->
+    
+
+        <?php
+        if (isset($wishlists)) {
+            echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto my-24'>";
+
+            foreach ($wishlists as $wishlist) {
+                echo "
+            <div class='flex items-center justify-between mb-4'>
+                <div class='flex items-center space-x-4'>
+                    <img src='{$wishlist['photo']}' alt='Airline Logo' class='w-16 h-12 rounded-full'>
+                    <div>
+                        <p class='text-lg font-semibold text-gray-800'>{$wishlist['airline_name']}</p>
+                        <p class='text-sm text-gray-500'>{$wishlist['flight_name']}</p>
+                    </div>
+                </div>
+                <p class='text-xl font-bold text-blue-600'>{$wishlist["class_name"]}</p>
+                <p class='text-xl font-bold text-blue-600'><span class='text-xl font-bold text-blue-600'>$</span>{$wishlist["classPrice"]}</p>
+            </div>
+            <div class='flex items-center justify-between mb-4'>
+                <div class='text-center'>
+                    <p class='text-lg font-semibold text-gray-800'>From</p>
+                    <p class='text-sm text-gray-500'>{$wishlist["source"]}</p>
+                    <p class='text-sm text-gray-500'>{$wishlist["departure_time"]}</p>
+                </div>
+                <div class='text-center text-gray-500'>
+                    <div class='flex items-center space-x-2'>
+                        <span class='w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full'>
+                            <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
+                                <path d='M10.293 15.707a1 1 0 010-1.414l3-3H3a1 1 0 110-2h10.586l-3-3a1 1 0 011.414-1.414l4.707 4.707a1 1 0 010 1.414l-4.707 4.707a1 1 0 01-1.414 0z' />
+                            </svg>
+                        </span>
+                        <p class='text-sm'>{$wishlist["total_distance"]}km</p>
+                    </div>
+                    <p class='text-xs'>Gate Name:{$wishlist["gate"]}</p>
+                    <p class='text-xs'>Trip Type:{$wishlist["triptype_name"]}</p>
+                </div>
+                <div class='text-center'>
+                    <p class='text-lg font-semibold text-gray-800'>To</p>
+                    <p class='text-sm text-gray-500'>{$wishlist["destination"]}</p>
+                    <p class='text-sm text-gray-500'>{$wishlist["arrival_time"]}</p>
+                </div>
+            </div>
+            <div class='flex items-center justify-between'>
+                <p class='text-sm text-gray-500'>{$wishlist["flight_date"]}</p>
+
+                <form action='$_SERVER[PHP_SELF]' method='POST' enctype='multipart/form-data'>
+                        <input type='hidden' name='flight_id' value='{$wishlist['flight_id']}'>
+                        <input type='hidden' name='flightclasses_id' value='{$wishlist['flightclasses_id']}'>
+                        <input type='hidden' name='class_id' value='{$wishlist['class_id']}'>
+                        <input type='hidden' name='fee_per_ticket' value='{$wishlist['fee_per_ticket']}'>
+                        <input type='hidden' name='photo' value='{$wishlist['photo']}'>
+                        <input type='hidden' name='airline_name' value='{$wishlist['airline_name']}'>
+                        <input type='hidden' name='flight_name' value='{$wishlist['flight_name']}'>
+                        <input type='hidden' name='class_name' value='{$wishlist["class_name"]}'>
+                        <input type='hidden' name='base_fees' value='{$wishlist["base_fees"]}'>
+                        <input type='hidden' name='priceCharge' value='{$wishlist["priceCharge"]}'>
+                        <input type='hidden' name='classPrice' value='{$wishlist["classPrice"]}'>
+                        <input type='hidden' name='source' value='{$wishlist["source"]}'>
+                        <input type='hidden' name='flight_date' value='{$wishlist["flight_date"]}'>
+                        <input type='hidden' name='departure_time' value='{$wishlist["departure_time"]}'>
+                        <input type='hidden' name='triptypeId' value='{$wishlist["triptypeId"]}'>
+                        <input type='hidden' name='triptype_name' value='{$wishlist["triptype_name"]}'>
+                        <input type='hidden' name='gate' value='{$wishlist["gate"]}'>
+                        <input type='hidden' name='destination' value='{$wishlist["destination"]}'>
+                        <input type='hidden' name='arrival_time' value='{$wishlist["arrival_time"]}'>
+                        <div>
+                        </div>
+                        <div class='space-x-2'>
+                            <button type='submit' name='bookSeats' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
+                        </div>
+                </form>
+                
+            </div>
+            <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
             }
-            ?>
-        </span><br>
-        <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="">
-            <button class="inline-flex h-8 items-center justify-center rounded-md bg-blue-500 px-6 font-medium text-neutral-50 shadow-lg shadow-neutral-500/20 transition active:scale-95 my-4">Edit Profile</button>
-        </a>
-    </div>
+
+            echo "</div>";
+        }
+        ?>
+
+
+
+    
 
     <!-- footer starts -->
     <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">
@@ -285,6 +397,8 @@ try {
         </div>
     </footer>
     <!-- footer ends -->
+
+
 </body>
 
 </html>

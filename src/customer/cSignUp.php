@@ -62,18 +62,14 @@ if (isset($_POST['signup']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $conn->prepare($sql);
                 $status = $stmt->execute([$username, $email, $password_hash, $uploadPath]);
 
-
                 if ($status) {
                     $user_id = $conn->lastInsertId();
 
                     $_SESSION['users'] = [
                         'user_id' => $user_id,
+                        'username' => $username
                     ];
-
-                    $_SESSION['username'] = $username;
-
                     $_SESSION['signUpSuccess'] = 'Sign Up Successful';
-                    
                     header('Location: cLogin.php');
                 }
             } catch (PDOException $e) {

@@ -8,9 +8,7 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
   $user_id = $_SESSION['users']['user_id'];
-  $username = $_SESSION['users']['username'];
-} else {
-  //echo "<script>alert('NO user ID selected!!!')</script>";
+  //$username = $_SESSION['users']['username'];
 }
 
 $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
@@ -83,41 +81,37 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
   // Check if all required fields are set
   if (isset($_POST['review_id'], $_POST['user_id'], $_POST['rating'], $_POST['review_text'])) {
-      // Sanitize and validate inputs
-      $review_id = intval($_POST['review_id']);
-      $user_id = intval($_POST['user_id']);
-      $rating = intval($_POST['rating']);
-      $review_text = htmlspecialchars($_POST['review_text'], ENT_QUOTES);
+    // Sanitize and validate inputs
+    $review_id = intval($_POST['review_id']);
+    $user_id = intval($_POST['user_id']);
+    $rating = intval($_POST['rating']);
+    $review_text = htmlspecialchars($_POST['review_text'], ENT_QUOTES);
 
-      // Use named placeholders in the query
-      $sql = "UPDATE review 
+    // Use named placeholders in the query
+    $sql = "UPDATE review 
               SET rating = :rating, review_text = :review_text 
               WHERE review_id = :review_id AND user_id = :user_id";
 
-      try {
-          // Prepare the SQL statement
-          $stmt = $conn->prepare($sql);
+    try {
+      // Prepare the SQL statement
+      $stmt = $conn->prepare($sql);
 
-          // Bind parameters to placeholders
-          $stmt->bindParam(':rating', $rating, PDO::PARAM_INT);
-          $stmt->bindParam(':review_text', $review_text, PDO::PARAM_STR);
-          $stmt->bindParam(':review_id', $review_id, PDO::PARAM_INT);
-          $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+      // Bind parameters to placeholders
+      $stmt->bindParam(':rating', $rating, PDO::PARAM_INT);
+      $stmt->bindParam(':review_text', $review_text, PDO::PARAM_STR);
+      $stmt->bindParam(':review_id', $review_id, PDO::PARAM_INT);
+      $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 
-          // Execute the statement
-          $status = $stmt->execute();
+      // Execute the statement
+      $status = $stmt->execute();
 
-    if($status){
-      header("Location: index.php");
-    }
-    
+      if ($status) {
+        header("Location: index.php");
+      }
     } catch (PDOException $e) {
       echo $e->getMessage();
-      
+    }
   }
-
-}
-
 }
 ?>
 
@@ -134,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
 </head>
 
 <body class="bg-[#f2f1ef]">
-  
+
 
   <!-- nav starts -->
   <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
@@ -151,10 +145,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
               <a href="wishlist.php" class="text-white px-4 py-2 rounded-md"><svg style="color: white" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-labelledby="favouriteIconTitle">
                   <title id="favouriteIconTitle">Favourite</title>
                   <path d="M12,21 L10.55,19.7051771 C5.4,15.1242507 2,12.1029973 2,8.39509537 C2,5.37384196 4.42,3 7.5,3 C9.24,3 10.91,3.79455041 12,5.05013624 C13.09,3.79455041 14.76,3 16.5,3 C19.58,3 22,5.37384196 22,8.39509537 C22,12.1029973 18.6,15.1242507 13.45,19.7149864 L12,21 Z" fill="white"></path>
-                </svg></a>
+                </svg>
+              </a>
             </div>
           </a>
-          <a href="bookingCart.php" class="text-white px-4 py-2 rounded-md">
+          <!-- <a href="bookingCart.php" class="text-white px-4 py-2 rounded-md">
             <svg width="45" height="45" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="5" y="42" width="26" height="38" rx="2" transform="rotate(-90 5 42)" fill="none" stroke="white" stroke-width="1" stroke-linejoin="round" />
               <path d="M9.00002 16L32 5L37 16" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
@@ -164,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
               <path d="M21 35H25L36 23" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
               <path d="M24 29H30" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </a>
+          </a> -->
         </div>
         <?php
         if (isset($_SESSION['userisLoggedIn'])) {
@@ -176,7 +171,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
                   <span class="sr-only">Open user menu</span>
                   <img class="w-10 h-10 rounded-full" src="<?php echo $_SESSION['userPhoto'] ?>" alt="user photo">
                 </button>
-
               </div>
 
               <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
@@ -330,16 +324,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
         <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30'>
         <div class='h-96 w-72'>
           <img class='h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125' src='{$flight['placeImg']}' alt='' />
-          <div class='absolute top-2 right-2'>
-          <a href=''>
-          <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6 text-white hover:text-red-500'>
-            <path stroke-linecap='round' stroke-linejoin='round' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' />
-          </svg> 
-          </a>
-          
-          </div>
         </div>
-
         <div class='absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black group-hover:from-black/70 group-hover:via-black/60 group-hover:to-black/70'></div>
 
         <div class='absolute inset-0 flex translate-y-[43%] flex-col items-center justify-center px-9 text-center transition-all duration-500 group-hover:translate-y-0'>
@@ -479,35 +464,35 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
             <button class='btn' onclick='document.getElementById(\"my_modal_5\").showModal()'>
             Edit
             </button>"
-          ?>
-          <?php
+      ?>
+            <?php
             echo "<dialog id='my_modal_5' class='modal modal-bottom rounded-lg lg:modal-middle bg-white'>
                <div class='modal-box w-96 rounded-lg px-4'>
               <div class='modal-action'>
                <form method='POST' action=''>
                 <input type='hidden' name='review_id' value='$review[review_id]'>
                 <input type='hidden' name='user_id' value='$review[user_id]'>";
-          ?>
-          <?php
-                      echo"<div class='mb-4'>";
             ?>
-                      <?php
-                       echo "<label for='message' class='block mb-2 text-m font-medium text-gray-900 dark:text-black'>Rating</label>";
-                        // Loop to create radio buttons for ratings
-                        for ($i = 1; $i <= 5; $i++) {
-                            // Check if this rating matches the stored value
-                            $checked = ($review['rating'] == $i) ? 'checked' : '';
-                            echo "
+            <?php
+            echo "<div class='mb-4'>";
+            ?>
+            <?php
+            echo "<label for='message' class='block mb-2 text-m font-medium text-gray-900 dark:text-black'>Rating</label>";
+            // Loop to create radio buttons for ratings
+            for ($i = 1; $i <= 5; $i++) {
+              // Check if this rating matches the stored value
+              $checked = ($review['rating'] == $i) ? 'checked' : '';
+              echo "
                             <input type='radio' name='rating' id='rating_$i' value='$i' class='focus:outline-none focus:ring-2 focus:ring-blue-500' $checked>
                             <label for='rating_$i' class='text-gray-600 cursor-pointer'>$i</label>";
-                        }
-                        ?>
+            }
+            ?>
 
-          <?php
-                      echo "</div>";
-          ?>
-          <?php
-                  echo "<label for='message' class='block mb-2 text-m font-medium text-gray-900 dark:text-black'>Edit Your Review</label>
+            <?php
+            echo "</div>";
+            ?>
+      <?php
+            echo "<label for='message' class='block mb-2 text-m font-medium text-gray-900 dark:text-black'>Edit Your Review</label>
 
                   <textarea id='message' name='review_text' rows='6' class='block p-2.5 w-full text-m text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Write your thoughts here...'>$review[review_text]
                   </textarea> 
@@ -518,7 +503,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
                   </div>
               </div>
             </dialog>";
-
           }
           echo "</div>";
         }
@@ -529,7 +513,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
 
   <!-- footer starts -->
   <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">
-  <div class="bg-[#00103c] py-10 px-6 font-[sans-serif]">
+    <div class="bg-[#00103c] py-10 px-6 font-[sans-serif]">
       <div class="max-w-lg mx-auto text-center">
         <h2 class="text-2xl font-bold mb-6 text-white">Subscribe to Our Newsletter</h2>
         <div class="mt-12 flex items-center overflow-hidden bg-gray-50 rounded-md max-w-xl mx-auto">
@@ -540,7 +524,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
         </div>
       </div>
     </div>
-    
+
     <div class="max-w-2xl mx-auto text-center">
       <ul class="flex flex-wrap justify-center gap-6 mt-8">
         <li>

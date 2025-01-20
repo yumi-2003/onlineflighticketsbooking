@@ -12,6 +12,7 @@ if (isset($_SESSION['users'])) {
     echo "<script>alert('NO user ID selected!!!')</script>";
 }
 
+//get airline
 try {
     $sql = "SELECT * FROM airline";
     $stmt = $conn->prepare($sql);
@@ -165,6 +166,7 @@ if (isset($_POST['selectSeat'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
     // Store the selected flight data in the session
     $_SESSION['flight'] = [
         'flight_id' => $_POST['flight_id'],
+        'flightClasses_id' => $_POST['flightclasses_id'],
         'airline_name' => $_POST['airline_name'],
         'photo' => $_POST['photo'],
         'fee_per_ticket' => $_POST['fee_per_ticket'],
@@ -187,6 +189,40 @@ if (isset($_POST['selectSeat'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: showSeat.php");
     exit;
 }
+
+if (isset($_POST['addFav']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Ensure user ID is set
+    if (isset($user_id) && !empty($user_id)) {
+        $flightclasses_id = $_POST['flightclasses_id'] ?? null; // Use null coalescing to handle unset values
+        $currentDate = date('Y-m-d');
+
+        // Validate required fields
+        if ($flightclasses_id) {
+            try {
+                $sql = "INSERT INTO wishlist (user_id, flightclasses_id, created_at) VALUES (?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $status = $stmt->execute([$user_id, $flightclasses_id, $currentDate]);
+
+                if ($status) {
+                    // Redirect to wishlist after successful insertion
+                    header("Location: wishlist.php");
+                    exit;
+                } else {
+                    echo "Failed to add to wishlist. Please try again.";
+                }
+            } catch (PDOException $e) {
+                // Use a generic error message for security
+                echo "An error occurred while processing your request.";
+                error_log("Database error: " . $e->getMessage()); // Log the actual error
+            }
+        } else {
+            echo "Invalid flight class ID.";
+        }
+    } else {
+        echo "User ID is not set. Please log in.";
+    }
+}
+
 
 //get filtered flight information by price
 if (isset($_POST['priceRangeSearch'])) {
@@ -280,7 +316,7 @@ if (isset($_POST['submit'])) {
     $text = $_POST['review_text'];
 
     try {
-        $reviewSql = "INSERT INTO review (user_id,rating,review_text,created_at) VALUES (?,?,?)";
+        $reviewSql = "INSERT INTO review (user_id,rating,review_text) VALUES (?,?,?)";
         $revStmt = $conn->prepare($reviewSql);
         $status = $revStmt->execute([$user_id, $rating, $text]);
         $review_id = $conn->lastInsertId();
@@ -363,6 +399,15 @@ if (isset($_POST['airSearch'])) {
             </a>
 
             <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <a href="wishlist.php" class="text-white px-4 py-2 rounded-md">
+                    <div class="flex items-center space-x-4">
+                        <a href="wishlist.php" class="text-white px-4 py-2 rounded-md"><svg style="color: white" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-labelledby="favouriteIconTitle">
+                                <title id="favouriteIconTitle">Favourite</title>
+                                <path d="M12,21 L10.55,19.7051771 C5.4,15.1242507 2,12.1029973 2,8.39509537 C2,5.37384196 4.42,3 7.5,3 C9.24,3 10.91,3.79455041 12,5.05013624 C13.09,3.79455041 14.76,3 16.5,3 C19.58,3 22,5.37384196 22,8.39509537 C22,12.1029973 18.6,15.1242507 13.45,19.7149864 L12,21 Z" fill="white"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </a>
                 <?php
                 if (isset($_SESSION['userisLoggedIn'])) {
                 ?>
@@ -426,13 +471,8 @@ if (isset($_POST['airSearch'])) {
                             <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                                 <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
                                     <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                        <a href="" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                                             About Us
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Newsletter
                                         </a>
                                     </li>
                                     <li>
@@ -452,9 +492,7 @@ if (isset($_POST['airSearch'])) {
                     <li>
                         <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
                     </li>
-                    <li>
-                        <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-                    </li>
+                    
                 </ul>
             </div>
         </div>
@@ -509,7 +547,6 @@ if (isset($_POST['airSearch'])) {
         </div>
     </div>
     <!-- banner ends -->
-
 
     <!-- main contents starts -->
     <div class="p-4 grid grid-cols-5 gap-1">
@@ -677,9 +714,20 @@ if (isset($_POST['airSearch'])) {
                         </div>
                         <div class='flex items-center justify-between'>
                             <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
-                            
+
+                            <form action='{$_SERVER['PHP_SELF']}' method='POST' enctype='multipart/form-data' class='mx-10'>
+                                <input type='hidden' name='flightclasses_id' value='{$flight['flightclasses_id']}'>
+                                <input type='hidden' name='user_id' value='{['user_id']}'>
+                                <button type='submit' name='addFav' class='mx-20'>
+                                    <svg style='color: blue' role='img' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' aria-labelledby='favouriteIconTitle'> 
+                                        <title id='favouriteIconTitle'>Favourite</title> 
+                                        <path d='M12,21 L10.55,19.7051771 C5.4,15.1242507 2,12.1029973 2,8.39509537 C2,5.37384196 4.42,3 7.5,3 C9.24,3 10.91,3.79455041 12,5.05013624 C13.09,3.79455041 14.76,3 16.5,3 C19.58,3 22,5.37384196 22,8.39509537 C22,12.1029973 18.6,15.1242507 13.45,19.7149864 L12,21 Z' fill='blue'></path> 
+                                    </svg>
+                                </button>
+                            </form>
                             <form action='$_SERVER[PHP_SELF]' method='POST' enctype='multipart/form-data'>
                                     <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
+                                    <input type='hidden' name='flightclasses_id' value='{$flight['flightclasses_id']}'>
                                     <input type='hidden' name='class_id' value='{$flight['class_id']}'>
                                     <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
                                     <input type='hidden' name='photo' value='{$flight['photo']}'>
@@ -697,6 +745,8 @@ if (isset($_POST['airSearch'])) {
                                     <input type='hidden' name='gate' value='{$flight["gate"]}'>
                                     <input type='hidden' name='destination' value='{$flight["destination"]}'>
                                     <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
+                                    <div>
+                                    </div>
                                     <div class='space-x-2'>
                                         <button type='submit' name='selectSeat' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
                                     </div>
@@ -772,7 +822,7 @@ if (isset($_POST['airSearch'])) {
                 <h2>How is yours experiences?</h2>
                 <!-- Open the modal using ID.showModal() method -->
                 <!-- You can open the modal using ID.showModal() method -->
-                <button class="btn px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700 " onclick="my_modal_3.showModal()">Rate us please!!!</button>
+                <button class="btn px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700" onclick="my_modal_3.showModal()">Rate us please!!!</button>
                 <dialog id="my_modal_3" class="modal shadow rounded-lg">
                     <div class="modal-box w-96">
                         <form method="dialog">
