@@ -5,6 +5,10 @@ require_once "dbconnect.php";
 if (!isset($_SESSION)) {
    session_start();
 }
+// Check if the user is logged in, if not then redirect him to login page
+if (!isset($_SESSION['isLoggedIn'])) {
+   header('Location:adminLogin.php');
+}
 
 $sql = "SELECT * FROM admin";
 try {
@@ -14,6 +18,94 @@ try {
 } catch (PDOException $e) {
    echo $e->getMessage();
 }
+
+//booking over time chart daily
+
+// Database query for daily bookings
+$sql = "SELECT DATE(bookAt) as booking_date, COUNT(*) as total_bookings
+            FROM booking
+            GROUP BY DATE(booking_date)
+            ORDER BY booking_date ASC";
+$result = $conn->prepare($sql);
+$result->execute();
+
+// Prepare data for embedding
+$dates = [];
+$bookings = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $dates[] = $row['booking_date'];
+   $bookings[] = $row['total_bookings'];
+}
+
+//top 5 most active users
+// Database query for top 5 most active users
+$sql = "SELECT users.username, COUNT(*) as total_bookings
+            FROM booking
+            JOIN users ON booking.user_id = users.user_id
+            GROUP BY users.user_id
+            ORDER BY total_bookings DESC
+            LIMIT 5";
+$result = $conn->prepare($sql);
+$result->execute();
+
+// Prepare data for embedding
+$users = [];
+$bookings1 = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $users[] = $row['username']; // You now fetch usernames instead of user_id
+   $bookings1[] = $row['total_bookings'];
+}
+
+// booked flight classes
+$classNames = [];
+$classBookings = [];
+
+if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
+   $flightId = $_GET['flight_id']; // Retrieve the selected flight ID from the form
+
+   // SQL query to count bookings for each class for the selected flight
+   $sql = "SELECT classes.class_name, COUNT(*) as total_bookings
+           FROM booking
+           JOIN classes ON booking.class_id = classes.class_id
+           WHERE booking.flight_id = ?
+           GROUP BY classes.class_id
+           ORDER BY total_bookings DESC";
+
+   $stmt = $conn->prepare($sql);
+   $stmt->execute([$flightId]);
+
+   // Fetch booking data for the selected flight
+   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $classNames[] = $row['class_name']; // Collect class names
+      $classBookings[] = $row['total_bookings']; // Collect total bookings for each class
+   }
+}
+
+// booked trip types
+$tripTypes = [];
+$tripTypeBookings = [];
+if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
+   $flightId = $_GET['flight_id']; // Retrieve the selected flight ID from the form
+
+   // SQL query to count bookings for each trip type for the selected flight
+   $sql = "SELECT triptype.triptype_name, COUNT(*) as total_bookings
+           FROM booking
+           JOIN triptype ON booking.triptype_id = triptype.triptypeId
+           WHERE booking.flight_id = ?
+           GROUP BY triptype.triptypeId
+           ORDER BY total_bookings DESC";
+   $stmt = $conn->prepare($sql);
+   $stmt->execute([$flightId]);
+   // Fetch booking data for the selected flight
+   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $tripTypes[] = $row['triptype_name']; // Collect trip type names
+      $tripTypeBookings[] = $row['total_bookings']; // Collect total bookings for each trip type
+   }
+}
+
+
+
+
 ?>
 
 <!doctype html>
@@ -26,116 +118,120 @@ try {
    <script src="https://cdn.tailwindcss.com"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
    <script src="..js/dropbutton.js"></script>
-   
+   <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+   </script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body class="bg-[#f2f1ef]">
 
    <!-- nav starts -->
    <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
-    <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-      <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
-      </a>
+      <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
+         <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
+         </a>
 
-      <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
-      <?php
+         <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <?php
 
-      if (isset($_SESSION['isLoggedIn'])) {
-      ?>
+            if (isset($_SESSION['isLoggedIn'])) {
+            ?>
 
-         <div class="flex items-center">
-            <div class="flex items-center ms-3">
-               <div>
-                  <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
-                     <span class="sr-only">Open user menu</span>
-                     <!-- admin profile -->
-                     <img class="w-8 h-8 rounded-full" src="<?php echo $admin['profile'] ?>" alt="admin photo">
+               <div class="flex items-center">
+                  <div class="flex items-center ms-3">
+                     <div>
+                        <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
+                           <span class="sr-only">Open user menu</span>
+                           <!-- admin profile -->
+                           <img class="w-8 h-8 rounded-full" src="<?php echo $admin['profile'] ?>" alt="admin photo">
 
-                  </button>
-               </div>
+                        </button>
+                     </div>
 
-               <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                  <div class="px-4 py-3" role="none">
-                     <p class="text-sm text-gray-900 dark:text-white" role="none">
-                        <?php
-                        echo $_SESSION['adName'];
-                        ?>
-                     </p>
-                     <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                        <?php
-                        echo $_SESSION['adEmail'];
-                        ?>
-                     </p>
+                     <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                        <div class="px-4 py-3" role="none">
+                           <p class="text-sm text-gray-900 dark:text-white" role="none">
+                              <?php
+                              echo $_SESSION['adName'];
+                              ?>
+                           </p>
+                           <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                              <?php
+                              echo $_SESSION['adEmail'];
+                              ?>
+                           </p>
+                        </div>
+                        <ul class="py-1" role="none">
+                           <li>
+                              <a href="editProfile.php?id=<?php echo $admin['admin_id']; ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
+
+                           </li>
+                           <li>
+                              <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                           </li>
+                        </ul>
+                     </div>
                   </div>
-                  <ul class="py-1" role="none">
-                     <li>
-                        <a href="editProfile.php?id=<?php echo $admin['admin_id']; ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
-
-                     </li>
-                     <li>
-                        <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
-                     </li>
-                  </ul>
                </div>
-            </div>
+
+            <?php
+            }
+
+            ?>
+            <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
+               <span class="sr-only">Open main menu</span>
+               <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+               </svg>
+            </button>
          </div>
 
-      <?php
-      }
-
-      ?>
-        <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-          </svg>
-        </button>
+         <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
+            <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
+               <li>
+                  <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+               </li>
+               <li>
+                  <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
+                     Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                     </svg>
+                  </button>
+                  <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
+                     <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                        <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 About Us
+                              </a>
+                           </li>
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 Conatct Us
+                              </a>
+                           </li>
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 Support Center
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </li>
+               <li>
+                  <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
+               </li>
+               <li>
+                  <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
+               </li>
+            </ul>
+         </div>
       </div>
-
-      <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-        <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
-          <li>
-            <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
-          </li>
-          <li>
-            <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
-              Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-              </svg>
-            </button>
-            <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
-                                <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                    <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                About Us
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Conatct Us
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Support Center
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </li>
-          <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
-          </li>
-          <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-          </li>
-        </ul>
-      </div>
-    </div>
    </nav>
    <!-- nav ends -->
 
@@ -180,13 +276,13 @@ try {
                <a href="viewBooking.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Booking</span>
                   <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:text-white">
-                     
-                  <?php
+
+                     <?php
                      $sql = "SELECT * FROM booking";
                      $result = $conn->query($sql);
                      $bookingCount = $result->rowCount();
                      echo $bookingCount;
-                  ?>
+                     ?>
                   </span>
                </a>
             </li>
@@ -195,9 +291,9 @@ try {
                <a href="viewTickets.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Tickets</span>
                   <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
-                     
-                  <!-- //count of bookings -->
-               
+
+                     <!-- //count of bookings -->
+
                   </span>
                </a>
             </li>
@@ -220,12 +316,13 @@ try {
 
    <!-- main contents starts -->
    <div class="p-4 sm:ml-64">
-      <div class="p-4 rounded-lg dark:border-gray-700 mt-14">
-         <h1 class="text-2xl font-semibold text-gray-900 dark:text-dark">Welcome to Admin Dashboard!!!</h1>
+      < class="p-4 rounded-lg dark:border-gray-700 mt-14">
+         <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to Admin Dashboard!!!</h1>
+
          <p>
             <?php
             if (isset($_SESSION['adminLoginSuccess'])) {
-               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50                  dark:text-green-400' role='alert'>
+               echo "<div class='p-4 mb-4 text-sm text-black rounded-lg bg-green-50 dark:bg-cyan-50 dark:text-green-400' role='alert'>
                         <span class='font-medium'>$_SESSION[adminLoginSuccess]</span>
                      </div>
                      ";
@@ -234,77 +331,183 @@ try {
             ?>
          </p>
 
-         <div class="grid grid-cols-4 gap-4 mb-4">
-            <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <!-- user count and user icon add -->
-                  Users
+         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div class="p-6 bg-[#0034b0] text-white rounded-lg shadow-md hover:shadow-lg">
+               <div class="flex items-center space-x-4">
+                  <h2 class="text-lg font-bold">Users</h2>
+                  <span>
+                     <img src="/images/group.png" class="w-10 h-10" alt="user">
+                  </span>
+               </div>
+               <p class="text-2xl">
                   <?php
-                  $sql = "SELECT * FROM users";
+                  $sql = "SELECT COUNT(*) as user_count FROM users";
                   $result = $conn->query($sql);
-                  $userCount = $result->rowCount();
-                  echo $userCount;
+                  $userCount = $result->fetch(PDO::FETCH_ASSOC);
+                  echo $userCount['user_count'];
                   ?>
                </p>
             </div>
 
-            <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <!-- flight count and flight icon add -->
-                  flights
+            <div class="p-6 bg-[#0034b0] text-white rounded-lg shadow-md hover:shadow-lg">
+               <div class="flex items-center space-x-4">
+                  <h2 class="text-lg font-bold">Flight</h2>
+                  <span>
+                     <img src="/images/airplane.png" class="w-10 h-10" alt="flight">
+                  </span>
+               </div>
+               <p class="text-2xl">
                   <?php
-                  $sql = "SELECT * FROM flight";
+                  $sql = "SELECT COUNT(*) as flight_count FROM flight";
                   $result = $conn->query($sql);
-                  $flightCount = $result->rowCount();
-                  echo $flightCount;
+                  $flightCount = $result->fetch(PDO::FETCH_ASSOC);
+                  echo $flightCount['flight_count'];
                   ?>
                </p>
             </div>
-            <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  bookings
-                  <?php
-                     $sql = "SELECT * FROM booking";
-                     $result = $conn->query($sql);
-                     $bookingCount = $result->rowCount();
-                     echo $bookingCount;
 
+            <div class="p-6 bg-[#0034b0] text-white rounded-lg shadow-md hover:shadow-lg">
+               <div class="flex items-center space-x-4">
+                  <h2 class="text-lg font-bold">Booking</h2>
+                  <span>
+                     <img src="/images/booking (1).png" class="w-10 h-10" alt="booking">
+                  </span>
+               </div>
+               <p class="text-2xl">
+                  <?php
+                  $sql = "SELECT COUNT(*) as booking_count FROM booking";
+                  $result = $conn->query($sql);
+                  $bookingCount = $result->fetch(PDO::FETCH_ASSOC);
+                  echo $bookingCount['booking_count'];
                   ?>
                </p>
             </div>
-            <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  Cancelled Booking
+
+            <div class="p-6 bg-[#0034b0] text-white rounded-lg shadow-md hover:shadow-lg">
+               <div class="flex items-center space-x-4">
+                  <h2 class="text-lg font-bold">Total Revenue</h2>
+                  <span>
+                     <img src="/images/tag.png" class="w-10 h-10" alt="revenue">
+                  </span>
+               </div>
+               <p class="text-2xl">
+                  <?php
+                  $sql = "SELECT SUM(totalPrice) as total_revenue FROM payment";
+                  $result = $conn->query($sql);
+                  $revenue = $result->fetch(PDO::FETCH_ASSOC);
+                  echo "$" . $revenue['total_revenue'];
+                  ?>
                </p>
             </div>
          </div>
-         <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-            <p class="text-2xl text-gray-400 dark:text-gray-500">
 
-            </p>
+         <div class="flex flex-wrap lg:flex-nowrap items-start justify-between space-y-6 lg:space-y-0 lg:space-x-6 p-6">
+            <!-- Booking Chart Section -->
+            <div class="flex flex-col items-center justify-center bg-[#cfedff] rounded-lg shadow-md w-full lg:w-2/3">
+               <h2 class="text-xl font-semibold text-black-700 dark:text-black-300 mb-4">
+                  Bookings Over Time
+               </h2>
+               <div class="w-full h-64 sm:h-80">
+                  <canvas id="bookingChart" class="w-full h-full"></canvas>
+               </div>
+            </div>
+
+            <!-- Grid Sections (stacked vertically on small screens, side-by-side on larger screens) -->
+            <div class="flex flex-col w-full lg:w-1/3 space-y-6">
+               <div class="flex items-center justify-center rounded bg-[#74c2ff] h-28">
+                  <div class="text-center">
+                     <h1 class="text-lg font-semibold text-gray-800">Confirmed Booking Count:</h1>
+                     <span class="text-2xl text-gray-700">
+                        <?php
+                        $sql = "SELECT COUNT(*) as confirmed_booking FROM booking WHERE status = 'confirm'";
+                        $result = $conn->query($sql);
+                        $confirmedBooking = $result->fetch(PDO::FETCH_ASSOC);
+                        echo $confirmedBooking['confirmed_booking'];
+                        ?>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="flex items-center justify-center rounded bg-[#74c2ff] h-28">
+                  <div class="text-center">
+                     <h1 class="text-lg font-semibold text-gray-800">Pending Booking Count:</h1>
+                     <span class="text-2xl text-gray-700">
+                        <?php
+                        $sql = "SELECT COUNT(*) as pending_booking FROM booking WHERE status = 'pending'";
+                        $result = $conn->query($sql);
+                        $pendingBooking = $result->fetch(PDO::FETCH_ASSOC);
+                        echo $pendingBooking['pending_booking'];
+                        ?>
+                     </span>
+                  </div>
+               </div>
+            </div>
          </div>
-         <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
+
+         <!-- Most Active Users Chart -->
+         <div class="flex flex-col items-center justify-center p-6 bg-[#f0f4f8] rounded-lg shadow-md w-full mt-6">
+            <h2 class="text-xl font-semibold text-black-700 dark:text-black-300 mb-4">
+               Most Active Users
+            </h2>
+            <div class="w-full h-64 sm:h-80">
+               <canvas id="activeUsersChart" class="w-full h-full"></canvas>
             </div>
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
+         </div>
+
+            <!-- booked flight classes and triptype by flight -->
+            <div class="w-full text-center mb-6 mt-10">
+               <form action="" method="GET" class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
+                  <label for="flightSelect" class="text-lg font-semibold text-black">Select Flight:</label>
+                  <select id="flightSelect" name="flight_id" class="border border-gray-300 rounded-lg p-2 w-60">
+                     <option value="">Select Flight</option>
+                     <?php
+                     // Fetch flight details from the database
+                     $selectedFlightId = isset($_GET['flight_id']) ? $_GET['flight_id'] : '';
+                     $sql = "SELECT flight_id, flight_name FROM flight";
+                     $stmt = $conn->prepare($sql);
+                     if ($stmt->execute()) {
+                        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        foreach ($flights as $flight) {
+                           $selected = ($selectedFlightId == $flight['flight_id']) ? 'selected' : '';
+                           echo "<option value='{$flight['flight_id']}' $selected>{$flight['flight_name']} (ID: {$flight['flight_id']})</option>";
+                        }
+                     } else {
+                        echo "<option value=''>Error fetching flights</option>";
+                     }
+                     ?>
+                  </select>
+                  <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Filter</button>
+               </form>
+
+
+               <!-- Charts Section -->
+            <div class="flex flex-wrap lg:flex-nowrap items-center justify-center w-full space-y-6 lg:space-y-0 lg:space-x-6">
+               <!-- Flight Classes Chart -->
+               <div class="flex flex-col items-center justify-center w-full lg:w-1/2">
+                  <h2 class="text-xl font-semibold text-black mb-4">Booked Flight Classes</h2>
+                  <div class="w-full h-64">
+                     <canvas id="flightClassesChart" class="w-full h-full"></canvas>
+                  </div>
+               </div>
+
+               <!-- Trip Types Chart -->
+               <div class="flex flex-col items-center justify-center w-full lg:w-1/2">
+                  <h2 class="text-xl font-semibold text-black mb-4">Booked Trip Types</h2>
+                  <div class="w-full h-64">
+                     <canvas id="tripType" class="w-full h-full"></canvas>
+                  </div>
+               </div>
             </div>
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
             </div>
+
+            
+
+      </div>
+
+      <!-- <div class="grid grid-cols-2 gap-4 mb-4 mt-4">
+            
+            
+            
             <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
                <p class="text-2xl text-gray-400 dark:text-gray-500">
                   <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
@@ -349,8 +552,8 @@ try {
                   </svg>
                </p>
             </div>
-         </div>
-      </div>
+         </div> -->
+   </div>
    </div>
    <!-- main contents ends -->
 
@@ -360,6 +563,206 @@ try {
 
       dropdownButton.addEventListener('click', () => {
          dropdownMenu.classList.toggle('hidden');
+      });
+
+      const labels = <?php echo json_encode($dates); ?>;
+      const bookings = <?php echo json_encode($bookings); ?>;
+
+      //chart
+      const ctx = document.getElementById('bookingChart').getContext('2d');
+
+      // Create a gradient for the background
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, 'rgba(99, 132, 255, 0.2)');
+      gradient.addColorStop(1, 'rgba(99, 132, 255, 0.1)');
+
+      const chart = new Chart(ctx, {
+         type: 'line',
+         data: {
+            labels: labels,
+            datasets: [{
+               label: 'Bookings',
+               data: bookings,
+               backgroundColor: gradient, // Gradient for background
+               borderColor: 'rgb(99, 132, 255)', // Smooth blue border
+               borderWidth: 2, // Thicker border for the line
+               tension: 0.4, // Smooth curve for the line
+               pointBackgroundColor: 'rgb(99, 132, 255)', // Color for points
+               pointRadius: 3, // Larger points
+               pointHoverRadius: 5, // Larger points on hover
+               pointBorderWidth: 2, // Border width for points
+            }]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false, // Prevent aspect ratio distortion
+            scales: {
+               y: {
+                  beginAtZero: true,
+                  grid: {
+                     color: 'rgba(0, 0, 0, 0.1)', // Soft gridlines
+                     lineWidth: 1
+                  },
+                  ticks: {
+                     font: {
+                        size: 12,
+                        family: 'Arial, sans-serif',
+                        weight: 'bold',
+                        color: '#333'
+                     }
+                  }
+               },
+               x: {
+                  grid: {
+                     color: 'rgba(0, 0, 0, 0.1)', // Soft gridlines
+                     lineWidth: 1
+                  },
+                  ticks: {
+                     font: {
+                        size: 12,
+                        family: 'Arial, sans-serif',
+                        weight: 'bold',
+                        color: '#333'
+                     }
+                  }
+               }
+            },
+            plugins: {
+               tooltip: {
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dark background for tooltips
+                  titleColor: '#fff',
+                  bodyColor: '#fff',
+                  borderColor: '#99CCFF',
+                  borderWidth: 1,
+                  callbacks: {
+                     label: function(tooltipItem) {
+                        return `Bookings: ${tooltipItem.raw}`; // Display bookings count in tooltip
+                     }
+                  }
+               },
+               legend: {
+                  labels: {
+                     font: {
+                        size: 10,
+                        family: 'Arial, sans-serif',
+                        weight: 'bold',
+                        color: '#333'
+                     },
+                     usePointStyle: true,
+                  },
+                  position: 'top',
+               }
+            }
+         }
+      });
+
+      // Active Users Chart
+      const users = <?php echo json_encode($users); ?>;
+      const bookings1 = <?php echo json_encode($bookings1); ?>;
+
+      const ctx1 = document.getElementById('activeUsersChart').getContext('2d');
+      const chart1 = new Chart(ctx1, {
+         type: 'bar',
+         data: {
+            labels: users, // Usernames as labels for the y-axis
+            datasets: [{
+               label: 'Bookings Count', // Label for the bars
+               data: bookings1, // Booking counts as data for the x-axis
+               backgroundColor: 'rgba(99, 132, 255, 0.2)', // Bar color
+               borderColor: 'rgb(99, 132, 255)', // Bar border color
+               borderWidth: 2, // Border width
+               barPercentage: 0.5, // Adjust the width of the bars
+               categoryPercentage: 0.5 // Adjust the category width
+            }]
+         },
+         options: {
+            indexAxis: 'y', // Set to 'y' for horizontal bar chart
+            scales: {
+               x: {
+                  beginAtZero: true // Ensure the x-axis starts at 0
+               }
+            },
+            responsive: true,
+            maintainAspectRatio: false, // Allow responsiveness
+            plugins: {
+               legend: {
+                  position: 'top', // Position the legend at the top of the chart
+                  labels: {
+                     font: {
+                        size: 12,
+                        family: 'Arial, sans-serif',
+                        weight: 'bold',
+                        color: '#333' // Font styling for the legend
+                     }
+                  }
+               }
+            }
+         }
+      });
+
+      //most booked flight classes for each flight
+
+      // Pass PHP data to JavaScript
+      // Render the donut chart using Chart.js
+      const classNames = <?php echo json_encode($classNames); ?>;
+      const classBookings = <?php echo json_encode($classBookings); ?>;
+
+      const ctx3 = document.getElementById('flightClassesChart').getContext('2d');
+      new Chart(ctx3, {
+         type: 'doughnut',
+         data: {
+            labels: classNames, // Class names as labels
+            datasets: [{
+               label: 'Bookings Count',
+               data: classBookings, // Use raw counts instead of percentages
+               backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+            }]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+               tooltip: {
+                  callbacks: {
+                     label: function(tooltipItem) {
+                        return `${tooltipItem.label}: ${tooltipItem.raw} bookings`; // Display count in the tooltip
+                     }
+                  }
+               }
+            }
+         }
+      });
+
+      //most booked trip types for each flight
+      // Pass PHP data to JavaScript
+      // Render the donut chart using Chart.js
+      const tripTypes = <?php echo json_encode($tripTypes); ?>;
+      const tripTypeBookings = <?php echo json_encode($tripTypeBookings); ?>;
+
+      const ctx4 = document.getElementById('tripType').getContext('2d');
+      new Chart(ctx4, {
+         type: 'doughnut',
+         data: {
+            labels: tripTypes, // Class names as labels
+            datasets: [{
+               label: 'Bookings Count',
+               data: tripTypeBookings, // Use raw counts instead of percentages
+               backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+            }]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+               tooltip: {
+                  callbacks: {
+                     label: function(tooltipItem) {
+                        return `${tooltipItem.label}: ${tooltipItem.raw} bookings`; // Display count in the tooltip
+                     }
+                  }
+               }
+            }
+         }
       });
    </script>
 </body>

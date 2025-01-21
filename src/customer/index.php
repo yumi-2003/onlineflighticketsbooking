@@ -22,26 +22,7 @@ try {
   echo $e->getMessage();
 }
 
-//search by source, destin, flight date
-if (isset($_POST['find'])) {
-  $source = $_POST['source'];
-  $desti = $_POST['destination'];
-  $date = $_POST['flight_date'];
 
-  try {
-    $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(1, $source, PDO::PARAM_STR);
-    $stmt->bindParam(2, $desti, PDO::PARAM_STR);
-    $stmt->bindParam(3, $date, PDO::PARAM_STR);
-    $stmt->execute();
-    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  } catch (PDOException $e) {
-    echo $e->getMessage();
-  }
-}else{
-  // echo "<span class='text-2xl'>No flights found</span>";
-}
 
 //get user information
 $sql = "SELECT * FROM users WHERE user_id = :user_id";
@@ -314,31 +295,54 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
   <div class='flex h-auto items-center justify-center'>
 
     <?php
-    if (isset($flights)) {
-      echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3 h-auto max-w-7xl mx-auto px-4'>";
-      foreach ($flights as $flight) {
-        echo "
-        <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30 rounded-lg'>
-        <div class='h-96 w-72'>
-          <img class='h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125' src='{$flight['placeImg']}' alt='' />
-        </div>
-        <div class='absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black group-hover:from-black/70 group-hover:via-black/60 group-hover:to-black/70'></div>
+    //search by source, destin, flight date
+    if (isset($_POST['find'])) {
+      $source = $_POST['source'];
+      $desti = $_POST['destination'];
+      $date = $_POST['flight_date'];
 
-        <div class='absolute inset-0 flex translate-y-[43%] flex-col items-center justify-center px-9 text-center transition-all duration-500 group-hover:translate-y-0'>
+      try {
+        $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(1, $source, PDO::PARAM_STR);
+        $stmt->bindParam(2, $desti, PDO::PARAM_STR);
+        $stmt->bindParam(3, $date, PDO::PARAM_STR);
+        $stmt->execute();
+        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-          <h1 class='font-dmserif text-3xl font-bold text-white'>{$flight['flight_name']}</h1>
-
-          <p class='mb-3 text-lg italic text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100'>From: {$flight['source']} To: {$flight['destination']}</p>
-
-          <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>
-          <a  href='flightSearch.php'>Explore</a>
-          </button>
-
-        </div>
-        </div>";
+        if (isset($flights)) {
+          echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3 h-auto max-w-7xl mx-auto px-4'>";
+          foreach ($flights as $flight) {
+            echo "
+            <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30 rounded-lg'>
+            <div class='h-96 w-72'>
+              <img class='h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125' src='{$flight['placeImg']}' alt='' />
+            </div>
+            <div class='absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black group-hover:from-black/70 group-hover:via-black/60 group-hover:to-black/70'></div>
+    
+            <div class='absolute inset-0 flex translate-y-[43%] flex-col items-center justify-center px-9 text-center transition-all duration-500 group-hover:translate-y-0'>
+    
+              <h1 class='font-dmserif text-3xl font-bold text-white'>{$flight['flight_name']}</h1>
+    
+              <p class='mb-3 text-lg italic text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100'>From: {$flight['source']} To: {$flight['destination']}</p>
+    
+              <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>
+              <a  href='flightSearch.php'>Explore</a>
+              </button>
+    
+            </div>
+            </div>";
+          }
+          echo "</div>";
+        }
+      } catch (PDOException $e) {
+        echo $e->getMessage();
       }
-      echo "</div>";
+    } else {
+      echo "<img src='/images/noflight.png' class='w-28 h-28' /></br>";
+      echo "<span class='text-base'>No Flights Available</span>";
     }
+    
     ?>
   </div>
   <hr>

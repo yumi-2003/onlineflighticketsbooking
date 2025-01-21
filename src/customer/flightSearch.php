@@ -190,6 +190,7 @@ if (isset($_POST['selectSeat'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
     exit;
 }
 
+// Add to wishlist
 if (isset($_POST['addFav']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ensure user ID is set
     if (isset($user_id) && !empty($user_id)) {
