@@ -103,7 +103,47 @@ if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
    }
 }
 
+// Revenue distribution by trip types and classes
+// Initialize the arrays to hold the necessary data
+$tripTypeNames = [];
+$classNames1 = [];
+$revenueData = [];
+$totalRevenue = 0;
 
+// SQL query to calculate revenue distribution by trip types and classes
+$sql = "SELECT triptype.triptype_name, classes.class_name, SUM(payment.totalPrice) as total_revenue
+        FROM booking
+        JOIN classes ON booking.class_id = classes.class_id
+        JOIN triptype ON booking.triptype_id = triptype.triptypeId
+        JOIN payment ON booking.payment_id = payment.paymentID
+        GROUP BY triptype.triptypeId, classes.class_id
+        ORDER BY total_revenue DESC";
+
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+// Fetch revenue data for each trip type and class
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+   // Store the trip type and class names
+   $tripTypeNames[] = $row['triptype_name'];
+   $classNames1[] = $row['class_name'];
+
+   // Store the total revenue for each trip type-class combination
+   $revenueData[] = $row['total_revenue'];
+
+   // Accumulate the total revenue to calculate percentages later
+   $totalRevenue += $row['total_revenue'];
+}
+
+// Calculate the percentages for each category (trip type-class)
+$percentages = [];
+foreach ($revenueData as $revenue) {
+   if ($totalRevenue > 0) {
+      $percentages[] = round(($revenue / $totalRevenue) * 100, 2); // Calculate percentage
+   } else {
+      $percentages[] = 0; // Handle division by zero if no revenue is available
+   }
+}
 
 
 ?>
@@ -454,33 +494,33 @@ if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
             </div>
          </div>
 
-            <!-- booked flight classes and triptype by flight -->
-            <div class="w-full text-center mb-6 mt-10">
-               <form action="" method="GET" class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
-                  <label for="flightSelect" class="text-lg font-semibold text-black">Select Flight:</label>
-                  <select id="flightSelect" name="flight_id" class="border border-gray-300 rounded-lg p-2 w-60">
-                     <option value="">Select Flight</option>
-                     <?php
-                     // Fetch flight details from the database
-                     $selectedFlightId = isset($_GET['flight_id']) ? $_GET['flight_id'] : '';
-                     $sql = "SELECT flight_id, flight_name FROM flight";
-                     $stmt = $conn->prepare($sql);
-                     if ($stmt->execute()) {
-                        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        foreach ($flights as $flight) {
-                           $selected = ($selectedFlightId == $flight['flight_id']) ? 'selected' : '';
-                           echo "<option value='{$flight['flight_id']}' $selected>{$flight['flight_name']} (ID: {$flight['flight_id']})</option>";
-                        }
-                     } else {
-                        echo "<option value=''>Error fetching flights</option>";
+         <!-- booked flight classes and triptype by flight -->
+         <div class="w-full text-center mb-6 mt-10">
+            <form action="" method="GET" class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
+               <label for="flightSelect" class="text-lg font-semibold text-black">Select Flight:</label>
+               <select id="flightSelect" name="flight_id" class="border border-gray-300 rounded-lg p-2 w-60">
+                  <option value="">Select Flight</option>
+                  <?php
+                  // Fetch flight details from the database
+                  $selectedFlightId = isset($_GET['flight_id']) ? $_GET['flight_id'] : '';
+                  $sql = "SELECT flight_id, flight_name FROM flight";
+                  $stmt = $conn->prepare($sql);
+                  if ($stmt->execute()) {
+                     $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                     foreach ($flights as $flight) {
+                        $selected = ($selectedFlightId == $flight['flight_id']) ? 'selected' : '';
+                        echo "<option value='{$flight['flight_id']}' $selected>{$flight['flight_name']} (ID: {$flight['flight_id']})</option>";
                      }
-                     ?>
-                  </select>
-                  <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Filter</button>
-               </form>
+                  } else {
+                     echo "<option value=''>Error fetching flights</option>";
+                  }
+                  ?>
+               </select>
+               <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Filter</button>
+            </form>
 
 
-               <!-- Charts Section -->
+            <!-- Charts Section -->
             <div class="flex flex-wrap lg:flex-nowrap items-center justify-center w-full space-y-6 lg:space-y-0 lg:space-x-6">
                <!-- Flight Classes Chart -->
                <div class="flex flex-col items-center justify-center w-full lg:w-1/2">
@@ -498,23 +538,27 @@ if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
                   </div>
                </div>
             </div>
+         </div>
+
+         <div class="flex flex-col items-center justify-center bg-[#cfedff] rounded-lg shadow-md w-full p-6">
+            <h2 class="text-xl font-semibold text-black mb-4">
+               Revenue Distribution by Trip Type and Class
+            </h2>
+
+            <div class="w-full h-64 sm:h-80">
+               <canvas id="revenueChart" class="w-full h-full"></canvas>
             </div>
+         </div>
 
-            
 
-      </div>
 
-      <!-- <div class="grid grid-cols-2 gap-4 mb-4 mt-4">
+   </div>
+
+   <!-- <div class="grid grid-cols-2 gap-4 mb-4 mt-4">
             
             
             
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
-            </div>
+            
          </div>
          <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
             <p class="text-2xl text-gray-400 dark:text-gray-500">
@@ -739,6 +783,7 @@ if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
       const tripTypes = <?php echo json_encode($tripTypes); ?>;
       const tripTypeBookings = <?php echo json_encode($tripTypeBookings); ?>;
 
+
       const ctx4 = document.getElementById('tripType').getContext('2d');
       new Chart(ctx4, {
          type: 'doughnut',
@@ -764,6 +809,67 @@ if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
             }
          }
       });
+
+
+      // Pass PHP data to JavaScript
+      const tripTypeNames = <?php echo json_encode($tripTypeNames); ?>;
+      const classNames1 = <?php echo json_encode($classNames1); ?>;
+      const revenueData = <?php echo json_encode($revenueData); ?>;
+
+      // Prepare the labels for the X-axis (trip type + class)
+      const labels1 = tripTypeNames.map((name, index) => `${name} - ${classNames1[index]}`);
+
+      // Prepare the revenue chart data and labels
+      const ctx5 = document.getElementById('revenueChart').getContext('2d');
+      new Chart(ctx5, {
+         type: 'bar', // Bar chart for total revenue
+         data: {
+            labels: labels1, // X-axis labels (trip type and class names)
+            datasets: [{
+               label: 'Total Revenue ($)', // Label for the dataset
+               data: revenueData, // Y-axis data (revenue)
+               backgroundColor: 'pink', // Bar color
+               borderColor: '#2D8CE5', // Border color
+               borderWidth: 1
+            }]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+               y: {
+                  beginAtZero: true, // Ensure the Y-axis starts from zero
+                  ticks: {
+                     stepSize: 1000, // Customize the step size for ticks (revenue)
+                     callback: function(value) {
+                        return '$' + value;
+                     } // Format Y-axis ticks as currency
+                  }
+               },
+               x: {
+                  ticks: {
+                     autoSkip: true, // Skip ticks for long labels
+                     maxRotation: 90, // Rotate labels to avoid overlap
+                     minRotation: 45 // Ensure readability of labels
+                  }
+               }
+            },
+            plugins: {
+               tooltip: {
+                  callbacks: {
+                     label: function(tooltipItem) {
+                        return '$' + tooltipItem.raw.toLocaleString(); // Format the tooltip for revenue
+                     }
+                  }
+               },
+               legend: {
+                  display: false // Hide the legend for this chart
+               }
+            }
+         }
+      });
+
+      
    </script>
 </body>
 
