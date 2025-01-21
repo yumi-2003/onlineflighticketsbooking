@@ -1,11 +1,11 @@
 <?php
-    require_once "dbconnect.php";
-    
-    if(!isset($_SESSION)){
-        session_start();
-    }
+require_once "dbconnect.php";
 
-    $sql = "SELECT * FROM admin";
+if (!isset($_SESSION)) {
+   session_start();
+}
+
+$sql = "SELECT * FROM admin";
 try {
    $stmt = $conn->prepare($sql);
    $stmt->execute();
@@ -15,29 +15,9 @@ try {
 }
 
 
-        //get flight information
-        $sql = "SELECT 
-        flight.flight_id,
-        airline.airline_name, 
-        flight.flight_name, 
-        flight.flight_date, 
-        flight.destination, 
-        flight.source, 
-        flight.total_distance, 
-        flight.fee_per_ticket, 
-        flight.departure_time, 
-        flight.arrival_time, 
-        flight.capacity, 
-        flight.seats_researved, 
-        flight.seats_available,
-        flight.gate,
-        flight.placeImg,
-        flightclasses.flightclasses_id,
-        classes.base_fees,
-        triptype.priceCharge,
-        flightclasses.classPrice,
-        classes.class_name,
-        triptype.triptype_name 
+//get flight information
+$sql = "SELECT 
+        *
     FROM 
         flight
     INNER JOIN 
@@ -58,142 +38,143 @@ try {
         flightclasses.triptype = triptype.triptypeId
     ";
 
-    try{
-    $stmt = $conn->query($sql);
-    $status = $stmt->execute();
+try {
+   $stmt = $conn->query($sql);
+   $status = $stmt->execute();
 
-    if($status){
-    $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    }catch(PDOException $e){
-    echo $e->getMessage();
-    }
+   if ($status) {
+      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+} catch (PDOException $e) {
+   echo $e->getMessage();
+}
 
-           
+
 ?>
 
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./output.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link href="./output.css" rel="stylesheet">
+   <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
-    
-  <body>
 
-    <!-- nav starts -->
+<body>
+
+   <!-- nav starts -->
    <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
-    <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-      <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
-      </a>
+      <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
+         <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
+         </a>
 
-      <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
-      <?php
+         <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <?php
 
-      if (isset($_SESSION['isLoggedIn'])) {
-      ?>
+            if (isset($_SESSION['isLoggedIn'])) {
+            ?>
 
-         <div class="flex items-center">
-            <div class="flex items-center ms-3">
-               <div>
-                  <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
-                     <span class="sr-only">Open user menu</span>
-                     <!-- admin profile -->
-                     <img class="w-8 h-8 rounded-full" src="<?php echo $admin['profile'] ?>" alt="admin photo">
+               <div class="flex items-center">
+                  <div class="flex items-center ms-3">
+                     <div>
+                        <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" id="dropdownUser">
+                           <span class="sr-only">Open user menu</span>
+                           <!-- admin profile -->
+                           <img class="w-8 h-8 rounded-full" src="<?php echo $admin['profile'] ?>" alt="admin photo">
 
-                  </button>
-               </div>
+                        </button>
+                     </div>
 
-               <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                  <div class="px-4 py-3" role="none">
-                     <p class="text-sm text-gray-900 dark:text-white" role="none">
-                        <?php
-                        echo $_SESSION['adName'];
-                        ?>
-                     </p>
-                     <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                        <?php
-                        echo $_SESSION['adEmail'];
-                        ?>
-                     </p>
+                     <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                        <div class="px-4 py-3" role="none">
+                           <p class="text-sm text-gray-900 dark:text-white" role="none">
+                              <?php
+                              echo $_SESSION['adName'];
+                              ?>
+                           </p>
+                           <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                              <?php
+                              echo $_SESSION['adEmail'];
+                              ?>
+                           </p>
+                        </div>
+                        <ul class="py-1" role="none">
+                           <li>
+                              <a href="editProfile.php?id=<?php echo $admin['admin_id']; ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
+
+                           </li>
+                           <li>
+                              <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                           </li>
+                        </ul>
+                     </div>
                   </div>
-                  <ul class="py-1" role="none">
-                     <li>
-                        <a href="editProfile.php?id=<?php echo $admin['admin_id']; ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profile</a>
-
-                     </li>
-                     <li>
-                        <a href="adminLogout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
-                     </li>
-                  </ul>
                </div>
-            </div>
+
+            <?php
+            }
+
+            ?>
+            <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
+               <span class="sr-only">Open main menu</span>
+               <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+               </svg>
+            </button>
          </div>
 
-      <?php
-      }
-
-      ?>
-        <button data-collapse-toggle="mega-menu" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mega-menu" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-          </svg>
-        </button>
+         <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
+            <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
+               <li>
+                  <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+               </li>
+               <li>
+                  <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
+                     Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                     </svg>
+                  </button>
+                  <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
+                     <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                        <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 About Us
+                              </a>
+                           </li>
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 Newsletter
+                              </a>
+                           </li>
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 Conatct Us
+                              </a>
+                           </li>
+                           <li>
+                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                 Support Center
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </li>
+               <li>
+                  <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
+               </li>
+               <li>
+                  <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
+               </li>
+            </ul>
+         </div>
       </div>
-
-      <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-        <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
-          <li>
-            <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
-          </li>
-          <li>
-            <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
-              Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-              </svg>
-            </button>
-            <div id="mega-menu-dropdown" class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
-                                <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                    <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                About Us
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Newsletter
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Conatct Us
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                                Support Center
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </li>
-          <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
-          </li>
-          <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-          </li>
-        </ul>
-      </div>
-    </div>
    </nav>
    <!-- nav ends -->
 
@@ -238,15 +219,15 @@ try {
                <a href="viewBooking.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Booking</span>
                   <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:text-white">
-                     
-                  <?php
+
+                     <?php
                      $sql = "SELECT * FROM booking";
                      $result = $conn->query($sql);
                      $bookingCount = $result->rowCount();
                      echo $bookingCount;
 
-                  ?>
-               
+                     ?>
+
                   </span>
                </a>
             </li>
@@ -255,9 +236,9 @@ try {
                <a href="viewTickets.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Tickets</span>
                   <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
-                     
-                  <!-- //count of bookings -->
-               
+
+                     <!-- //count of bookings -->
+
                   </span>
                </a>
             </li>
@@ -278,17 +259,17 @@ try {
    </aside>
    <!-- sidebar ends -->
 
-      <!-- main cotent starts -->
-      <div class="p-4 sm:ml-64 mt-16">
-         <div class="p-4 border-gray-200 rounded-lg dark:border-gray-700">
-               <div class="grid gap-4 mb-4">
-                  <div class="flex h-10 rounded">
-                     <p class="text-2xl text-black ">
-                        Pricing Information
-                     </p>
-                  </div>
-               </di>
-               <div>
+   <!-- main cotent starts -->
+   <div class="p-4 sm:ml-64 mt-16">
+      <div class="p-4 border-gray-200 rounded-lg dark:border-gray-700">
+         <div class="grid gap-4 mb-4">
+            <div class="flex h-10 rounded">
+               <p class="text-2xl text-black ">
+                  Pricing Information
+               </p>
+            </div>
+            </di>
+            <div>
                <a href="addPricing.php" class="flex items-center justify-end p-2 text-sm text-black rounded-lg">
                   <svg class="w-4 h-4 me-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                      <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 5.523 4.477 10 10 10 5.523 0 10-4.477 10-10 0-5.523-4.477-10-10-10Zm0 18.75c-4.556 0-8.25-3.694-8.25-8.25S5.444 2.25 10 2.25 18.25 5.944 18.25 10 14.556 18.75 10 18.75Zm-1.25-9.25H6.25a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5a.75.75 0 0 0-1.5 0v2.5Z"></path>
@@ -296,47 +277,47 @@ try {
                   Add more Price Information
                </a>
             </div>
-         
-               <div class="font-sans overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200">
+
+            <div class="font-sans overflow-x-auto">
+               <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-100 whitespace-nowrap">
                      <tr>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        ID
+                           ID
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Flight Name
+                           Flight Name
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Source
+                           Source
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Destination
+                           Destination
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Fee per ticket
+                           Fee per ticket
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Class Name
+                           Class Name
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Trip type Name
+                           Trip type Name
                         </th>
                         <th class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Total Price
+                           Total Price
                         </th>
                         <td class="px-4 py-4 text-sm text-gray-800 width-1/4">
-                        <button class="text-blue-600 mr-4">Edit</button>
-                        <button class="text-red-600">Delete</button>
+                           <button class="text-blue-600 mr-4">Edit</button>
+                           <button class="text-red-600">Delete</button>
                         </td>
                      </tr>
                   </thead>
 
                   <tbody class="bg-white divide-y divide-gray-200 whitespace-nowrap">
-                  <?php
-                     if(isset($flights)){
-                        foreach($flights as $flight){
-                        echo "<tr>
+                     <?php
+                     if (isset($flights)) {
+                        foreach ($flights as $flight) {
+                           echo "<tr>
                         <td class='px-4 py-4 text-sm text-gray-800'>
                         $flight[flightclasses_id]
                         </td>
@@ -368,27 +349,28 @@ try {
                      </tr>";
                         }
                      }
-                     
+
                      ?>
                   </tbody>
-                  </table>
-               </div>
-
-               
-      </div>
-      <!-- main content ends -->
-      
-      
-      
-      <script>
-      const dropdownButton = document.getElementById('dropdownButton');
-      const dropdownMenu = document.getElementById('dropdownMenu');
-
-      dropdownButton.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('hidden');
+               </table>
+            </div>
 
 
-      });
-   </script>
-   </body>
+         </div>
+         <!-- main content ends -->
+
+
+
+         <script>
+            const dropdownButton = document.getElementById('dropdownButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            dropdownButton.addEventListener('click', () => {
+               dropdownMenu.classList.toggle('hidden');
+
+
+            });
+         </script>
+</body>
+
 </html>

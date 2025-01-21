@@ -8,12 +8,10 @@ if (!isset($_SESSION)) {
 
 if (isset($_SESSION['users'])) {
   $user_id = $_SESSION['users']['user_id'];
-  //$username = $_SESSION['users']['username'];
 }
 
-$sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
-
 try {
+  $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
   $stmt = $conn->query($sql);
   $status = $stmt->execute();
 
@@ -32,7 +30,6 @@ if (isset($_POST['find'])) {
 
   try {
     $sql = "SELECT * FROM flight where source = ? AND destination = ? AND flight_date=?";
-
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(1, $source, PDO::PARAM_STR);
     $stmt->bindParam(2, $desti, PDO::PARAM_STR);
@@ -42,6 +39,8 @@ if (isset($_POST['find'])) {
   } catch (PDOException $e) {
     echo $e->getMessage();
   }
+}else{
+  // echo "<span class='text-2xl'>No flights found</span>";
 }
 
 //get user information
@@ -133,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
   <!-- nav starts -->
   <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
     <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-      <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <a href="index.php" class="flex items-center space-x-3 rtl:space-x-reverse">
         <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
         <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
       </a>
@@ -216,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
       <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
         <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
           <li>
-            <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+            <a href="index.php" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
           </li>
           <li>
             <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
@@ -228,17 +227,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
               <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                 <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
                   <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                    <a href="aboutUs.php" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                       About Us
                     </a>
                   </li>
                   <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                      Newsletter
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                    <a href="contactUs.php" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                       Conatct Us
                     </a>
                   </li>
@@ -262,6 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
     </div>
   </nav>
   <!-- nav ends -->
+
   <!-- banner starts -->
   <div class="font-[sans-serif]">
     <div class=" w-full h-60 mt-10">
@@ -310,18 +305,20 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
     </div>
   </div>
   <!-- banner ends -->
+
   <!-- cards show -->
   <div class="text-center font-semibold text-2xl my-2">
     Available Flights
   </div>
+
   <div class='flex h-auto items-center justify-center'>
 
     <?php
     if (isset($flights)) {
-      echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3 h-60'>";
+      echo "<div class='grid grid-auto-cols gap-5 md:grid-cols-2 lg:grid-cols-3 h-auto max-w-7xl mx-auto px-4'>";
       foreach ($flights as $flight) {
         echo "
-        <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30'>
+        <div class='group relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30 rounded-lg'>
         <div class='h-96 w-72'>
           <img class='h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125' src='{$flight['placeImg']}' alt='' />
         </div>
@@ -334,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
           <p class='mb-3 text-lg italic text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100'>From: {$flight['source']} To: {$flight['destination']}</p>
 
           <button class='rounded-full bg-neutral-900 py-2 px-3.5 font-com text-sm capitalize text-white shadow shadow-black/60'>
-          <a  href='flightSearch.php'>Flight Details</a>
+          <a  href='flightSearch.php'>Explore</a>
           </button>
 
         </div>
@@ -511,14 +508,138 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
     </div>
   </div>
 
+  <div
+    class="relative w-full bg-[#e4f6ff] px-6 pt-10 pb-8 mt-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-2xl sm:rounded-lg sm:px-10 mb-10">
+    <div class="mx-auto px-5">
+      <div class="flex flex-col items-center">
+        <h2 class="mt-5 text-center text-3xl font-bold tracking-tight md:text-5xl">FAQ</h2>
+        <p class="mt-3 text-lg text-neutral-500 md:text-xl">Frequenty asked questions
+        </p>
+      </div>
+      <div class="mx-auto mt-8 grid max-w-xl divide-y divide-neutral-200">
+        <div class="py-5">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
+              <span> How does the billing work?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shape-rendering="geometricPrecision"
+                  stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="group-open:animate-fadeIn mt-3 text-neutral-600">Springerdata offers a variety of
+              billing options, including monthly and annual subscription plans, as well as pay-as-you-go
+              pricing for certain services. Payment is typically made through a credit card or other
+              secure online payment method.
+            </p>
+          </details>
+        </div>
+        <div class="py-5">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
+              <span> Can I get a refund for my subscription?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shape-rendering="geometricPrecision"
+                  stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="group-open:animate-fadeIn mt-3 text-neutral-600">We offer a 30-day money-back
+              guarantee for most of its subscription plans. If you are not satisfied with your
+              subscription within the first 30 days, you can request a full refund. Refunds for
+              subscriptions that have been active for longer than 30 days may be considered on a
+              case-by-case basis.
+            </p>
+          </details>
+        </div>
+        <div class="py-5">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
+              <span> How do I cancel my subscription?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shape-rendering="geometricPrecision"
+                  stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="group-open:animate-fadeIn mt-3 text-neutral-600">To cancel your subscription, you can
+              log in to your account and navigate to the subscription management page. From there, you
+              should be able to cancel your subscription and stop future billing.
+            </p>
+          </details>
+        </div>
+        <div class="py-5">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
+              <span> Is there a free trial?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shape-rendering="geometricPrecision"
+                  stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="group-open:animate-fadeIn mt-3 text-neutral-600">We offer a free trial of our software
+              for a limited time. During the trial period, you will have access to a limited set of
+              features and functionality, but you will not be charged.
+            </p>
+          </details>
+        </div>
+        <div class="py-5">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
+              <span> How do I contact support?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shape-rendering="geometricPrecision"
+                  stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="group-open:animate-fadeIn mt-3 text-neutral-600">If you need help with our platform or
+              have any other questions, you can contact the company's support team by submitting a support
+              request through the website or by emailing support@ourwebsite.com.
+            </p>
+          </details>
+        </div>
+        <div class="py-5">
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
+              <span> Do you offer any discounts or promotions?</span>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="24" shape-rendering="geometricPrecision"
+                  stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+            <p class="group-open:animate-fadeIn mt-3 text-neutral-600">We may offer discounts or promotions
+              from time to time. To stay up-to-date on the latest deals and special offers, you can sign
+              up for the company's newsletter or follow it on social media.
+            </p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- footer starts -->
-  <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">
-    <div class="bg-[#00103c] py-10 px-6 font-[sans-serif]">
+  <footer class="py-10 px-5 font-sans tracking-wide bg-[#00103c] h-72">
+    <div class="bg-[#00103c] px-6 font-[sans-serif]">
       <div class="max-w-lg mx-auto text-center">
         <h2 class="text-2xl font-bold mb-6 text-white">Subscribe to Our Newsletter</h2>
         <div class="mt-12 flex items-center overflow-hidden bg-gray-50 rounded-md max-w-xl mx-auto">
           <input type="email" placeholder="Enter your email" class="w-full bg-transparent py-3.5 px-4 text-gray-800 text-base focus:outline-none" />
-          <button class="bg-[#004be4] hover:bg-[#a91079e2] text-white text-base tracking-wide py-3.5 px-6 hover:shadow-md hover:transition-transform transition-transform hover:scale-105 focus:outline-none">
+          <button class="bg-[#004be4] hover:bg-[#0d3c9b] text-white text-base tracking-wide py-3.5 px-6 hover:shadow-md hover:transition-transform transition-transform hover:scale-105 focus:outline-none">
             Subscribe
           </button>
         </div>
@@ -565,19 +686,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
             </svg>
           </a>
         </li>
-        <li>
-          <a href='javascript:void(0)'>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 1227 1227">
-              <path d="M613.5 0C274.685 0 0 274.685 0 613.5S274.685 1227 613.5 1227 1227 952.315 1227 613.5 952.315 0 613.5 0z" data-original="#000000" />
-              <path fill="#fff" d="m680.617 557.98 262.632-305.288h-62.235L652.97 517.77 470.833 252.692H260.759l275.427 400.844-275.427 320.142h62.239l240.82-279.931 192.35 279.931h210.074L680.601 557.98zM345.423 299.545h95.595l440.024 629.411h-95.595z" data-original="#ffffff" />
-            </svg>
-          </a>
-        </li>
       </ul>
     </div>
 
 
-    <hr class="my-10 border-gray-500" />
+    <hr class="border-gray-500 my-2" />
 
     <div class="flex max-md:flex-col gap-4">
       <ul class="flex flex-wrap gap-4">

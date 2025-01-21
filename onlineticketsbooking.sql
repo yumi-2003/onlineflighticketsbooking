@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 20, 2025 at 12:17 AM
+-- Generation Time: Jan 21, 2025 at 06:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -98,7 +98,19 @@ INSERT INTO `booking` (`booking_id`, `user_id`, `flight_id`, `class_id`, `tripty
 (80, 7, 2, 2, 1, 466, '2025-01-12 23:56:29', 95, 'confirm', '2025-01-13', 65),
 (82, 11, 2, 2, 1, 477, '2025-01-13 23:10:45', 97, 'confirm', '2025-01-14', 66),
 (83, 11, 2, 2, 1, 489, '2025-01-18 18:56:33', 98, 'pending', NULL, NULL),
-(84, 11, 4, 2, 1, 613, '2025-01-19 11:39:33', 99, 'confirm', '2025-01-20', 67);
+(84, 11, 4, 2, 1, 613, '2025-01-19 11:39:33', 99, 'confirm', '2025-01-20', 67),
+(85, 7, 2, 2, 2, 473, '2025-01-19 20:07:22', 100, 'pending', NULL, NULL),
+(86, 7, 2, 3, 1, 507, '2025-01-19 20:17:18', 101, 'pending', NULL, NULL),
+(87, 7, 2, 3, 1, 507, '2025-01-19 20:24:00', 102, 'pending', NULL, NULL),
+(88, 7, 2, 3, 1, 507, '2025-01-19 20:27:19', 103, 'pending', NULL, NULL),
+(89, 7, 2, 3, 1, 507, '2025-01-19 20:27:29', 104, 'pending', NULL, NULL),
+(90, 7, 2, 3, 1, 507, '2025-01-19 20:27:36', 105, 'pending', NULL, NULL),
+(91, 7, 2, 3, 1, 507, '2025-01-19 20:29:07', 106, 'pending', NULL, NULL),
+(92, 7, 2, 3, 1, 537, '2025-01-19 20:29:51', 107, 'pending', NULL, NULL),
+(93, 7, 2, 3, 1, 537, '2025-01-19 20:32:28', 108, 'pending', NULL, NULL),
+(94, 7, 2, 4, 1, 558, '2025-01-19 20:34:21', 109, 'pending', NULL, NULL),
+(95, 7, 2, 4, 1, 558, '2025-01-19 20:39:03', 110, 'pending', NULL, NULL),
+(96, 7, 2, 4, 1, 558, '2025-01-19 20:45:04', 111, 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -121,6 +133,27 @@ INSERT INTO `classes` (`class_id`, `class_name`, `base_fees`) VALUES
 (2, 'Business', 4.00),
 (3, 'Premium Economy', 2.00),
 (4, 'Economy', 1.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact`
+--
+
+CREATE TABLE `contact` (
+  `contact_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `contact`
+--
+
+INSERT INTO `contact` (`contact_id`, `user_id`, `name`, `email`, `message`) VALUES
+(1, 7, 'Ingyin', 'ingyin@gmail.com', 'Can i know when the flight to London will be available');
 
 -- --------------------------------------------------------
 
@@ -156,7 +189,7 @@ CREATE TABLE `flight` (
   `destination` varchar(255) NOT NULL,
   `source` varchar(100) NOT NULL,
   `total_distance` varchar(100) NOT NULL,
-  `fee_per_ticket` decimal(10,2) NOT NULL,
+  `fee_per_ticket` float NOT NULL,
   `departure_time` time NOT NULL,
   `arrival_time` time NOT NULL,
   `capacity` int(11) NOT NULL,
@@ -169,8 +202,9 @@ CREATE TABLE `flight` (
 --
 
 INSERT INTO `flight` (`flight_id`, `airline_id`, `flight_name`, `flight_date`, `destination`, `source`, `total_distance`, `fee_per_ticket`, `departure_time`, `arrival_time`, `capacity`, `gate`, `placeImg`) VALUES
-(2, 5, 'MAI-201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150.00, '09:00:00', '10:30:00', 150, 'A1', '../flightImg/bangkok.jpg'),
-(4, 2, 'MAI 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100.00, '08:00:00', '10:00:00', 150, 'A2', '../flightImg/cm.jpg');
+(2, 5, 'MAI 201', '2025-02-01', 'Bangkok', 'Yangon', '580', 150, '09:00:00', '10:30:00', 150, 'A1', '../flightImg/bangkok.jpg'),
+(4, 2, 'MNA 707', '2025-02-01', 'Chiang Mai', 'Yangon', '430', 100, '08:00:00', '10:00:00', 150, 'A2', '../flightImg/cm1.jpg'),
+(5, 6, 'SQ 221', '2025-02-22', 'Singapore', 'Yangon', '1927', 200, '13:00:00', '15:00:00', 150, 'B1', '../flightImg/sg1.jpg');
 
 -- --------------------------------------------------------
 
@@ -250,7 +284,19 @@ INSERT INTO `passengers` (`passenger_id`, `fullName`, `age`, `gender`, `national
 (96, 'phoo nge', 31, 'Female', 'Myanmar', '09788976544', 'brvrv4', '557657'),
 (97, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '557657'),
 (98, 'phoo nge', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
-(99, 'nora', 21, 'Female', 'Myanmar', '09788976544', 'brvrv4', '557657');
+(99, 'nora', 21, 'Female', 'Myanmar', '09788976544', 'brvrv4', '557657'),
+(100, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'eve3', '557657'),
+(101, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(102, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(103, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(104, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(105, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(106, 'nora', 21, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(107, 'nora', 12, 'Female', 'Myanmar', '09786993707', 'eve3', '557657'),
+(108, 'Nway thu', 23, 'Female', 'Myanmar', '09786993707', 'brvrv4', '3fc34c'),
+(109, 'nora', 23, 'Female', 'Myanmar', '09788976544', 'brvrv4', '3fc34c'),
+(110, 'nora', 23, 'Female', 'Myanmar', '09788976544', 'brvrv4', '3fc34c'),
+(111, 'nora', 23, 'Female', 'Myanmar', '09788976544', 'brvrv4', '3fc34c');
 
 -- --------------------------------------------------------
 
@@ -319,7 +365,7 @@ CREATE TABLE `review` (
 --
 
 INSERT INTO `review` (`review_id`, `user_id`, `rating`, `review_text`) VALUES
-(2, 7, 3, 'it needs to make fast process\r\n                  '),
+(2, 7, 3, 'it needs to make fast process\r\n                  \r\n                  '),
 (3, 9, 3, 'the function needs to be improved');
 
 -- --------------------------------------------------------
@@ -696,13 +742,48 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `cpassword`, `profile`) VALUES
-(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/photo_2024-01-07_17-04-55.jpg'),
+(7, 'yumi', 'yumi@gmail.com', '$2y$10$624QCrhZr/aUb9M7A8O6QemcRuebevCpav47xWucT8d6iXkWLpfAq', NULL, '../userPhoto/download.jfif'),
 (8, 'nora', 'nora@gmail.com', '$2y$10$ksnIcwgmMJT2/iHp1GnMO.81Qu8fVq9q80vuMP9a7AwPNVbiTpD1.', NULL, '../userPhoto/'),
 (9, 'Emma', 'emma@gmail.com', '$2y$10$oRFV38ZIColJW4obfMkv4u4da7Oc8W22qD/AoAjrrW6Q444wVVo4m', NULL, '../userPhoto/d7ca1bbb-d965-4630-b386-0598a38917d1.jpg'),
 (11, 'Phoo Nge', 'phoonge@gmail.com', '$2y$10$ud8MojGtInBQOjtJcU1VXORnI038poy3y5.RMoNQW7S7z3RvJ6Gdi', NULL, '../userPhoto/dog.jpg'),
 (12, 'maymon', 'maymon@gmail.com', '$2y$10$CClct0GlCvdHtyFo7rBWCu3VSwuEkdRSoyGQJuS.z6tBAK6MD20iO', NULL, '../userPhoto/dog.jpg'),
 (14, 'nwaythu', 'nwaythu@gmail.com', '$2y$10$I2n.1PaeZEbogs4ioBeYfuDgiUNkWvaO2fF/16K0bSsjSrkuBLkoS', NULL, '../userPhoto/'),
 (15, 'swarsi', 'swarsi@gmail.com', '$2y$10$/IE6X9BWou3WLYPwSjm2p.tdMVfp6kFw7GEU9SGD.pCZlp4kKhosi', NULL, '../userPhoto/');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wishlist`
+--
+
+CREATE TABLE `wishlist` (
+  `wishListId` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `flightclasses_id` int(11) DEFAULT NULL,
+  `created_at` date DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `wishlist`
+--
+
+INSERT INTO `wishlist` (`wishListId`, `user_id`, `flightclasses_id`, `created_at`) VALUES
+(22, 7, 1, '2025-01-20'),
+(23, 7, 2, '2025-01-20'),
+(24, 15, 5, '2025-01-20'),
+(25, 15, 11, '2025-01-20'),
+(28, 15, 15, '2025-01-20'),
+(29, 15, 1, '2025-01-21'),
+(30, 15, 24, '2025-01-21'),
+(31, 15, 24, '2025-01-21'),
+(44, 9, 11, '2025-01-21'),
+(45, 9, 13, '2025-01-21'),
+(46, 9, 9, '2025-01-21'),
+(47, 9, 8, '2025-01-21'),
+(48, 9, 7, '2025-01-21'),
+(49, 9, 7, '2025-01-21'),
+(50, 9, 11, '2025-01-21'),
+(51, 9, 24, '2025-01-21');
 
 --
 -- Indexes for dumped tables
@@ -737,6 +818,13 @@ ALTER TABLE `booking`
 --
 ALTER TABLE `classes`
   ADD PRIMARY KEY (`class_id`);
+
+--
+-- Indexes for table `contact`
+--
+ALTER TABLE `contact`
+  ADD PRIMARY KEY (`contact_id`),
+  ADD KEY `FK_userContact` (`user_id`);
 
 --
 -- Indexes for table `discount`
@@ -813,6 +901,14 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`);
 
 --
+-- Indexes for table `wishlist`
+--
+ALTER TABLE `wishlist`
+  ADD PRIMARY KEY (`wishListId`),
+  ADD KEY `FK_wishflight` (`flightclasses_id`),
+  ADD KEY `FK_userwish` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -832,13 +928,19 @@ ALTER TABLE `airline`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
   MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `contact`
+--
+ALTER TABLE `contact`
+  MODIFY `contact_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `discount`
@@ -850,7 +952,7 @@ ALTER TABLE `discount`
 -- AUTO_INCREMENT for table `flight`
 --
 ALTER TABLE `flight`
-  MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `flightclasses`
@@ -862,7 +964,7 @@ ALTER TABLE `flightclasses`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `passenger_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT for table `payment`
@@ -907,6 +1009,12 @@ ALTER TABLE `users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT for table `wishlist`
+--
+ALTER TABLE `wishlist`
+  MODIFY `wishListId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -920,6 +1028,12 @@ ALTER TABLE `booking`
   ADD CONSTRAINT `FK_payBook` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`paymentID`),
   ADD CONSTRAINT `FK_seatNobook` FOREIGN KEY (`seatNoId`) REFERENCES `seat_layout` (`id`),
   ADD CONSTRAINT `FK_userBook` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `contact`
+--
+ALTER TABLE `contact`
+  ADD CONSTRAINT `FK_userContact` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `flight`
@@ -953,6 +1067,13 @@ ALTER TABLE `review`
 ALTER TABLE `seat_layout`
   ADD CONSTRAINT `FK_flightseat` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`),
   ADD CONSTRAINT `FK_seatclass` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`);
+
+--
+-- Constraints for table `wishlist`
+--
+ALTER TABLE `wishlist`
+  ADD CONSTRAINT `FK_userwish` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `FK_wishflight` FOREIGN KEY (`flightclasses_id`) REFERENCES `flightclasses` (`flightclasses_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -9,6 +9,7 @@ if (isset($_SESSION['users'])) {
     $user_id = $_SESSION['users']['user_id'];
 }
 
+
 $sql = "SELECT 
     *
 FROM 
@@ -32,7 +33,7 @@ ON
 JOIN
 	airline a
 ON
-	f.flight_id = a.airline_id
+	f.airline_id = a.airline_id
 JOIN
     users u
 ON
@@ -45,15 +46,18 @@ try {
 
     if ($status) {
         $wishlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach($wishlists as $wishlist){
+            $wishlist['wishListId'];
+        }
     }
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
 
-if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Store the selected flight data in the session
-    $_SESSION['wishlist'] = [
+    $_SESSION['flight'] = [
         'flight_id' => $_POST['flight_id'],
         'flightClasses_id' => $_POST['flightclasses_id'],
         'airline_name' => $_POST['airline_name'],
@@ -74,7 +78,7 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
         'triptype_name' => $_POST['triptype_name'],
         'class_id' => $_POST['class_id']
     ];
-
+    
     header("Location: showSeat.php");
     exit;
 }
@@ -228,14 +232,14 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- nav ends -->
 
     <!-- disply flight information -->
-    
 
-        <?php
-        if (isset($wishlists)) {
-            echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto my-24'>";
 
-            foreach ($wishlists as $wishlist) {
-                echo "
+    <?php
+    if (isset($wishlists)) {
+        echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto my-24'>";
+
+        foreach ($wishlists as $wishlist) {
+            echo "
             <div class='flex items-center justify-between mb-4'>
                 <div class='flex items-center space-x-4'>
                     <img src='{$wishlist['photo']}' alt='Airline Logo' class='w-16 h-12 rounded-full'>
@@ -303,15 +307,15 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 
             </div>
             <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
-            }
-
-            echo "</div>";
         }
-        ?>
+
+        echo "</div>";
+    }
+    ?>
 
 
 
-    
+
 
     <!-- footer starts -->
     <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">

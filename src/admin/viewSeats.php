@@ -18,27 +18,27 @@ try {
 //get flight information
 
 $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
-      try {
-         $stmt = $conn->query($sql);
-         $status = $stmt->execute();
+try {
+   $stmt = $conn->query($sql);
+   $status = $stmt->execute();
 
-         if ($status) {
-            $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         }
-      } catch (PDOException $e) {
-         echo $e->getMessage();
-      }
-   
+   if ($status) {
+      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+} catch (PDOException $e) {
+   echo $e->getMessage();
+}
+
 
 if (isset($_POST['search'])) {
    $searchInput = trim($_POST['searchInput']); // trim to remove space
 
    if (!empty($searchInput)) {
-      $searchInput = '%' .$searchInput. '%';
+      $searchInput = '%' . $searchInput . '%';
 
       $sql = "SELECT * FROM flight WHERE flight_name LIKE :search";
       $stmt = $conn->prepare($sql);
-      $stmt->bindParam(':search', $searchInput,PDO::PARAM_STR);
+      $stmt->bindParam(':search', $searchInput, PDO::PARAM_STR);
       $stmt->execute();
       $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
    } else {
@@ -274,10 +274,9 @@ if (isset($_POST['search'])) {
    <div class="p-4 sm:ml-64 mt-20">
 
 
-      <div class="grid grid-cols-3 grid-rows-5">
+      <div class="grid grid-cols-3 gap-6">
          <!-- Search Bar -->
          <div class="col-span-3 bg-blue-100 py-10 h-28">
-
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                <div class="flex rounded-md border-2 border-blue-500 overflow-hidden max-w-md mx-auto font-[sans-serif]">
                   <input type="text" name="searchInput" placeholder="Search Flight Name..."
@@ -294,41 +293,37 @@ if (isset($_POST['search'])) {
          </div>
 
          <!-- Flight Info Section -->
-         <div class="col-span-1 row-span-6 row-start-2">
-            <h3 class="font-semibold text-lg">Flight Info</h3>
-            <!-- card info -->
-            <?php
-            if (isset($flights)) {
-               foreach ($flights as $flight) {
-                  echo "<div class='relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-80'>";
-                  echo "<div class='relative h-56 m-2.5 overflow-hidden text-white rounded-md'>
-                           <img src='$flight[placeImg]' alt='card-image' />
-                           </div>";
-                  echo "<div class='p-4'>";
-                  echo "<h6 class='mb-2 text-slate-800 text-xl font-semibold'>
-                              $flight[flight_name]
-                           </h6>";
-                  echo "<span>Source: $flight[source] </span><br>
-                           <span>Destination: $flight[destination] </span><br>
-                           <span>Departure Date: $flight[flight_date]</span><br>
-                           <span>Departure Time: $flight[departure_time] </span><br>
-                           <span>Arrival Time: $flight[arrival_time]</span><br>";
-                  echo "</div>";
-                  echo "<form action='$_SERVER[PHP_SELF]' method='POST'>
-                           <input type='hidden' name='flight_id' value='$flight[flight_id]'>
-                           <div class='px-4 pb-4 pt-0 mt-2'>
-                              <button class='rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none' type='submit' name='showSeats'>
-                              View Available Seats
-                              </button>
-                           </div>
-                     </form>
-                     ";
-                  echo "</div>";
-               }
+         <?php
+         if (isset($flights)) {
+            foreach ($flights as $flight) {
+               echo "<div class='relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg p-4'>";
+               echo "<div class='relative h-56 m-2.5 overflow-hidden text-white rounded-md'>
+                  <img src='$flight[placeImg]' alt='card-image' class='w-full h-full object-cover' />
+               </div>";
+               echo "<div class='p-4'>";
+               echo "<h6 class='mb-2 text-slate-800 text-xl font-semibold'>
+                     $flight[flight_name]
+                  </h6>";
+               echo "<span>Source: $flight[source] </span><br>
+                  <span>Destination: $flight[destination] </span><br>
+                  <span>Departure Date: $flight[flight_date]</span><br>
+                  <span>Departure Time: $flight[departure_time] </span><br>
+                  <span>Arrival Time: $flight[arrival_time]</span><br>";
+               echo "</div>";
+               echo "<form action='$_SERVER[PHP_SELF]' method='POST'>
+                  <input type='hidden' name='flight_id' value='$flight[flight_id]'>
+                  <div class='px-4 pb-4 pt-0 mt-2'>
+                     <button class='rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none' type='submit' name='showSeats'>
+                     View Available Seats
+                     </button>
+                  </div>
+               </form>";
+               echo "</div>";
             }
-            ?>
-         </div>
+         }
+         ?>
       </div>
+
 
       <!-- Show Seats Section -->
       <div class="col-span-2 row-span-6 row-start-3">

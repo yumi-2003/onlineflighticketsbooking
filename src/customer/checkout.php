@@ -122,23 +122,21 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-if (isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST") {
+// if (isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST") {
 
-    $_SESSION['flight_id'] = $_POST['flight_id'];
-    $_SESSION['flight_name'] = $_POST['flight_name'];
-    $_SESSION['class_id'] = $_POST['class_id'];
-    $_SESSION['class_name'] = $_POST['class_name'];
-    $_SESSION['flight_date'] = $_POST['flight_date'];
-    $_SESSION['triptypeId'] = $_POST['triptypeId'];
-    $_SESSION['triptype_name'] = $_POST['triptype_name'];
-    $_SESSION['selectedSeats'] = $_POST['selectedSeats'];
-    $_SESSION['total_price'] = $_POST['total_price'];
+//     $_SESSION['flight_id'] = $_POST['flight_id'];
+//     $_SESSION['flight_name'] = $_POST['flight_name'];
+//     $_SESSION['class_id'] = $_POST['class_id'];
+//     $_SESSION['class_name'] = $_POST['class_name'];
+//     $_SESSION['flight_date'] = $_POST['flight_date'];
+//     $_SESSION['triptypeId'] = $_POST['triptypeId'];
+//     $_SESSION['triptype_name'] = $_POST['triptype_name'];
+//     $_SESSION['selectedSeats'] = $_POST['selectedSeats'];
+//     $_SESSION['total_price'] = $_POST['total_price'];
 
-    header("Location: bookingCart.php");
-    exit;
-}
-
-
+//     header("Location: bookingCart.php");
+//     exit;
+// }
 
 ?>
 <!DOCTYPE html>

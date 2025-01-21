@@ -492,7 +492,7 @@ if (isset($_POST['airSearch'])) {
                     <li>
                         <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
                     </li>
-                    
+
                 </ul>
             </div>
         </div>
@@ -666,8 +666,14 @@ if (isset($_POST['airSearch'])) {
                 </form>
             </div>
             <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
+            
+            <!-- Clear Filters Button -->
+            <div class="flex justify-center mt-4">
+                <button type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-3 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800" onclick="clearFilters()">Clear Filters</button>
+            </div>
         </div>
 
+     
         <!-- disply flight information -->
         <div class="p-1 border-gray-200 dark:border-gray-700 grid col-span-3">
 
@@ -857,8 +863,19 @@ if (isset($_POST['airSearch'])) {
         </div>
 
         <script>
-            function airlineSearch() {
-                document.getElementById('airline_name').value;
+             function clearFilters() {
+                // Reset all the filter form fields
+                document.getElementById('airline_name').selectedIndex = 0; // Reset select box
+                document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+                    radio.checked = false; // Uncheck all radio buttons
+                });
+                document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                    checkbox.checked = false; // Uncheck all checkboxes
+                });
+                document.getElementById('labels-range-input').value = 100; // Reset range slider
+
+                // Submit the form to reset the flight information
+                document.querySelector('form').submit();
             }
         </script>
         <!-- main contents ends -->
