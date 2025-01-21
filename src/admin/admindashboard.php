@@ -145,6 +145,53 @@ foreach ($revenueData as $revenue) {
    }
 }
 
+//booked seat numbers in each flight
+
+$sql = "SELECT 
+flight.flight_name,
+flight.capacity,
+COUNT(DISTINCT booking.seatNOId) AS bookedSeats,
+(flight.capacity - COUNT(DISTINCT booking.seatNOId)) AS availableSeats
+FROM 
+booking
+JOIN 
+flight ON booking.flight_id = flight.flight_id
+GROUP BY 
+flight.flight_id;
+";
+
+$result = $conn->query($sql);
+
+$flightNames = [];
+$capacity = [];
+$bookedSeats = [];
+$availableSeats = [];
+
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $flightNames[] = $row['flight_name'];
+   $capacity[] = $row['capacity'];
+   $bookedSeats[] = $row['bookedSeats'];
+   $availableSeats[] = $row['availableSeats'];
+}
+
+//flight count by each airline
+
+$sql = "SELECT airline.airline_name,
+COUNT(flight.flight_id) AS flight_count
+FROM flight
+JOIN airline ON flight.airline_id = airline.airline_id
+GROUP BY airline.airline_id;";
+
+$flightCount = $conn->query($sql);
+
+$airlineNames = [];
+$flightCounts = [];
+
+while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
+   $airlineNames[] = $row['airline_name'];
+   $flightCounts[] = $row['flight_count'];
+}
+
 
 ?>
 
@@ -550,53 +597,35 @@ foreach ($revenueData as $revenue) {
             </div>
          </div>
 
+         <div class="flex flex-col items-center justify-center h-auto p-4 rounded-lg bg-[#a8dcff] mt-10 shadow-md">
+            <!-- Title -->
+            <h2 class="text-2xl font-semibold text-black dark:text-black mb-6 text-center">
+               Booked Seats in Each Flight
+            </h2>
+
+            <!-- Chart Container -->
+            <div class="w-full h-64 sm:h-80 md:w-3/4 lg:w-2/3 xl:w-1/2">
+               <canvas id="bookedSeats" class="w-full h-full"></canvas>
+            </div>
+         </div>
+
+         <div class="flex flex-col items-center justify-center h-auto p-4 rounded-lg bg-[#a8dcff] mt-10 shadow-md w-auto">
+            <!-- Title -->
+            <h2 class="text-2xl font-semibold text-black dark:text-black mb-6 text-center">
+               Flight Counts By Each Airline
+            </h2>
+
+            <!-- Chart Container -->
+            <div class="flex w-full h-auto sm:h-auto md:w-3/4 lg:w-2/3 xl:w-1/2">
+               <canvas id="airFlight" class="w-full h-full"></canvas>
+            </div>
+         </div>
+
 
 
    </div>
 
-   <!-- <div class="grid grid-cols-2 gap-4 mb-4 mt-4">
-            
-            
-            
-            
-         </div>
-         <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-            <p class="text-2xl text-gray-400 dark:text-gray-500">
-               <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-               </svg>
-            </p>
-         </div>
-         <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
-            </div>
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
-            </div>
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
-            </div>
-            <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
-               <p class="text-2xl text-gray-400 dark:text-gray-500">
-                  <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-               </p>
-            </div>
-         </div> -->
+
    </div>
    </div>
    <!-- main contents ends -->
@@ -869,7 +898,110 @@ foreach ($revenueData as $revenue) {
          }
       });
 
-      
+      // Data from PHP
+      const flightNames = <?php echo json_encode($flightNames); ?>;
+      const capacities = <?php echo json_encode($capacity); ?>;
+      const bookedSeats = <?php echo json_encode($bookedSeats); ?>;
+      const availableSeats = <?php echo json_encode($availableSeats); ?>;
+
+      // Create the Chart
+      const ctx6 = document.getElementById('bookedSeats').getContext('2d');
+      new Chart(ctx6, {
+         type: 'bar',
+         data: {
+            labels: flightNames, // Flight names as labels
+            datasets: [{
+                  label: 'Capacity',
+                  data: capacities,
+                  backgroundColor: 'rgba(75, 192, 192, 0.6)', // Light green
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1,
+               },
+               {
+                  label: 'Booked Seats',
+                  data: bookedSeats,
+                  backgroundColor: 'red', // Light red
+                  borderColor: 'rgba(255, 99, 132, 1)',
+                  borderWidth: 1,
+               },
+               {
+                  label: 'Available Seats',
+                  data: availableSeats,
+                  backgroundColor: 'white', // Light blue
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1,
+               }
+            ]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+               legend: {
+                  position: 'top',
+               }
+            },
+            scales: {
+               x: {
+                  stacked: true, // Makes the bars stacked
+               },
+               y: {
+                  beginAtZero: true
+               }
+            }
+         }
+      });
+
+      //flight count by each airlines
+      const airlineNames = <?php echo json_encode($airlineNames); ?>;
+      const flightCounts = <?php echo json_encode($flightCounts); ?>;
+      const ctx7 = document.getElementById('airFlight').getContext('2d');
+
+      new Chart(ctx7, {
+         type: 'bar', // Horizontal bar chart
+         data: {
+            labels: airlineNames, // Long labels
+            datasets: [{
+               label: 'Flight Count',
+               data: flightCounts,
+               backgroundColor: '#3b82f6',
+               borderColor: '#1d4ed8',
+               borderWidth: 1
+            }]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false, // Ensure the chart resizes dynamically
+            indexAxis: 'y', // Horizontal bars
+            scales: {
+               x: {
+                  beginAtZero: true
+               },
+               y: {
+                  ticks: {
+                     autoSkip: false, // Show all labels
+                     font: {
+                        size: 14 // Adjust font size for better visibility
+                     },
+                     padding: 10, // Add spacing between labels
+                     callback: function(value) {
+                        return value; // Display full label
+                     }
+                  }
+               }
+            },
+            layout: {
+               padding: {
+                  left: 50 // Increase left padding for labels
+               }
+            },
+            plugins: {
+               legend: {
+                  position: 'top'
+               }
+            }
+         }
+      });
    </script>
 </body>
 
