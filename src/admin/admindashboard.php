@@ -37,6 +37,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
    $bookings[] = $row['total_bookings'];
 }
 
+
 //top 5 most active users
 // Database query for top 5 most active users
 $sql = "SELECT users.username, COUNT(*) as total_bookings
@@ -191,6 +192,27 @@ while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
    $airlineNames[] = $row['airline_name'];
    $flightCounts[] = $row['flight_count'];
 }
+
+//total revenue by daily
+// Database query for daily revenue
+$sql = "SELECT DATE(bookAt) as booking_date, SUM(totalPrice) as total_revenue
+            FROM booking 
+            JOIN
+            	payment
+            ON
+            	booking.payment_id = payment.paymentID
+            GROUP BY DATE(booking_date)
+            ORDER BY booking_date ASC;";
+$result = $conn->prepare($sql);
+$result->execute();
+// Prepare data for embedding
+$dates1 = [];
+$revenues = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $dates1[] = $row['booking_date'];
+   $revenues[] = $row['total_revenue'];
+}
+
 
 
 ?>
@@ -494,6 +516,7 @@ while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
                <h2 class="text-xl font-semibold text-black-700 dark:text-black-300 mb-4">
                   Bookings Over Time
                </h2>
+
                <div class="w-full h-64 sm:h-80">
                   <canvas id="bookingChart" class="w-full h-full"></canvas>
                </div>
@@ -621,6 +644,19 @@ while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
             </div>
          </div>
 
+         <div class="flex flex-col items-center justify-center h-auto p-4 rounded-lg bg-[#a8dcff] mt-10 shadow-md w-auto">
+            <!-- Title -->
+            <h2 class="text-2xl font-semibold text-black dark:text-black mb-6 text-center">
+               Total Revenue By Daily
+            </h2>
+
+            <!-- Chart Container -->
+            <div class="flex w-full h-auto sm:h-auto md:w-3/4 lg:w-2/3 xl:w-1/2">
+               <canvas id="revenueDaily" class="w-full h-full"></canvas>
+            </div>
+         </div>
+
+
 
 
    </div>
@@ -638,6 +674,7 @@ while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
          dropdownMenu.classList.toggle('hidden');
       });
 
+      // Booking Chart
       const labels = <?php echo json_encode($dates); ?>;
       const bookings = <?php echo json_encode($bookings); ?>;
 
@@ -857,7 +894,7 @@ while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
             datasets: [{
                label: 'Total Revenue ($)', // Label for the dataset
                data: revenueData, // Y-axis data (revenue)
-               backgroundColor: 'pink', // Bar color
+               backgroundColor: 'white', // Bar color
                borderColor: '#2D8CE5', // Border color
                borderWidth: 1
             }]
@@ -1002,6 +1039,18 @@ while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
             }
          }
       });
+
+      //revenue by daily
+      const revdate = <?php echo json_encode($dates1); ?>;
+      const revenues = <?php echo json_encode($revenues); ?>;
+      const ctx8 = document.getElementById('revenueDaily').getContext('2d');
+      
+
+      
+
+   
+
+
    </script>
 </body>
 

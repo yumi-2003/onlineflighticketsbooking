@@ -1,68 +1,68 @@
 <?php
-        require_once 'dbconnect.php';
+require_once 'dbconnect.php';
 
-        if (!isset($_SESSION)) {
-            session_start();
-        }
+if (!isset($_SESSION)) {
+  session_start();
+}
 
-        //get the selected seat No
-        if (isset($_POST['submitSeats'])) {
+//get the selected seat No
+if (isset($_POST['submitSeats'])) {
 
-            if(isset($_POST['seats'])){
-                $selectedSeats = $_POST['seats'];
+  if (isset($_POST['seats'])) {
+    $selectedSeats = $_POST['seats'];
 
-                foreach($selectedSeats as $seatId => $seatNo){
-                    echo "You selected seat: $seatNo <br>";
-                }
+    // foreach ($selectedSeats as $seatId => $seatNo) {
+    //   echo "You selected seat: $seatNo <br>";
+    // }
 
-                $_SESSION['selectedSeats'] = $_POST['seats'];
-                header('Location: flightBook.php');
-                exit();
-            }else{
-                echo "Please select a seat";
-            }
-        }
+    $_SESSION['selectedSeats'] = $_POST['seats'];
+    header('Location: flightBook.php');
+    exit();
+  } else {
+    echo "Please select a seat";
+  }
+}
 
-        if (isset($_SESSION['flight'])) {
-            // Retrieve the flight details from the session
-            $flight = $_SESSION['flight'];
-            $flight_id = $flight['flight_id'];
-            // $photo = $flight['photo'];
-            $class_id = $flight['class_id'];
-            $feePerTicket = $flight['fee_per_ticket'];
-            $classtypefees = $flight['base_fees'];
-            $triptypefees = $flight['priceCharge'];
-            $airline_name = $flight['airline_name'];
-            $flight_name = $flight['flight_name'];
-            $class_name = $flight['class_name'];
-            $class_price = $flight['classPrice'];
-            $source = $flight['source'];
-            $destination = $flight['destination'];
-            $gate = $flight['gate'];
-            $flight_date = $flight['flight_date'];
-            $departure_time = $flight['departure_time'];
-            $arrival_time = $flight['arrival_time'];
-            $triptypeId = $flight['triptypeId'];
-            $triptype_name = $flight['triptype_name'];
-        } 
+if (isset($_SESSION['flight'])) {
+  // Retrieve the flight details from the session
+  $flight = $_SESSION['flight'];
+  $flight_id = $flight['flight_id'];
+  // $photo = $flight['photo'];
+  $class_id = $flight['class_id'];
+  $feePerTicket = $flight['fee_per_ticket'];
+  $classtypefees = $flight['base_fees'];
+  $triptypefees = $flight['priceCharge'];
+  $airline_name = $flight['airline_name'];
+  $flight_name = $flight['flight_name'];
+  $class_name = $flight['class_name'];
+  $class_price = $flight['classPrice'];
+  $source = $flight['source'];
+  $destination = $flight['destination'];
+  $gate = $flight['gate'];
+  $flight_date = $flight['flight_date'];
+  $departure_time = $flight['departure_time'];
+  $arrival_time = $flight['arrival_time'];
+  $triptypeId = $flight['triptypeId'];
+  $triptype_name = $flight['triptype_name'];
+}
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seat Selection</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seat Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
 </head>
 
 <body>
-   
 
 
-    <!-- nav starts -->
+
+  <!-- nav starts -->
   <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
     <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
       <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -186,49 +186,53 @@
     </div>
   </nav>
   <!-- nav ends -->
-    
+
   <div class='flex h-auto items-center justify-center'>
-  <div class="flex justify-center items-center  font-[sans-serif] h-full md:min-h-screen p-4 my-3 grid grid-cols-3 gap-4">
-        <div class="p-4 gap-2 mt-16 mx-auto bg-cyan-200 col-span-2 border-2 rounded-lg">
-            <h1>Select Your Seat</h1>
-            <?php
-            $flight_id = $flight['flight_id'] ?? '';
-            $class_id = $flight['class_id']?? '';
-            $sql = "SELECT * FROM seat_layout WHERE flight_id = :flight_id AND class_id = :class_id";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':flight_id', $flight_id, PDO::PARAM_INT);
-            $stmt->bindParam(':class_id', $class_id, PDO::PARAM_INT);
-            $stmt->execute();
-            $seats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $row = 1;
+    <div class="pt-20 flex flex-col justify-center items-center font-[sans-serif] h-full md:min-h-screen p-4 my-3 gap-6">
+    <h1 class="text-3xl font-bold">Select Your Seat</h1>
+
+      <div class=" flex justify-center items-center p-4 gap-2 mt-6 mx-auto border-2 rounded-lg shadow-lg">
+        <div>
+        <?php
+        $flight_id = $flight['flight_id'] ?? '';
+        $class_id = $flight['class_id'] ?? '';
+        $sql = "SELECT * FROM seat_layout WHERE flight_id = :flight_id AND class_id = :class_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':flight_id', $flight_id, PDO::PARAM_INT);
+        $stmt->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $seats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $row = 1;
+        $col = 1;
+
+        echo "<form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>";
+        echo "<div class='seat-container w-full'>";
+
+        foreach ($seats as $seat) {
+          if ($col > 10) {
             $col = 1;
-
-            echo "<form action='$_SERVER[PHP_SELF]' method='POST' class='inline-block' enctype='multipart/form-data'>";
-            echo "<div class='seat-container w-full inline-block'>";
-            foreach ($seats as $seat) {
-                if ($col > 10) {
-                    $col = 1;
-                    $row++;
-                    echo "<br>";
-                }
-                if ($col == 6) {
-                    echo "<span>aisle</span>";
-                }
-                if ($row > 15) {
-                    break;
-                }
-                if ($seat['status'] == 1) {
-                    echo "
+            $row++;
+            echo "<br>";
+          }
+          if ($col == 6) {
+            echo "<span>aisle</span>";
+          }
+          if ($row > 15) {
+            break;
+          }
+          if ($seat['status'] == 1) {
+            echo "
                             
                                 <button type='button' name='' class='focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'>{$seat['seatNo']}
                                 
                                 </button>
                             ";
-                } else {
+          } else {
 
-                    if ($seat['class_id'] == 1){
-                        echo "
+            if ($seat['class_id'] == 1) {
+              echo "
                             
                                 <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
@@ -241,8 +245,8 @@
                                 <input type='hidden' name='priceCharge' value='{$flight['priceCharge']}'>
                                 </button>
                             ";
-                    }else if($seat['class_id'] == 2){
-                        echo "
+            } else if ($seat['class_id'] == 2) {
+              echo "
                                 <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
@@ -256,9 +260,8 @@
                                 
                                 </button>
                             ";
-                    }
-                    else if($seat['class_id'] == 3){
-                        echo "
+            } else if ($seat['class_id'] == 3) {
+              echo "
                                 <button type='button' name='select'  data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
@@ -272,8 +275,8 @@
                                
                                 </button>
                             ";
-                    }else if($seat['class_id'] == 4){
-                        echo "
+            } else if ($seat['class_id'] == 4) {
+              echo "
                                 <button type='button' name='select' data-seat-id='{$seat['id']}' data-seat-no='{$seat['seatNo']}' class='select-seat-btn focus:outline-none text-white bg-black hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-black dark:hover:bg-gray-700 dark:focus:ring-gray-800'>{$seat['seatNo']}
                                 <input type='hidden' name='seatNo' value='{$seat['seatNo']}'>
                                 <input type='hidden' name='id' value='{$seat['id']}'>
@@ -288,26 +291,18 @@
                                 </button>
                             
                             ";
-                    }
-                }
-                $col++;
             }
-            echo "</div>";
-            echo "<button type='submit' name='submitSeats' class='submit-seats-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 mt-4 rounded-lg'>
-                    Submit Selected Seats
-                </button>";
-            echo "</form>";
-            ?>
+          }
+          $col++;
+        }
+        echo "</div>";
+        echo "<div class='flex justify-center items-center mt-4'>";
 
+        echo "<button type='submit' name='submitSeats' class='w-full border-2 border-green-500 text-green-500 hover:bg-green-700 hover:text-white hover:border-green-700 font-bold py-2 px-4 rounded'>Submit</button> </div>";
+        echo "</form>";
+        ?>
         </div>
-        <div class="gap-4 w-full h-60 mx-auto my-0 col-span-1 bg-cyan-100 border-b rounded-lg">
-            <div class="">
-                booked
-            </div>
-            <div class="">
-                Available
-            </div>
-        </div>
+      </div>
     </div>
   </div>
 
@@ -388,30 +383,32 @@
   </footer>
   <!-- footer ends -->
 
-    <script>
-        document.querySelectorAll('.select-seat-btn').forEach(button => {
-            button.addEventListener('click',function(){
-                const seatNo = this.dataset.seatNo;
-                const seatId = this.dataset.seatId;
+  <script>
+    document.querySelectorAll('.select-seat-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const seatNo = this.dataset.seatNo;
+        const seatId = this.dataset.seatId;
 
-                //make sure  already put the seat to the form or not
-                let existingSeat = document.querySelector(`input[name="seats[${seatId}]"]`);
+        //make sure  already put the seat to the form or not
+        let existingSeat = document.querySelector(`input[name="seats[${seatId}]"]`);
 
-                //if not put that seat into th form
-                if(!existingSeat){
-                    const seatInsert =document.createElement('input');
-                    seatInsert.type = 'hidden';
-                    seatInsert.name = 'seats[' + seatId + ']';
-                    seatInsert.value = seatNo;
+        //if not put that seat into th form
+        if (!existingSeat) {
+          const seatInsert = document.createElement('input');
+          seatInsert.type = 'hidden';
+          seatInsert.name = 'seats[' + seatId + ']';
+          seatInsert.value = seatNo;
 
-                    //append the new hidden input fields to the form
-                    document.querySelector('form').appendChild(seatInsert);
-                }
-            })
-        })
-    </script>
+          //append the new hidden input fields to the form
+          document.querySelector('form').appendChild(seatInsert);
+        }
+      })
+    })
 
-    
+
+  </script>
+
+
 </body>
 
 </html>

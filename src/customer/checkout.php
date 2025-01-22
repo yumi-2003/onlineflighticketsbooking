@@ -97,6 +97,8 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($status) {
                 $paymentId = $conn->lastInsertId();
+                $_SESSION['paymentId'] = $paymentId;
+
                 $bookingIds = $_SESSION['bookingIds'];
                 $flight_id = $flight['flight_id'];
                 $classId = $flight['class_id'];
@@ -120,23 +122,10 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             echo $e->getMessage();
         }
     }
+
+    header('Location: viewTickets.php');
 }
 
-// if (isset($_POST['addToCart']) && $_SERVER['REQUEST_METHOD'] == "POST") {
-
-//     $_SESSION['flight_id'] = $_POST['flight_id'];
-//     $_SESSION['flight_name'] = $_POST['flight_name'];
-//     $_SESSION['class_id'] = $_POST['class_id'];
-//     $_SESSION['class_name'] = $_POST['class_name'];
-//     $_SESSION['flight_date'] = $_POST['flight_date'];
-//     $_SESSION['triptypeId'] = $_POST['triptypeId'];
-//     $_SESSION['triptype_name'] = $_POST['triptype_name'];
-//     $_SESSION['selectedSeats'] = $_POST['selectedSeats'];
-//     $_SESSION['total_price'] = $_POST['total_price'];
-
-//     header("Location: bookingCart.php");
-//     exit;
-// }
 
 ?>
 <!DOCTYPE html>
@@ -278,15 +267,18 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <hr />
                                     <li class="flex flex-wrap gap-4 text-base font-bold">Total <span class="ml-auto">$
                                             <?php
+                                            $promocode = $_POST['promoCode'] ?? '';
                                             $discountPercentage = 0; //default if there is no promo
                                             // $class_price = $flight['classPrice'] ?? '';
                                             $bookingAmount = count($bookingIds);
                                             $tax = 0.15;
                                             $taxAmount = $class_price * $tax;
                                             $totalPrice = ($class_price + $taxAmount) * $bookingAmount;
-                                            if ($discountPercentage === 0) {
+
+                                            if ($discountPercentage === 0 && $promocode === '') {
                                                 echo number_format($totalPrice, 2);
                                             } else {
+
                                                 if (isset($_POST['promoCode']) && isset($_POST['applyCode'])) {
                                                     $promoCode = trim($_POST['promoCode']);
                                                     $promoCode = strtoupper($promoCode);
@@ -311,6 +303,7 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="mt-8">
                                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
                                         <h3 class="text-lg font-bold text-gray-800 mb-4">Do you have a promo code?</h3>
+
                                         <div class="flex border border-blue-600 overflow-hidden rounded-lg max-w-md">
                                             <input type="text" placeholder="Promo code" name="promoCode"
                                                 class="w-full outline-none bg-white text-gray-600 text-sm px-4 py-2.5" />

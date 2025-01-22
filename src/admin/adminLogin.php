@@ -198,9 +198,6 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     </form>
   </div>
   </div>
-
-  
-
 </body>
 
 </html>
