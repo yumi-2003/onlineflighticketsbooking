@@ -17,6 +17,8 @@ try {
 
 //get flight information
 
+
+
 $sql = "SELECT *  FROM flight INNER JOIN airline ON flight.airline_id = airline.airline_id;";
 try {
    $stmt = $conn->query($sql);
@@ -53,6 +55,74 @@ if (isset($_POST['search'])) {
       } catch (PDOException $e) {
          echo $e->getMessage();
       }
+   }
+}
+
+// if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+//    $flight_id = $_POST['flight_id'];
+
+//    $classes = [
+//       ['class_ID' => 1, 'prefix' => 'F', 'count' => 10],   // First Class
+//       ['class_ID' => 2, 'prefix' => 'B', 'count' => 30],   // Business Class
+//       ['class_ID' => 3, 'prefix' => 'P', 'count' => 50],   // Premium Economy
+//       ['class_ID' => 4, 'prefix' => 'E', 'count' => 60],   // Economy
+//    ];
+
+//    // Generate and insert seats for each class
+//    foreach ($classes as $class) {
+//       $classID = $class['class_ID'];
+//       $prefix = $class['prefix'];
+//       $count = $class['count'];
+
+//       for ($i = 1; $i <= $count; $i++) {
+//          $seatNumber = $prefix . $i;  // Generate seat number (e.g., F1, B1, P1, E1)
+//          $sql = "INSERT INTO seat_layout (flight_ID, class_ID, seatNo, status) VALUES (?,?,?,?)";
+//          $stmt = $conn->prepare($sql);
+//          $stmt->execute([$flight_id, $classID, $seatNumber, 'available']);
+
+
+//       }
+//    }
+
+//    echo "<scipt>alert('Seats generated successfully for all classes!')</script>";
+// }
+
+if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+   $flight_id = $_POST['flight_id'];
+
+   // Check if seats already exist for the given flight_id
+   $sqlCheck = "SELECT COUNT(*) AS seat_count FROM seat_layout WHERE flight_ID = ?";
+   $stmtCheck = $conn->prepare($sqlCheck);
+   $stmtCheck->execute([$flight_id]);
+   $result = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+   if ($result['seat_count'] > 0) {
+       echo "<script>alert('Seats already exist for this flight ID!');</script>";
+   } else {
+       // Define class distribution
+       $classes = [
+           ['class_ID' => 1, 'prefix' => 'F', 'count' => 10],   // First Class
+           ['class_ID' => 2, 'prefix' => 'B', 'count' => 30],   // Business Class
+           ['class_ID' => 3, 'prefix' => 'P', 'count' => 50],   // Premium Economy
+           ['class_ID' => 4, 'prefix' => 'E', 'count' => 60],   // Economy
+       ];
+
+       // Generate and insert seats for each class
+       foreach ($classes as $class) {
+           $classID = $class['class_ID'];
+           $prefix = $class['prefix'];
+           $count = $class['count'];
+
+           for ($i = 1; $i <= $count; $i++) {
+               $seatNumber = $prefix . $i;  // Generate seat number (e.g., F1, B1, P1, E1)
+               $sql = "INSERT INTO seat_layout (flight_ID, class_ID, seatNo, status) VALUES (?, ?, ?, ?)";
+               $stmt = $conn->prepare($sql);
+               $stmt->execute([$flight_id, $classID, $seatNumber, 'available']);
+           }
+       }
+
+       echo "<script>alert('Seats generated successfully for all classes!');</script>";
    }
 }
 
@@ -276,7 +346,7 @@ if (isset($_POST['search'])) {
 
       <div class="grid grid-cols-3 gap-6">
          <!-- Search Bar -->
-         <div class="col-span-3 bg-blue-100 py-10 h-28">
+         <div class="col-span-3 bg-blue-100 py-10 h-28 flex flex-row space-x-4 items-center justify-center">
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                <div class="flex rounded-md border-2 border-blue-500 overflow-hidden max-w-md mx-auto font-[sans-serif]">
                   <input type="text" name="searchInput" placeholder="Search Flight Name..."
@@ -290,7 +360,23 @@ if (isset($_POST['search'])) {
                   </button>
                </div>
             </form>
+
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" class="flex flex-end">
+
+               <div class="flex rounded-md border-2 border-blue-500">
+                  <input type="number" name="flight_id" placeholder="Enter Flight ID" class="w-full outline-none bg-white text-gray-600 text-sm px-4 py-3" />
+                  <button type="submit" name="insertSeats" class="flex items-center justify-center
+                     bg-[#007bff] px-5 text-white">InsertSeats</button>
+              
+
+               </div>
+
+               
+            </form>
+
          </div>
+
+
 
          <!-- Flight Info Section -->
          <?php

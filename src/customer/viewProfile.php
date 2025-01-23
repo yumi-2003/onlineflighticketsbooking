@@ -175,31 +175,65 @@ try {
 
     <!-- view Profile -->
     <h6 class="text-center text-2xl pt-24">WELCOME <?php echo $users['username'] ?></h6>
-    <div class="card bg-base-100 w-80 shadow-xl mx-auto my-16 h-30 px-4 text-center">
-        <h2 class="card-title">WELCOME to SwiftMiles</h2>
+
+    <div class="flex flex-col lg:flex-row items-center justify-center h-auto px-12">
+        <!-- Profile Card -->
+        <div class="card bg-base-100 w-96 shadow-xl mx-12 my-16 px-6 text-center bg-[#e4f6ff] rounded-lg shadow-lg">
+        <h3 class="text-lg font-semibold mb-2">Profile</h3>
         <figure class="flex justify-center items-center pt-10">
-            <img
-                src="<?php if (isset($_SESSION['userPhoto'])) {
-                            echo $profile;
-                        } ?>"
-                alt="profile"
-                class="rounded-lg w-24 h-25" />
-        </figure>
-        <span>
-            <?php
-            echo "<strong>Username:</strong> " . $users['username'];
-            ?>
-        </span><br>
-        <span>
-            <?php if (isset($_SESSION['userEmail'])) {
-                echo "<strong>Email:</strong> " . $email;
-            }
-            ?>
-        </span><br>
-        <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="">
-            <button class="inline-flex h-8 items-center justify-center rounded-md bg-blue-500 px-6 font-medium text-neutral-50 shadow-lg shadow-neutral-500/20 transition active:scale-95 my-4">Edit Profile</button>
-        </a>
+                <img
+                    src="<?php if (isset($_SESSION['userPhoto'])) {
+                                echo $profile;
+                            } ?>"
+                    alt="profile"
+                    class="rounded-lg w-24 h-25" />
+            </figure>
+            <span>
+                <?php echo "<strong>Username:</strong> " . $users['username']; ?>
+            </span><br>
+            <span>
+                <?php if (isset($_SESSION['userEmail'])) {
+                    echo "<strong>Email:</strong> " . $email;
+                } ?>
+            </span><br>
+            <a href="editUProfile.php?uID=<?php echo $users['user_id'] ?>" class="">
+                <button class="inline-flex h-8 items-center justify-center rounded-md bg-blue-500 px-6 font-medium text-neutral-50 shadow-lg shadow-neutral-500/20 transition active:scale-95 my-4">Edit Profile</button>
+            </a>
+        </div>
+
+        <!-- Activities Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mx-12 my-16 w-full max-w-screen-lg">
+            <!-- View Cart -->
+            <div class="card p-6 text-center w-80 bg-[#e4f6ff] rounded-lg shadow-lg">
+
+                <h3 class="text-lg font-semibold mb-2">View Cart</h3>
+                <figure class="flex justify-center items-center pt-10">
+                <img
+                    src="/images/electronic-ticket.png"
+                    alt="airticket"
+                    class="rounded-lg w-24 h-25" />
+            </figure>
+                <p class="text-gray-500 mb-4">You have 2 unpaid items in your cart.</p>
+                <a href="viewCart.php" class="text-blue-500 hover:underline">Go to Cart</a>
+            </div>
+
+            <!-- View Tickets -->
+            <div class="card p-6 text-center w-80 bg-[#e4f6ff] rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-2">View Tickets</h3>
+                <figure class="flex justify-center items-center pt-10">
+                <img
+                    src="/images/airplane-ticket.png"
+                    alt="airticket"
+                    class="rounded-lg w-24 h-25" />
+            </figure>
+                <p class="text-gray-500 mb-4">You have 3 upcoming tickets.</p>
+                <a href="viewTickets.php" class="text-blue-500 hover:underline">Go to Tickets</a>
+            </div>
+        </div>
     </div>
+
+
+
 
     <!-- footer starts -->
     <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">
