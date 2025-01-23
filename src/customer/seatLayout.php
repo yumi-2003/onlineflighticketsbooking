@@ -5,7 +5,7 @@
         session_start();
     }
   
-    $flightID = $_GET['flight_ID'];  
+    //$flightID = $_GET['flight_ID'];  
     
     // Define class distribution
     $classes = [

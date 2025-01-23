@@ -197,6 +197,7 @@ if (isset($_SESSION['flight'])) {
         <?php
         $flight_id = $flight['flight_id'] ?? '';
         $class_id = $flight['class_id'] ?? '';
+
         $sql = "SELECT * FROM seat_layout WHERE flight_id = :flight_id AND class_id = :class_id";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':flight_id', $flight_id, PDO::PARAM_INT);
@@ -222,7 +223,7 @@ if (isset($_SESSION['flight'])) {
           if ($row > 15) {
             break;
           }
-          if ($seat['status'] == 1) {
+          if ($seat['status'] === 'booked') {
             echo "
                             
                                 <button type='button' name='' class='focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 w-16 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'>{$seat['seatNo']}

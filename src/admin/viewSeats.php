@@ -356,7 +356,7 @@ if (isset($_POST['search'])) {
                }
 
                // Seat Display with Delete and View Buttons
-               $seatStatusClass = $seat['status'] == 1 ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800';
+               $seatStatusClass = $seat['status'] === 'booked' ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800';
                echo "
                 <div class='inline-block'>
                     <button type='button' class='focus:outline-none text-white {$seatStatusClass} font-medium rounded-lg text-sm px-5 py-2.5 me-1 mb-1 w-16'>{$seat['seatNo']}</button>

@@ -112,7 +112,7 @@ if (isset($_POST['payAmount']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $bookStatus->execute([$bookingId]);
 
                     foreach ($selectedSeats as $seatNo) {
-                        $seatUpdate = "UPDATE seat_layout set status = 1 WHERE flight_id = ? AND class_id = ? AND seatNo = ?";
+                        $seatUpdate = "UPDATE seat_layout set status = 'booked' WHERE flight_id = ? AND class_id = ? AND seatNo = ?";
                         $seatStmt = $conn->prepare($seatUpdate);
                         $seatStmt->execute([$flight_id, $classId, $seatNo]);
                     }
