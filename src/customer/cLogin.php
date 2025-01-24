@@ -35,7 +35,7 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     header('Location: index.php');
                 } else {
                     $password_err =  "Invalid email or password";
-                    //echo "<script>alert('Invalid email or password')</script>";
+                    echo "<script>alert('Invalid email or password')</script>";
                 }
             } else {
                 $password_err =  "Invalid email or password";
@@ -47,12 +47,8 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 } else {
     $password_err =  "Invalid email or password";
-    echo "<script>alert('Invalid email or password')</script>";
+    //echo "<script>alert('Invalid email or password')</script>";
 }
-
-// if(isset($_SESSION['signUpSuccess'])){
-//     var_dump($_SESSION['signUpSuccess']);
-// }
 
 ?>
 <!DOCTYPE html>

@@ -141,7 +141,7 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
       <form class="bg-gray-50 rounded-2xl p-6 -mt-24 relative z-10" action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data">
         <div class="mb-12">
-          <h3 class="text-3xl font-extrabold text-blue-600">Admin Log in</h3>
+          <h3 class="text-3xl font-extrabold text-blue-600">Admin Login</h3>
         </div>
 
 

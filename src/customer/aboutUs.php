@@ -8,7 +8,7 @@ require_once 'dbconnect.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ContactUs</title>
+    <title>About SwiftMiles</title>
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
@@ -17,8 +17,6 @@ require_once 'dbconnect.php';
 </head>
 
 <body>
-
-   
 
     <div class="font-sans bg-gray-100 px-4 py-20">
         <div class="grid lg:grid-cols-2 gap-12 lg:max-w-6xl max-w-2xl mx-auto">

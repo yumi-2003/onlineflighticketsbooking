@@ -204,7 +204,7 @@ try {
         <!-- Activities Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mx-12 my-16 w-full max-w-screen-lg">
             <!-- View Cart -->
-            <div class="card p-6 text-center w-80 bg-[#e4f6ff] rounded-lg shadow-lg">
+            <!-- <div class="card p-6 text-center w-80 bg-[#e4f6ff] rounded-lg shadow-lg">
 
                 <h3 class="text-lg font-semibold mb-2">View Cart</h3>
                 <figure class="flex justify-center items-center pt-10">
@@ -215,7 +215,7 @@ try {
             </figure>
                 <p class="text-gray-500 mb-4">You have 2 unpaid items in your cart.</p>
                 <a href="viewCart.php" class="text-blue-500 hover:underline">Go to Cart</a>
-            </div>
+            </div> -->
 
             <!-- View Tickets -->
             <div class="card p-6 text-center w-80 bg-[#e4f6ff] rounded-lg shadow-lg">
