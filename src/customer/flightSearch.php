@@ -460,7 +460,7 @@ if (isset($_POST['airSearch'])) {
             <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
                 <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
                     <li>
-                        <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+                        <a href="index.php" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
                     </li>
                     <li>
                         <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
@@ -472,12 +472,12 @@ if (isset($_POST['airSearch'])) {
                             <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                                 <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
                                     <li>
-                                        <a href="" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                        <a href="aboutUs.php" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                                             About Us
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                        <a href="contactUs.php" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                                             Conatct Us
                                         </a>
                                     </li>
@@ -551,10 +551,10 @@ if (isset($_POST['airSearch'])) {
 
     <!-- main contents starts -->
     <div class="p-4 grid grid-cols-5 gap-1">
-        <div class="col-span-1 grid-row-4 gap-1">
+        <div class="col-span-1 grid-row-4 gap-1 ">
             <!-- filter section -->
             <div class="flex justify-start rounded-lg text-black">
-                <h3 class="font-[sans-serif] text-2xl">Filter Flight Information</h3>
+                <h3 class="font-[sans-serif] text-xl">Filter Flight Information</h3>
             </div>
 
             <!-- search by ariline name -->
@@ -647,119 +647,116 @@ if (isset($_POST['airSearch'])) {
             </div>
             <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
 
-            <!-- search by departure time and arrival time -->
-            <div class="flex justify-start rounded-lg text-black">
-                <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST" enctype="multipart/form-data" class="p-3" id="timeSearch">
-                    <label for="">Departure and Arrival</label>
-                    <div class="grid space-y-3 pt-3">
-                        <div class="grid space-y-2">
-                            <label for="departure-checkbox" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="departure-checkbox" name="departure_time" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Departure Time</span>
-                            </label>
 
-                            <label for="arrival-checkbox" class="max-w-xs flex p-3 w-full bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
-                                <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="arrival-checkbox" name="arrival_time" onchange="this.form.submit();">
-                                <span class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Arrival Time</span>
-                            </label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>
-            
+
             <!-- Clear Filters Button -->
             <div class="flex justify-center mt-4">
                 <button type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-3 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800" onclick="clearFilters()">Clear Filters</button>
             </div>
         </div>
 
-     
+
         <!-- disply flight information -->
-        <div class="p-1 border-gray-200 dark:border-gray-700 grid col-span-3">
+        <div class="p-1 border-gray-200 dark:border-gray-700 grid col-span-3 ">
 
             <?php
             if (isset($flights)) {
-                echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto'>";
+                echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-full max-w-2xl mx-auto'>";
 
                 foreach ($flights as $flight) {
                     echo "
-                        <div class='flex items-center justify-between mb-4'>
-                            <div class='flex items-center space-x-4'>
-                                <img src='{$flight['photo']}' alt='Airline Logo' class='w-16 h-12 rounded-full'>
-                                <div>
-                                    <p class='text-lg font-semibold text-gray-800'>{$flight['airline_name']}</p>
-                                    <p class='text-sm text-gray-500'>{$flight['flight_name']}</p>
+                        <div class='p-6 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-neutral-800 dark:border-neutral-700'>
+                                <!-- Airline Information -->
+                                <div class='flex items-center justify-between mb-6'>
+                                    <div class='flex items-center space-x-4'>
+                                        <img src='{$flight['photo']}' alt='Airline Logo' class='w-18 h-16 rounded-lg shadow-sm'>
+                                        <div>
+                                            <p class='text-xl font-bold text-gray-800 dark:text-gray-200'>{$flight['airline_name']}</p>
+                                            <p class='text-sm text-gray-600 dark:text-gray-400'>{$flight['flight_name']}</p>
+                                        </div>
+                                    </div>
+                                    <div class='text-right'>
+                                        <p class='text-lg font-bold text-blue-600 dark:text-blue-400'>{$flight["class_name"]}</p>
+                                        <p class='text-lg font-bold text-blue-600 dark:text-blue-400'>
+                                            <span class='text-sm'>$</span>{$flight["classPrice"]}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <p class='text-xl font-bold text-blue-600'>{$flight["class_name"]}</p>
-                            <p class='text-xl font-bold text-blue-600'><span class='text-xl font-bold text-blue-600'>$</span>{$flight["classPrice"]}</p>
-                        </div>
-                        <div class='flex items-center justify-between mb-4'>
-                            <div class='text-center'>
-                                <p class='text-lg font-semibold text-gray-800'>From</p>
-                                <p class='text-sm text-gray-500'>{$flight["source"]}</p>
-                                <p class='text-sm text-gray-500'>{$flight["departure_time"]}</p>
-                            </div>
-                            <div class='text-center text-gray-500'>
-                                <div class='flex items-center space-x-2'>
-                                    <span class='w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full'>
-                                        <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
-                                            <path d='M10.293 15.707a1 1 0 010-1.414l3-3H3a1 1 0 110-2h10.586l-3-3a1 1 0 011.414-1.414l4.707 4.707a1 1 0 010 1.414l-4.707 4.707a1 1 0 01-1.414 0z' />
-                                        </svg>
-                                    </span>
-                                    <p class='text-sm'>{$flight["total_distance"]}km</p>
-                                </div>
-                                <p class='text-xs'>Gate Name:{$flight["gate"]}</p>
-                                <p class='text-xs'>Trip Type:{$flight["triptype_name"]}</p>
-                            </div>
-                            <div class='text-center'>
-                                <p class='text-lg font-semibold text-gray-800'>To</p>
-                                <p class='text-sm text-gray-500'>{$flight["destination"]}</p>
-                                <p class='text-sm text-gray-500'>{$flight["arrival_time"]}</p>
-                            </div>
-                        </div>
-                        <div class='flex items-center justify-between'>
-                            <p class='text-sm text-gray-500'>{$flight["flight_date"]}</p>
 
-                            <form action='{$_SERVER['PHP_SELF']}' method='POST' enctype='multipart/form-data' class='mx-10'>
-                                <input type='hidden' name='flightclasses_id' value='{$flight['flightclasses_id']}'>
-                                <input type='hidden' name='user_id' value='{['user_id']}'>
-                                <button type='submit' name='addFav' class='mx-20'>
-                                    <svg style='color: blue' role='img' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' aria-labelledby='favouriteIconTitle'> 
-                                        <title id='favouriteIconTitle'>Favourite</title> 
-                                        <path d='M12,21 L10.55,19.7051771 C5.4,15.1242507 2,12.1029973 2,8.39509537 C2,5.37384196 4.42,3 7.5,3 C9.24,3 10.91,3.79455041 12,5.05013624 C13.09,3.79455041 14.76,3 16.5,3 C19.58,3 22,5.37384196 22,8.39509537 C22,12.1029973 18.6,15.1242507 13.45,19.7149864 L12,21 Z' fill='blue'></path> 
-                                    </svg>
-                                </button>
-                            </form>
-                            <form action='$_SERVER[PHP_SELF]' method='POST' enctype='multipart/form-data'>
-                                    <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
-                                    <input type='hidden' name='flightclasses_id' value='{$flight['flightclasses_id']}'>
-                                    <input type='hidden' name='class_id' value='{$flight['class_id']}'>
-                                    <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
-                                    <input type='hidden' name='photo' value='{$flight['photo']}'>
-                                    <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
-                                    <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
-                                    <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
-                                    <input type='hidden' name='base_fees' value='{$flight["base_fees"]}'>
-                                    <input type='hidden' name='priceCharge' value='{$flight["priceCharge"]}'>
-                                    <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
-                                    <input type='hidden' name='source' value='{$flight["source"]}'>
-                                    <input type='hidden' name='flight_date' value='{$flight["flight_date"]}'>
-                                    <input type='hidden' name='departure_time' value='{$flight["departure_time"]}'>
-                                    <input type='hidden' name='triptypeId' value='{$flight["triptypeId"]}'>
-                                    <input type='hidden' name='triptype_name' value='{$flight["triptype_name"]}'>
-                                    <input type='hidden' name='gate' value='{$flight["gate"]}'>
-                                    <input type='hidden' name='destination' value='{$flight["destination"]}'>
-                                    <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
-                                    <div>
+                                <!-- Flight Details -->
+                                <div class='grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6'>
+                                    <!-- From -->
+                                    <div class='text-center'>
+                                        <p class='text-lg font-semibold text-gray-800 dark:text-gray-200'>From</p>
+                                        <p class='text-sm text-gray-600 dark:text-gray-400'>{$flight["source"]}</p>
+                                        <p class='text-sm text-gray-500 dark:text-gray-400'>{$flight["departure_time"]}</p>
                                     </div>
-                                    <div class='space-x-2'>
-                                        <button type='submit' name='selectSeat' class='px-4 py-2 rounded-lg text-white text-sm bg-blue-600 hover:bg-blue-700'>Select Seat</button>
+
+                                    <!-- Flight Distance and Gate -->
+                                    <div class='text-center'>
+                                        <div class='flex items-center justify-center space-x-2 mb-2'>
+                                            <span class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full shadow-sm'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                                                    <path d='M10.293 15.707a1 1 0 010-1.414l3-3H3a1 1 0 110-2h10.586l-3-3a1 1 0 011.414-1.414l4.707 4.707a1 1 0 010 1.414l-4.707 4.707a1 1 0 01-1.414 0z' />
+                                                </svg>
+                                            </span>
+                                            <p class='text-sm text-gray-600 dark:text-gray-400'>{$flight["total_distance"]}km</p>
+                                        </div>
+                                        <p class='text-xs text-gray-500 dark:text-gray-400'>Gate: {$flight["gate"]}</p>
+                                        <p class='text-sm font-semibold text-gray-800 dark:text-gray-200'>{$flight["triptype_name"]}</p>
                                     </div>
-                            </form>
-                            
-                        </div>
+
+                                    <!-- To -->
+                                    <div class='text-center'>
+                                        <p class='text-lg font-semibold text-gray-800 dark:text-gray-200'>To</p>
+                                        <p class='text-sm text-gray-600 dark:text-gray-400'>{$flight["destination"]}</p>
+                                        <p class='text-sm text-gray-500 dark:text-gray-400'>{$flight["arrival_time"]}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Flight Date and Actions -->
+                                <div class='flex items-center justify-between'>
+                                    <p class='text-sm text-gray-600 dark:text-gray-400'>{$flight["flight_date"]}</p>
+
+                                    <!-- Favourite Button -->
+                                    <form action='{$_SERVER['PHP_SELF']}' method='POST' enctype='multipart/form-data'>
+                                        <input type='hidden' name='flightclasses_id' value='{$flight['flightclasses_id']}'>
+                                        <input type='hidden' name='user_id' value='{['user_id']}'>
+                                        <button type='submit' name='addFav' class='p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition duration-200 ease-in-out'>
+                                            <svg style='color: blue' role='img' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' aria-labelledby='favouriteIconTitle'> 
+                                                <title id='favouriteIconTitle'>Favourite</title> 
+                                                <path d='M12,21 L10.55,19.7051771 C5.4,15.1242507 2,12.1029973 2,8.39509537 C2,5.37384196 4.42,3 7.5,3 C9.24,3 10.91,3.79455041 12,5.05013624 C13.09,3.79455041 14.76,3 16.5,3 C19.58,3 22,5.37384196 22,8.39509537 C22,12.1029973 18.6,15.1242507 13.45,19.7149864 L12,21 Z' fill='blue'></path> 
+                                            </svg>
+                                        </button>
+                                    </form>
+
+                                    <!-- Select Seat Button -->
+                                    <form action='{$_SERVER['PHP_SELF']}' method='POST' enctype='multipart/form-data'>
+                                        <input type='hidden' name='flight_id' value='{$flight['flight_id']}'>
+                                        <input type='hidden' name='flightclasses_id' value='{$flight['flightclasses_id']}'>
+                                        <input type='hidden' name='class_id' value='{$flight['class_id']}'>
+                                        <input type='hidden' name='fee_per_ticket' value='{$flight['fee_per_ticket']}'>
+                                        <input type='hidden' name='photo' value='{$flight['photo']}'>
+                                        <input type='hidden' name='airline_name' value='{$flight['airline_name']}'>
+                                        <input type='hidden' name='flight_name' value='{$flight['flight_name']}'>
+                                        <input type='hidden' name='class_name' value='{$flight["class_name"]}'>
+                                        <input type='hidden' name='base_fees' value='{$flight["base_fees"]}'>
+                                        <input type='hidden' name='priceCharge' value='{$flight["priceCharge"]}'>
+                                        <input type='hidden' name='classPrice' value='{$flight["classPrice"]}'>
+                                        <input type='hidden' name='source' value='{$flight["source"]}'>
+                                        <input type='hidden' name='flight_date' value='{$flight["flight_date"]}'>
+                                        <input type='hidden' name='departure_time' value='{$flight["departure_time"]}'>
+                                        <input type='hidden' name='triptypeId' value='{$flight["triptypeId"]}'>
+                                        <input type='hidden' name='triptype_name' value='{$flight["triptype_name"]}'>
+                                        <input type='hidden' name='gate' value='{$flight["gate"]}'>
+                                        <input type='hidden' name='destination' value='{$flight["destination"]}'>
+                                        <input type='hidden' name='arrival_time' value='{$flight["arrival_time"]}'>
+                                        <button type='submit' name='selectSeat' class='px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-200 ease-in-out'>
+                                            Select Seat
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
                 }
 
@@ -862,24 +859,37 @@ if (isset($_POST['airSearch'])) {
                 </dialog>
             </div>
         </div>
+    </div>
 
-        <script>
-             function clearFilters() {
-                // Reset all the filter form fields
-                document.getElementById('airline_name').selectedIndex = 0; // Reset select box
-                document.querySelectorAll('input[type="radio"]').forEach((radio) => {
-                    radio.checked = false; // Uncheck all radio buttons
-                });
-                document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-                    checkbox.checked = false; // Uncheck all checkboxes
-                });
-                document.getElementById('labels-range-input').value = 100; // Reset range slider
+    <script>
+        function clearFilters() {
+            // Reset all the filter form fields
+            document.getElementById('airline_name').selectedIndex = 0; // Reset select box
+            document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+                radio.checked = false; // Uncheck all radio buttons
+            });
+            document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.checked = false; // Uncheck all checkboxes
+            });
+            document.getElementById('labels-range-input').value = 100; // Reset range slider
 
-                // Submit the form to reset the flight information
-                document.querySelector('form').submit();
-            }
-        </script>
-        <!-- main contents ends -->
+            // Submit the form to reset the flight information
+            document.querySelector('form').submit();
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+
+            const depDateInput = document.querySelector("#depDate");
+            const retDateInput = document.querySelector("#retDate");
+
+            depDateInput.setAttribute("min", minDate);
+            retDateInput.setAttribute("min", minDate);
+        }
+    </script>
+    <!-- main contents ends -->
 </body>
 
 </html>

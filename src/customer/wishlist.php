@@ -11,42 +11,42 @@ if (isset($_SESSION['users'])) {
 
 
 $sql = "SELECT 
-    *
-FROM 
-    wishlist w
-JOIN 
-    flightclasses fc 
-ON 
-    w.flightclasses_id = fc.flightclasses_id
-JOIN 
-    flight f 
-ON 
-    fc.flight_id = f.flight_id
-JOIN
-	classes c
-ON
-	fc.class_id = c.class_id
-JOIN
-	triptype tt
-ON 
-	fc.triptype = tt.triptypeId
-JOIN
-	airline a
-ON
-	f.airline_id = a.airline_id
-JOIN
-    users u
-ON
-    w.user_id = u.user_id
-WHERE
-    w.user_id = $user_id";
+                *
+            FROM 
+                wishlist w
+            JOIN 
+                flightclasses fc 
+            ON 
+                w.flightclasses_id = fc.flightclasses_id
+            JOIN 
+                flight f 
+            ON 
+                fc.flight_id = f.flight_id
+            JOIN
+                classes c
+            ON
+                fc.class_id = c.class_id
+            JOIN
+                triptype tt
+            ON 
+                fc.triptype = tt.triptypeId
+            JOIN
+                airline a
+            ON
+                f.airline_id = a.airline_id
+            JOIN
+                users u
+            ON
+                w.user_id = u.user_id
+            WHERE
+                w.user_id = $user_id";
 try {
     $stmt = $conn->query($sql);
     $status = $stmt->execute();
 
     if ($status) {
         $wishlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach($wishlists as $wishlist){
+        foreach ($wishlists as $wishlist) {
             $wishlist['wishListId'];
         }
     }
@@ -78,9 +78,24 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
         'triptype_name' => $_POST['triptype_name'],
         'class_id' => $_POST['class_id']
     ];
-    
+
     header("Location: showSeat.php");
     exit;
+}
+
+//clear wishlist
+if (isset($_POST['clearWishlist'])) {
+    $sql = "DELETE FROM wishlist WHERE user_id = $user_id";
+    try {
+        $stmt = $conn->query($sql);
+        $status = $stmt->execute();
+        if ($status) {
+            header("Location: wishlist.php");
+            exit;
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
 
 ?>
@@ -90,7 +105,7 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Favourite</title>
     <link href="./output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
@@ -102,7 +117,6 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
         <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
             <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
                 <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
             </a>
 
@@ -117,17 +131,7 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
                             </a>
                         </div>
                     </a>
-                    <!-- <a href="bookingCart.php" class="text-white px-4 py-2 rounded-md">
-            <svg width="45" height="45" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="5" y="42" width="26" height="38" rx="2" transform="rotate(-90 5 42)" fill="none" stroke="white" stroke-width="1" stroke-linejoin="round" />
-              <path d="M9.00002 16L32 5L37 16" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-              <circle cx="13" cy="23" r="2" fill="white" />
-              <circle cx="13" cy="29" r="2" fill="white" />
-              <circle cx="13" cy="35" r="2" fill="white" />
-              <path d="M21 35H25L36 23" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M24 29H30" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a> -->
+
                 </div>
                 <?php
                 if (isset($_SESSION['userisLoggedIn'])) {
@@ -184,7 +188,7 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
             <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
                 <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
                     <li>
-                        <a href="#" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+                        <a href="index.php" class="block py-2 px-3  text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
                     </li>
                     <li>
                         <button id="mega-menu-dropdown-button" data-dropdown-toggle="mega-menu-dropdown" class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
@@ -196,17 +200,12 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                                 <ul class="space-y-4" aria-labelledby="mega-menu-dropdown-button">
                                     <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                        <a href="aboutUs.php" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                                             About Us
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                            Newsletter
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                        <a href="contactUs.php" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                                             Conatct Us
                                         </a>
                                     </li>
@@ -222,9 +221,6 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li>
                         <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
                     </li>
-                    <li>
-                        <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -232,8 +228,6 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- nav ends -->
 
     <!-- disply flight information -->
-
-
     <?php
     if (isset($wishlists)) {
         echo "<div class='p-6 border border-gray-200 dark:border-gray-700 bg-white shadow-lg rounded-lg w-auto max-w-2xl mx-auto my-24'>";
@@ -278,6 +272,7 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class='flex items-center justify-between'>
                 <p class='text-sm text-gray-500'>{$wishlist["flight_date"]}</p>
 
+                
                 <form action='$_SERVER[PHP_SELF]' method='POST' enctype='multipart/form-data'>
                         <input type='hidden' name='flight_id' value='{$wishlist['flight_id']}'>
                         <input type='hidden' name='flightclasses_id' value='{$wishlist['flightclasses_id']}'>
@@ -308,14 +303,16 @@ if (isset($_POST['bookSeats'])  && $_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <hr class='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700'>";
         }
+        echo "<form action='{$_SERVER['PHP_SELF']}' method='POST'>
+                <button type='submit' name='clearWishlist' class='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition duration-200 ease-in-out'>
+                    Clear Wishlist
+                </button>
+            </form>";
 
         echo "</div>";
     }
     ?>
-
-
-
-
+    
 
     <!-- footer starts -->
     <footer class=" py-10 px-10 font-sans tracking-wide bg-[#00103c]">

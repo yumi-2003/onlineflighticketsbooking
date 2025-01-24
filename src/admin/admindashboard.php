@@ -19,99 +19,99 @@ try {
    echo $e->getMessage();
 }
 
-         //booking over time chart daily
-         // Database query for daily bookings
-         $sql = "SELECT DATE(bookAt) as booking_date, COUNT(*) as total_bookings
+//booking over time chart daily
+// Database query for daily bookings
+$sql = "SELECT DATE(bookAt) as booking_date, COUNT(*) as total_bookings
                      FROM booking
                      GROUP BY DATE(booking_date)
                      ORDER BY booking_date ASC";
-         $result = $conn->prepare($sql);
-         $result->execute();
+$result = $conn->prepare($sql);
+$result->execute();
 
-         // Prepare data for embedding
-         $dates = [];
-         $bookings = [];
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $dates[] = $row['booking_date'];
-            $bookings[] = $row['total_bookings'];
-         }
+// Prepare data for embedding
+$dates = [];
+$bookings = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $dates[] = $row['booking_date'];
+   $bookings[] = $row['total_bookings'];
+}
 
 
-         //top 5 most active users
-         // Database query for top 5 most active users
-         $sql = "SELECT users.username, COUNT(*) as total_bookings
+//top 5 most active users
+// Database query for top 5 most active users
+$sql = "SELECT users.username, COUNT(*) as total_bookings
                      FROM booking
                      JOIN users ON booking.user_id = users.user_id
                      GROUP BY users.user_id
                      ORDER BY total_bookings DESC
                      LIMIT 10";
-         $result = $conn->prepare($sql);
-         $result->execute();
+$result = $conn->prepare($sql);
+$result->execute();
 
-         // Prepare data for embedding
-         $users = [];
-         $bookings1 = [];
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $users[] = $row['username']; // You now fetch usernames instead of user_id
-            $bookings1[] = $row['total_bookings'];
-         }
+// Prepare data for embedding
+$users = [];
+$bookings1 = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $users[] = $row['username']; // You now fetch usernames instead of user_id
+   $bookings1[] = $row['total_bookings'];
+}
 
-         // booked flight classes
-         $classNames = [];
-         $classBookings = [];
+// booked flight classes
+$classNames = [];
+$classBookings = [];
 
-         if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
-            $flightId = $_GET['flight_id']; // Retrieve the selected flight ID from the form
+if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
+   $flightId = $_GET['flight_id']; // Retrieve the selected flight ID from the form
 
-            // SQL query to count bookings for each class for the selected flight
-            $sql = "SELECT classes.class_name, COUNT(*) as total_bookings
+   // SQL query to count bookings for each class for the selected flight
+   $sql = "SELECT classes.class_name, COUNT(*) as total_bookings
                   FROM booking
                   JOIN classes ON booking.class_id = classes.class_id
                   WHERE booking.flight_id = ?
                   GROUP BY classes.class_id
                   ORDER BY total_bookings DESC";
 
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$flightId]);
+   $stmt = $conn->prepare($sql);
+   $stmt->execute([$flightId]);
 
-            // Fetch booking data for the selected flight
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-               $classNames[] = $row['class_name']; // Collect class names
-               $classBookings[] = $row['total_bookings']; // Collect total bookings for each class
-            }
-         }
+   // Fetch booking data for the selected flight
+   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $classNames[] = $row['class_name']; // Collect class names
+      $classBookings[] = $row['total_bookings']; // Collect total bookings for each class
+   }
+}
 
-         // booked trip types
-         $tripTypes = [];
-         $tripTypeBookings = [];
-         if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
-            $flightId = $_GET['flight_id']; // Retrieve the selected flight ID from the form
+// booked trip types
+$tripTypes = [];
+$tripTypeBookings = [];
+if (isset($_GET['flight_id']) && !empty($_GET['flight_id'])) {
+   $flightId = $_GET['flight_id']; // Retrieve the selected flight ID from the form
 
-            // SQL query to count bookings for each trip type for the selected flight
-            $sql = "SELECT triptype.triptype_name, COUNT(*) as total_bookings
+   // SQL query to count bookings for each trip type for the selected flight
+   $sql = "SELECT triptype.triptype_name, COUNT(*) as total_bookings
                   FROM booking
                   JOIN triptype ON booking.triptype_id = triptype.triptypeId
                   WHERE booking.flight_id = ?
                   GROUP BY triptype.triptypeId
                   ORDER BY total_bookings DESC";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$flightId]);
-            // Fetch booking data for the selected flight
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-               $tripTypes[] = $row['triptype_name']; // Collect trip type names
-               $tripTypeBookings[] = $row['total_bookings']; // Collect total bookings for each trip type
-            }
-         }
+   $stmt = $conn->prepare($sql);
+   $stmt->execute([$flightId]);
+   // Fetch booking data for the selected flight
+   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $tripTypes[] = $row['triptype_name']; // Collect trip type names
+      $tripTypeBookings[] = $row['total_bookings']; // Collect total bookings for each trip type
+   }
+}
 
-         // Revenue distribution by trip types and classes
-         // Initialize the arrays to hold the necessary data
-         $tripTypeNames = [];
-         $classNames1 = [];
-         $revenueData = [];
-         $totalRevenue = 0;
+// Revenue distribution by trip types and classes
+// Initialize the arrays to hold the necessary data
+$tripTypeNames = [];
+$classNames1 = [];
+$revenueData = [];
+$totalRevenue = 0;
 
-               // SQL query to calculate revenue distribution by trip types and classes
-               $sql = "SELECT triptype.triptype_name, classes.class_name, SUM(payment.totalPrice) as total_revenue
+// SQL query to calculate revenue distribution by trip types and classes
+$sql = "SELECT triptype.triptype_name, classes.class_name, SUM(payment.totalPrice) as total_revenue
                      FROM booking
                      JOIN classes ON booking.class_id = classes.class_id
                      JOIN triptype ON booking.triptype_id = triptype.triptypeId
@@ -119,34 +119,34 @@ try {
                      GROUP BY triptype.triptypeId, classes.class_id
                      ORDER BY total_revenue DESC";
 
-               $stmt = $conn->prepare($sql);
-               $stmt->execute();
+$stmt = $conn->prepare($sql);
+$stmt->execute();
 
-               // Fetch revenue data for each trip type and class
-               while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                  // Store the trip type and class names
-                  $tripTypeNames[] = $row['triptype_name'];
-                  $classNames1[] = $row['class_name'];
+// Fetch revenue data for each trip type and class
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+   // Store the trip type and class names
+   $tripTypeNames[] = $row['triptype_name'];
+   $classNames1[] = $row['class_name'];
 
-                  // Store the total revenue for each trip type-class combination
-                  $revenueData[] = $row['total_revenue'];
+   // Store the total revenue for each trip type-class combination
+   $revenueData[] = $row['total_revenue'];
 
-                  // Accumulate the total revenue to calculate percentages later
-                  $totalRevenue += $row['total_revenue'];
-               }
+   // Accumulate the total revenue to calculate percentages later
+   $totalRevenue += $row['total_revenue'];
+}
 
-                  // Calculate the percentages for each category (trip type-class)
-                  $percentages = [];
-                  foreach ($revenueData as $revenue) {
-                     if ($totalRevenue > 0) {
-                        $percentages[] = round(($revenue / $totalRevenue) * 100, 2); // Calculate percentage
-                     } else {
-                        $percentages[] = 0; // Handle division by zero if no revenue is available
-                     }
-                  }
+// Calculate the percentages for each category (trip type-class)
+$percentages = [];
+foreach ($revenueData as $revenue) {
+   if ($totalRevenue > 0) {
+      $percentages[] = round(($revenue / $totalRevenue) * 100, 2); // Calculate percentage
+   } else {
+      $percentages[] = 0; // Handle division by zero if no revenue is available
+   }
+}
 
-         //booked seat numbers in each flight
-         $sql = "SELECT 
+//booked seat numbers in each flight
+$sql = "SELECT 
          flight.flight_name,
          flight.capacity,
          COUNT(DISTINCT booking.seatNOId) AS bookedSeats,
@@ -159,41 +159,41 @@ try {
          flight.flight_id;
          ";
 
-         $result = $conn->query($sql);
+$result = $conn->query($sql);
 
-         $flightNames = [];
-         $capacity = [];
-         $bookedSeats = [];
-         $availableSeats = [];
+$flightNames = [];
+$capacity = [];
+$bookedSeats = [];
+$availableSeats = [];
 
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $flightNames[] = $row['flight_name'];
-            $capacity[] = $row['capacity'];
-            $bookedSeats[] = $row['bookedSeats'];
-            $availableSeats[] = $row['availableSeats'];
-         }
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $flightNames[] = $row['flight_name'];
+   $capacity[] = $row['capacity'];
+   $bookedSeats[] = $row['bookedSeats'];
+   $availableSeats[] = $row['availableSeats'];
+}
 
-         //flight count by each airline
+//flight count by each airline
 
-         $sql = "SELECT airline.airline_name,
+$sql = "SELECT airline.airline_name,
          COUNT(flight.flight_id) AS flight_count
          FROM flight
          JOIN airline ON flight.airline_id = airline.airline_id
          GROUP BY airline.airline_id;";
 
-         $flightCount = $conn->query($sql);
+$flightCount = $conn->query($sql);
 
-         $airlineNames = [];
-         $flightCounts = [];
+$airlineNames = [];
+$flightCounts = [];
 
-         while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
-            $airlineNames[] = $row['airline_name'];
-            $flightCounts[] = $row['flight_count'];
-         }
+while ($row = $flightCount->fetch(PDO::FETCH_ASSOC)) {
+   $airlineNames[] = $row['airline_name'];
+   $flightCounts[] = $row['flight_count'];
+}
 
-         //total revenue by daily
-         // Database query for daily revenue
-         $sql = "SELECT DATE(bookAt) as booking_date, SUM(totalPrice) as total_revenue
+//total revenue by daily
+// Database query for daily revenue
+$sql = "SELECT DATE(bookAt) as booking_date, SUM(totalPrice) as total_revenue
                      FROM booking 
                      JOIN
                         payment
@@ -201,70 +201,70 @@ try {
                         booking.payment_id = payment.paymentID
                      GROUP BY DATE(booking_date)
                      ORDER BY booking_date ASC;";
-         $result = $conn->prepare($sql);
-         $result->execute();
-         // Prepare data for embedding
-         $dates1 = [];
-         $revenues = [];
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $dates1[] = $row['booking_date'];
-            $revenues[] = $row['total_revenue'];
-         }
+$result = $conn->prepare($sql);
+$result->execute();
+// Prepare data for embedding
+$dates1 = [];
+$revenues = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $dates1[] = $row['booking_date'];
+   $revenues[] = $row['total_revenue'];
+}
 
-         //total revenue by monthly
-         // Database query for monthly revenue
-         $sql = "SELECT MONTH(bookAt) as month, SUM(totalPrice) as total_revenu
+//total revenue by monthly
+// Database query for monthly revenue
+$sql = "SELECT MONTH(bookAt) as month, SUM(totalPrice) as total_revenu
          FROM booking
          JOIN payment
          ON booking.payment_id = payment.paymentID
          GROUP BY MONTH(bookAt)
          ORDER BY month ASC;";
 
-         $result = $conn->prepare($sql);
-         $result->execute();
-         // Prepare data for embedding
-         $months = [];
-         $revenues1 = [];
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $months[] = $row['month'];
-            $revenues1[] = $row['total_revenu'];
-         }
+$result = $conn->prepare($sql);
+$result->execute();
+// Prepare data for embedding
+$months = [];
+$revenues1 = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $months[] = $row['month'];
+   $revenues1[] = $row['total_revenu'];
+}
 
-         //total revenue by yearly
-         // Database query for yearly revenue
-         $sql = "SELECT YEAR(bookAt) as year, SUM(totalPrice) as total_revenue
+//total revenue by yearly
+// Database query for yearly revenue
+$sql = "SELECT YEAR(bookAt) as year, SUM(totalPrice) as total_revenue
          FROM booking
          JOIN payment
          ON booking.payment_id = payment.paymentID
          GROUP BY YEAR(bookAt)
          ORDER BY year ASC;";
-         $result = $conn->prepare($sql);
-         $result->execute();
-         // Prepare data for embedding
-         $years = [];
-         $revenues2 = [];
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $years[] = $row['year'];
-            $revenues2[] = $row['total_revenue'];
-         }
+$result = $conn->prepare($sql);
+$result->execute();
+// Prepare data for embedding
+$years = [];
+$revenues2 = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $years[] = $row['year'];
+   $revenues2[] = $row['total_revenue'];
+}
 
-         //most used payment type
-         $sql = "SELECT payment.paymentType, COUNT(paymentID) as total_payment
+//most used payment type
+$sql = "SELECT paymenttype.paymentName, COUNT(paymentID) as total_payment
          FROM payment
          JOIN paymentType
-         ON payment.paymentType = paymenttype.paymentName
+         ON payment.paymentType = paymenttype.typeID
          GROUP BY paymentType
          ORDER BY total_payment DESC;";
 
-         $result = $conn->query($sql);
-         $result->execute();
+$result = $conn->query($sql);
+$result->execute();
 
-         $paymentTypes = [];
-         $paymentTypes = [];
-         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $paymentTypes[] = $row['paymentType'];
-            $paymentCounts[] = $row['total_payment'];
-         }
+$paymentTypes = [];
+$paymentTypes = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+   $paymentTypes[] = $row['paymentName'];
+   $paymentCounts[] = $row['total_payment'];
+}
 
 
 
@@ -450,17 +450,6 @@ try {
             </li>
 
             <li>
-               <a href="viewTickets.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                  <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Tickets</span>
-                  <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
-
-                     <!-- //count of bookings -->
-
-                  </span>
-               </a>
-            </li>
-
-            <li>
                <a href="viewUsers.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Users</span>
                </a>
@@ -564,7 +553,7 @@ try {
          </div>
 
          <!-- Charts Section -->
-          <!-- booking count over time -->
+         <!-- booking count over time -->
          <div class="flex flex-wrap lg:flex-nowrap items-start justify-between space-y-6 lg:space-y-0 lg:space-x-6 p-6">
             <!-- Booking Chart Section -->
             <div class="flex flex-col items-center justify-center bg-[#cfedff] rounded-lg shadow-md w-full lg:w-2/3">
@@ -742,18 +731,19 @@ try {
             </div>
          </div>
 
-          <!-- Total Revenue By Yearly -->
-          <div class="flex flex-col items-center justify-center h-auto p-4 rounded-lg mt-10 shadow-md w-auto">
+         <!-- Total Revenue By Yearly -->
+         <div class="flex flex-col items-center justify-center h-auto p-4 rounded-lg mt-6 shadow-md w-auto">
             <!-- Title -->
-            <h2 class="text-2xl font-semibold text-black dark:text-black mb-6 text-center">
+            <h2 class="text-xl font-semibold text-black dark:text-black mb-4 text-center">
                Most Used Payment Type
             </h2>
 
             <!-- Chart Container -->
-            <div class="flex w-full h-auto sm:h-auto md:w-3/4 lg:w-2/3 xl:w-1/2">
+            <div class="flex w-full h-auto sm:w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4">
                <canvas id="mostUsedPaymentType" class="w-full h-full"></canvas>
             </div>
-         </div>
+      </div>
+
 
 
    </div>
@@ -1098,31 +1088,52 @@ try {
             datasets: [{
                label: 'Flight Count',
                data: flightCounts,
-               backgroundColor: 'rgba(99, 132, 255, 0.2)',
+               backgroundColor: 'rgba(99, 132, 255, 0.6)',
                borderColor: 'rgb(99, 132, 255)',
                borderWidth: 2,
-               barPercentage: 0.5,
-               categoryPercentage: 0.5
             }]
          },
          options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-               legend: {
-                  position: 'top',
-                  labels: {
+            scales: {
+               x: {
+                  ticks: {
                      font: {
-                        size: 12,
-                        family: 'Arial, sans-serif',
-                        weight: 'bold',
-                        color: '#333'
+                        size: 12, // Smaller font size for better fit
+                     },
+                     callback: function(value) {
+                        // Truncate long names to fit (optional)
+                        return value.length > 15 ? value.substring(0, 15) + '...' : value;
                      }
                   }
+               },
+               y: {
+                  ticks: {
+                     font: {
+                        size: 10, // Reduce font size on the y-axis
+                     }
+                  }
+               }
+            },
+            plugins: {
+               tooltip: {
+                  callbacks: {
+                     label: function(context) {
+                        return context.label; // Full name in tooltip
+                     }
+                  }
+               }
+            },
+            layout: {
+               padding: {
+                  top: 20,
+                  bottom: 20,
                }
             }
          }
       });
+
 
       //revenue by daily
       const revdate = <?php echo json_encode($dates1); ?>;
@@ -1216,7 +1227,7 @@ try {
 
       // Map month numbers to month names
       const monthNames = [
-         "January", "February", "March", "April", "May", "June", 
+         "January", "February", "March", "April", "May", "June",
          "July", "August", "September", "October", "November", "December"
       ];
       const monthLabels = months.map(month => monthNames[month - 1]); // Convert month numbers to names
@@ -1392,8 +1403,47 @@ try {
       //most used payment type
       // Data from PHP
 
-      
+      const paymentTypes = <?php echo json_encode($paymentTypes); ?>; // Array of payment types
+      const paymentCounts = <?php echo json_encode($paymentCounts); ?>; // Array of payment counts
 
+      // Get the canvas context
+      const ctx11 = document.getElementById('mostUsedPaymentType').getContext('2d');
+
+      // Create the pie chart
+      new Chart(ctx11, {
+         type: 'pie',
+         data: {
+            labels: paymentTypes, // Payment types as labels
+            datasets: [{
+               label: 'Payment Count', // Dataset label
+               data: paymentCounts, // Payment counts as data
+               backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'], // Colors for each slice
+            }]
+         },
+         options: {
+            title: {
+               display: true,
+               text: 'Most Used Payment Type', // Chart title
+               font: {
+                  size: 12,
+                  weight: 'bold'
+               }
+            },
+            legend: {
+               display: true,
+               position: 'top' // Legend position
+            },
+            plugins: {
+               tooltip: {
+                  callbacks: {
+                     label: function(context) {
+                        return `${context.label}: ${context.raw} bookings`; // Show payment type and count in tooltip
+                     }
+                  }
+               }
+            }
+         }
+      });
    </script>
 </body>
 

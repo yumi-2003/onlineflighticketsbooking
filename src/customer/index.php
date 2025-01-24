@@ -22,6 +22,16 @@ try {
   echo $e->getMessage();
 }
 
+//get flight information
+
+$sql = "SELECT * FROM airline";
+try {
+  $stmt = $conn->prepare($sql);
+  $stmt->execute();
+  $airlines = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo $e->getMessage();
+}
 
 
 //get user information
@@ -228,9 +238,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
           </li>
           <li>
             <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Team</a>
-          </li>
-          <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
           </li>
         </ul>
       </div>
@@ -519,6 +526,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
     </div>
   </div>
 
+
+  <!-- faq -->
   <div
     class="relative w-full bg-[#e4f6ff] px-6 pt-10 pb-8 mt-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-2xl sm:rounded-lg sm:px-10 mb-10">
     <div class="mx-auto px-5">
@@ -643,6 +652,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
     </div>
   </div>
 
+  
+
   <!-- footer starts -->
   <footer class="py-10 px-5 font-sans tracking-wide bg-[#00103c] h-72">
     <div class="bg-[#00103c] px-6 font-[sans-serif]">
@@ -734,9 +745,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['close'])) {
     depDateInput.setAttribute("min", minDate);
     retDateInput.setAttribute("min", minDate);
 
-    // if (retDateInput.value === depDateInput.value) {
-    //   alert("Return date should be greater than departure date");
-    // }
   </script>
 </body>
 

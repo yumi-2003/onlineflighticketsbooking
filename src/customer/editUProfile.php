@@ -48,6 +48,8 @@ if (isset($_POST['update'])) {
     $uploadPath = '../userPhoto/' . $proflile;
     move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
 
+
+
     try {
         $sql = "Update users set username = ?,email = ?, profile = ? Where user_id = ?";
         $stmt = $conn->prepare($sql);
@@ -242,12 +244,7 @@ if (isset($_POST['update'])) {
             <div class="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
                 <h2 class="pl-6 text-2xl font-bold sm:text-xl text-center">Edit Profile</h2>
 
-                <!-- <div class="grid max-w-2xl mx-auto mt-8">
-                    <div class="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
-                        <label for="">Upload Profile Picture</label><br>
-                        <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="multiple_files" type="file" name="profile" multiple>
-                    </div>
-                </div> -->
+                <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>" >
 
                 <label for="uploadFile1"
                     class="bg-white text-gray-500 font-semibold text-sm rounded-full w-24 h-24 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto">
@@ -287,6 +284,55 @@ if (isset($_POST['update'])) {
                             class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                             placeholder="" value="<?php echo $user['email']; ?>" required>
                     </div>
+
+                    <div class="mb-2 sm:mb-6 relative">
+                        <label for="current-password" class="block mb-2 text-xl font-medium text-black">Current Password</label>
+                        <div class="relative">
+                            <input type="password" id="current-password" name="current-password"
+                                class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 pr-10"
+                                placeholder="" value="" required>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-indigo-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.268.877-.683 1.687-1.219 2.387M15 12a9 9 0 11-6 0" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 sm:mb-6 relative">
+                        <label for="new-password" class="block mb-2 text-xl font-medium text-black">New Password</label>
+                        <div class="relative">
+                            <input type="password" id="new-password" name="new-password"
+                                class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 pr-10"
+                                placeholder="" required>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-indigo-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.268.877-.683 1.687-1.219 2.387M15 12a9 9 0 11-6 0" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 sm:mb-6 relative">
+                        <label for="new-password" class="block mb-2 text-xl font-medium text-black">Confirm New Password</label>
+                        <div class="relative">
+                            <input type="password" id="new-password" name="new-password"
+                                class="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 pr-10"
+                                placeholder="" required>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-indigo-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.268.877-.683 1.687-1.219 2.387M15 12a9 9 0 11-6 0" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+
+
+
                     <div class="flex justify-end">
                         <button type="submit" name="update"
                             class="text-white bg-indigo-700  hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full xl:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Update</button>
