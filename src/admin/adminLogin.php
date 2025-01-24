@@ -14,9 +14,12 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
   if (empty($email) || empty($password)) {
     echo "<script>alert('All fields are required')</script>";
+
   } else if (strlen($password) < 7) {
     move_uploaded_file($_FILES['profile']['tmp_name'], $uploadPath);
+    
     $password_error = "Password must be at least 7 characters long";
+
   } else {
     try {
       $sql = "SELECT * FROM admin WHERE admin_email = ?";
@@ -143,8 +146,6 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="mb-12">
           <h3 class="text-3xl font-extrabold text-blue-600">Admin Login</h3>
         </div>
-
-
 
         <div class="relative flex items-center mt-6">
           <input name="admin_email" type="text" required class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter email" />

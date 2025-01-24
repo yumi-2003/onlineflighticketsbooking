@@ -37,7 +37,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 }
 
 
-//top 5 most active users
+//top 10 most active users
 // Database query for top 5 most active users
 $sql = "SELECT users.username, COUNT(*) as total_bookings
                      FROM booking
@@ -135,15 +135,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
    $totalRevenue += $row['total_revenue'];
 }
 
-// Calculate the percentages for each category (trip type-class)
-$percentages = [];
-foreach ($revenueData as $revenue) {
-   if ($totalRevenue > 0) {
-      $percentages[] = round(($revenue / $totalRevenue) * 100, 2); // Calculate percentage
-   } else {
-      $percentages[] = 0; // Handle division by zero if no revenue is available
-   }
-}
+
 
 //booked seat numbers in each flight
 $sql = "SELECT 
@@ -292,7 +284,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
    <!-- nav starts -->
    <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
       <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-         <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+         <a href="" class="flex items-center space-x-3 rtl:space-x-reverse">
             <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
             <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
          </a>
@@ -302,7 +294,6 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 
             if (isset($_SESSION['isLoggedIn'])) {
             ?>
-
                <div class="flex items-center">
                   <div class="flex items-center ms-3">
                      <div>
@@ -318,7 +309,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                         <div class="px-4 py-3" role="none">
                            <p class="text-sm text-gray-900 dark:text-white" role="none">
                               <?php
-                              echo $_SESSION['adName'];
+                              echo $admin['admin_uname'];
                               ?>
                            </p>
                            <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
@@ -621,7 +612,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                      $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
                      foreach ($flights as $flight) {
                         $selected = ($selectedFlightId == $flight['flight_id']) ? 'selected' : '';
-                        echo "<option value='{$flight['flight_id']}' $selected>{$flight['flight_name']} (ID: {$flight['flight_id']})</option>";
+                        echo "<option value='{$flight['flight_id']}' $selected>{$flight['flight_name']}</option>";
                      }
                   } else {
                      echo "<option value=''>Error fetching flights</option>";

@@ -58,35 +58,6 @@ if (isset($_POST['search'])) {
    }
 }
 
-// if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-
-//    $flight_id = $_POST['flight_id'];
-
-//    $classes = [
-//       ['class_ID' => 1, 'prefix' => 'F', 'count' => 10],   // First Class
-//       ['class_ID' => 2, 'prefix' => 'B', 'count' => 30],   // Business Class
-//       ['class_ID' => 3, 'prefix' => 'P', 'count' => 50],   // Premium Economy
-//       ['class_ID' => 4, 'prefix' => 'E', 'count' => 60],   // Economy
-//    ];
-
-//    // Generate and insert seats for each class
-//    foreach ($classes as $class) {
-//       $classID = $class['class_ID'];
-//       $prefix = $class['prefix'];
-//       $count = $class['count'];
-
-//       for ($i = 1; $i <= $count; $i++) {
-//          $seatNumber = $prefix . $i;  // Generate seat number (e.g., F1, B1, P1, E1)
-//          $sql = "INSERT INTO seat_layout (flight_ID, class_ID, seatNo, status) VALUES (?,?,?,?)";
-//          $stmt = $conn->prepare($sql);
-//          $stmt->execute([$flight_id, $classID, $seatNumber, 'available']);
-
-
-//       }
-//    }
-
-//    echo "<scipt>alert('Seats generated successfully for all classes!')</script>";
-// }
 
 if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
    $flight_id = $_POST['flight_id'];
@@ -142,12 +113,12 @@ if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </head>
 
-<body>
+<body  class="bg-[#f2f1ef]">
 
    <!-- nav starts -->
    <nav class="fixed top-0 z-50 w-full bg-[#00103c]">
       <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-         <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+         <a href="" class="flex items-center space-x-3 rtl:space-x-reverse">
             <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
             <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SwiftMiles</span>
          </a>
@@ -230,11 +201,6 @@ if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
                            </li>
                            <li>
                               <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
-                                 Newsletter
-                              </a>
-                           </li>
-                           <li>
-                              <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                                  Conatct Us
                               </a>
                            </li>
@@ -313,16 +279,6 @@ if (isset($_POST['insertSeats']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
                </a>
             </li>
 
-            <li>
-               <a href="viewTickets.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                  <span class="flex-1 ms-3 whitespace-nowrap hover:text-white">Tickets</span>
-                  <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
-
-                     <!-- //count of bookings -->
-
-                  </span>
-               </a>
-            </li>
 
             <li>
                <a href="viewUsers.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-blue hover:bg-gray-100 dark:hover:bg-gray-700 group">
